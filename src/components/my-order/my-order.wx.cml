@@ -1,0 +1,744 @@
+<template>
+  <view class="container">
+  <nav title="{{ title}}"></nav>
+ 
+<van-tabs active="{{ active }}" bind:click="onChange" border="{{false}}">
+  <van-tab title="全部"></van-tab>
+  <van-tab title="待发货"></van-tab>
+  <van-tab title="待收货"></van-tab>
+  <van-tab title="待付款"></van-tab>
+</van-tabs>
+
+  <view class="panel-list">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+      cstyle="background:#eee;"
+    >
+        <cell
+          class="cell"
+          c-for="{{detailsList}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+      <view class="panel">
+      <view class="items items1">
+      <view class="order-number"><text style="color:#ff410f;" class="spec-order-text">{{item.orderId}}</text></view>
+      <view class="status"><text class="spec-order-text">{{item.statusMsg}}</text></view>
+      </view>
+
+      <cell c-for="{{item.goodsInfo}}"
+          c-for-index="j"
+          c-for-item="items"
+          data-idx="{{j}}">
+        <view class="items items2"  data-orderid="{{items.id}}"  c-bind:tap="goOrderDetails(item.orderId)" >
+        <view>
+          <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
+        </view>
+        <view style="width:300cpx;"><text class="spec-order-text" style="font-size:22cpx;">{{items.goodsName}}</text> 
+        <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text></view>
+        <view ><text class="spec-order-text">￥{{items.price}}</text> <text class="spec-order-text">x{{items.totalCount}}</text>
+        </view>
+        </view>
+      </cell>
+
+      <view class="items3">
+      <view class="top">
+      <text class="spec-order-text">共{{item.totalCount}}件</text>
+      <text style="margin-left:10cpx;" class="spec-order-text" >应付总额:</text>
+      <text class="now-price">￥{{item.totalMoney}}</text>
+      </view>
+      <view class="bottom"  c-if="{{item.pay_status}}">
+      <text class="spec-order-text">实付总额:</text>
+      <text class="now-price">{{item.real_money}}</text>
+      </view>
+      </view>
+
+      <view class="items items1">
+
+      <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
+      data-id="{{item.id}}"
+      ><van-icon name="delete" size="20" color="#f5222d"/></view>
+
+      <view class="items5">
+      <view class="btn" c-if="{{item.statusMsg==='待支付'}}" c-bind:tap="canceldialog(item.orderId,item.statusMsg)">
+      <van-button round type="default" size="small"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       {{setBtnName}}
+      </van-button>
+      </view>
+
+      <view class="btn" c-if="{{item.statusMsg==='已发货' }}" c-bind:tap="confirmReceipts(item.orderId,item.statusMsg)">
+      <van-button round type="default" size="small"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       {{confirmReceipt}}
+      </van-button>
+      </view>
+      
+      <view style="margin-left:10cpx;" c-if="{{item.status==1}}" c-bind:tap="getNumber(item.orderId)" data-id="{{item.id}}" >
+      <van-button round type="info" size="small" color="#f44336">立即付款</van-button></view>
+<!--
+      <view style="margin-left:10cpx;" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
+      <van-button round type="info" size="small" color="#fff">查看物流</van-button></view>
+-->
+
+      <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
+      <van-button round type="default" size="small">查看物流</van-button>
+      </view>
+
+
+      <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
+      <van-button round type="info" size="small" color="#f44336">再来一单</van-button></view>
+
+      </view>
+      </view>
+          </view>
+        </cell>
+    </list>
+  </view>
+  
+
+    <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+  <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+  <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+
+
+
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getOrderLists,getOrderNumber,cancelOrderDetails,deleteOrder,sureGetGoods,modifyState,another} from '../../api/index'
+import store from '../../store'
+import Dialog from '../../vant/dialog/dialog'
+class MyOrder implements MyOrderInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     type: {
+      type: Number,
+      default: 0
+    }
+  }
+
+  data = {
+    title:"我的订单",
+    active:0,
+    loading:false,
+    detailsList:[],
+    page:1,
+    otherLoading:false,
+    setBtnName:'取消订单',
+    statuss:'',
+    confirmReceipt:'确认收货',
+    returnGoods:'申请退货'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    logistics(expNum){
+      console.log('打印',expNum)
+      if(expNum===''||expNum===null){
+        this.tip("未找到此订单的订单号")
+      }else{
+        cml.navigateTo({
+          path: '/pages/logistics_details/logistics_details',
+          query:{expNum:expNum}
+        })
+      }
+    },
+   dialog(id){
+      Dialog.confirm({
+      title: '提示',
+      context:this,
+      message: '您确认要删除该订单吗？'
+    }).then(() => {
+      this.deleteOrderData(id)
+    }).catch(() => { 
+    });
+   },
+    
+    onChange(e){
+      console.log(e)
+      if(e.detail.index==1){
+        this.statuss=2
+      }else if(e.detail.index==2){
+        this.statuss=3
+      }else if(e.detail.index==3){
+         this.statuss=1
+      }else{
+        this.statuss=''
+      }
+      this.detailsList=[]
+      this.page=1
+      this.getDetaisList()
+      
+    },
+      getDetaisList(){
+        this.loading=true
+        let uname
+        cml.getStorage("uname").then(value => {
+        uname=value
+        getOrderLists({pageNum:this.page,status:this.statuss,uname:uname}).then(res=>{
+          this.loading=false
+
+          console.log(res,'哈哈123')
+         
+          if(res.code){
+            this.detailsList= this.detailsList.concat(res.data.map(d=>{
+              // d.goodsInfo.forEach(element => {
+              //   element.thumb='http://'+element.thumb
+              // });
+          d.goodsInfo.map(c=>{
+             c.thumb='http://'+c.thumb
+            return c
+          })
+              return d
+            }))
+            if(!res.data.length){
+              cml.showToast({
+              message: "没有更多数据了",
+              duration: 2000
+            })
+
+            }
+
+          }
+        })
+        })
+
+      },
+      checkStatus(status,payStatus,isSale){
+        if(status===-1){
+          return '订单已取消'
+
+        }else{
+          if(payStatus===0){
+            if(isSale===0){
+              return '已下架'
+            }
+              return '待支付'
+          }
+        }
+
+        switch(status) {
+     case 0:
+        return '未发货'
+        break;
+     case 1:
+     return '已发货'
+        break;
+          case 2:
+     return '已收货'
+        break;
+         case 3:
+     return '已评价'
+        break;
+          case -1:
+     return '订单已取消'
+        break;
+          case -2:
+     return '申请退货'
+        break;
+          case -3:
+     return '同意退货'
+        break;
+          case -4:
+     return '已退货'
+        break;
+         case -5:
+     return '退货驳回'
+        break;
+     default:
+      
+} 
+        
+
+      },
+       onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getDetaisList()
+      }, 800)
+
+    },
+
+    setBtn(status,payStatus){
+      console.log(payStatus,3333)
+      console.log(status,3333)
+      // if(payStatus && status!=='已收货' && status!=='已发货' ){
+      //   this.setBtnName='取消订单'
+      //   return
+      // }
+      if(!payStatus){
+         return '取消订单'
+       
+
+      }
+      if(status==='已发货'){
+        console.log(1)
+        return '确认收货'
+      }else if(status==='已收货'){
+        return '已收货'
+      }else if(status==='申请退货'){
+         return '退货中'
+
+      }else if(status==='同意退货'){
+         return '请等待...'
+
+      }else{
+      return '取消订单'
+      }
+
+
+
+    },
+
+    goOrderDetails(e){
+      console.log(e)
+      cml.setStorage('orderid',e)
+      cml.navigateTo({
+  path: '/pages/order-details/order-details',
+  query:{}
+  })
+    },
+    //点击立即付款，获取付款信息
+    getNumber(e){
+      console.log(e)
+      this.otherLoading=true
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      getOrderNumber({uname:uname,orderId:e}).then(res=>{
+         this.otherLoading=false
+          console.log("结果",res)
+        if(res.code==1){
+          cml.setStorage('payData',res.data)
+          cml.navigateTo({
+            path: '/pages/payment/payment',
+            query:{osn:res.data.totalMoney}
+          })
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+      })
+
+
+    },
+    //再来一单
+    anotherOne(val){
+      another({orderId:val}).then(res=>{
+          console.log("结果",res)
+        if(res.code==1){
+          cml.navigateTo({
+            path: '/pages/index/index',
+            query:{currentComp:'shopping-cart'}
+          })
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+    },
+   canceldialog(orderId,stats){
+      Dialog.confirm({
+      title: '提示',
+      context:this,
+      message: '您确认要取消该订单吗？'
+    }).then(() => {
+      this.cancelOeder(orderId,stats)
+    }).catch(() => { 
+    });
+   },
+    //取消订单
+    cancelOeder(orderId,stats){
+      let status=6
+      console.log(orderId,stats)
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      modifyState({uname:uname,orderId:orderId,status:status}).then(res=>{
+          console.log("结果",res)
+        if(res.code==1){
+          cml.showToast({
+            message: "取消成功",
+            duration: 1000
+          })
+          this.detailsList=[]
+          this.page=1
+          this.getDetaisList()
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+      })
+      // let id=e.currentTarget.dataset.id
+      // let tip=e.currentTarget.dataset.tip
+      // let btntip=e.currentTarget.dataset.btntip
+      // if(tip==='已发货' && btntip==='确认收货'){
+      //   console.log(tip,88888)
+      //   this.sureGoods(id)
+      //   return 
+      // }
+      // if(btntip==='已收货') return
+      // if(btntip==='退货中') return
+      // if(btntip==='请等待...') return
+      // cancelOrderDetails({id:id}).then(res=>{
+      //   console.log(res,888877)
+      //   if(res.code){
+      //      cml.showToast({
+      //   message: res.msg,
+      //   duration: 1000
+      // })
+      // setTimeout(()=>{
+      //   console.log(999777,'hahah')
+      //   //刷新页面
+      //   this.detailsList=[]
+      //   this.page=1
+      //   this.getDetaisList()
+      // },1500)
+      //   }else{
+      //     this.tip(res.msg)
+      //   }
+      // }).catch(err=>{
+        
+      // })
+
+
+
+
+
+    },
+    // deleteOrder(e){
+    //   let id=e.currentTarget.dataset.id
+    //   this.deleteOrderData(id)
+
+    // },
+    deleteOrderData(id){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      deleteOrder({orderId:id,uname:uname}).then(res=>{
+        if(res.code==1){
+          cml.showToast({
+            message: "删除成功",
+            duration: 1500
+          })
+//刷新页面
+      setTimeout(()=>{
+        this.detailsList=[]
+        this.page=1
+        this.getDetaisList()
+      },1000)
+        }else if(res.code==0){
+          cml.showToast({
+            message: res.msg,
+            duration: 1500
+          })
+        }
+        
+      }).catch(err=>{})
+      })
+
+    },
+    //确认收货操作
+    confirmReceipts(orderId,stats){
+      let status=5
+      console.log(orderId,stats)
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      modifyState({uname:uname,orderId:orderId,status:status}).then(res=>{
+          console.log("结果",res)
+        if(res.code==1){
+          cml.showToast({
+            message: "确认收货成功，请自行确认是否已签收",
+            duration: 1500
+          })
+          // this.tip(`获得ASL3数量${res.getAsl3}`)
+          setTimeout(()=>{
+            this.detailsList=[]
+            this.page=1
+            this.getDetaisList()
+          },1500)
+
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+      })
+      // sureGetGoods({id:id}).then(res=>{
+      //   if(res.code){
+      //     this.tip(`获得ASL3数量${res.data.get_asl3}`)
+      //     this.detailsList.map(d=>{
+      //       if(d.id===id){
+      //         d.setBtnName='已收货'
+      //       }
+      //       return d
+      //     })
+      //   }else{
+      //     this.tip(res.msg)
+      //   }
+      // }).catch(err=>{})
+
+    },
+  //申请退货
+  returnGood(orderId,stats){ 
+      let status=7
+      console.log(orderId,stats)
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      modifyState({uname:uname,orderId:orderId,status:status}).then(res=>{
+          console.log("结果",res)
+        if(res.code==1){
+          cml.showToast({
+            message: "退货成功",
+            duration: 1000
+          })
+          this.detailsList=[]
+          this.page=1
+          this.getDetaisList()
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+      })
+  },
+    tip(msg){
+        cml.showToast({
+        message: msg,
+        duration: 1500
+      })
+
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.active=this.type
+      if(this.type==1){
+        this.statuss=2
+      }else if(this.type==2){
+        this.statuss=3
+      }else if(this.type==3){
+         this.statuss=1
+      }else{
+        this.statuss=''
+      }
+      this.detailsList=[]
+      this.page=1
+      this.getDetaisList()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new MyOrder();
+</script>
+
+<style scoped >
+
+.container{
+  width:750cpx;
+ 
+  
+
+
+}
+
+.items2{
+  padding:10cpx!important;
+}
+
+.num-posi{
+  margin-top:5cpx;
+}
+
+
+
+.panel-list{
+  position: absolute;
+  top: 250cpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+}
+
+.panel{
+  width:750cpx;
+  min-height: 250cpx;
+  background: #fff;
+  padding:10cpx;
+}
+
+.items{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top:10cpx;
+  padding-bottom:5cpx;
+  border-bottom:2cpx solid #eee;
+}
+.items5{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top:10cpx;
+  padding-bottom:5cpx;
+  border-bottom:2cpx solid #eee;
+}
+
+.items3{
+  padding:10cpx!important;
+  width: 100%;
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  border-bottom:2cpx solid #eee;
+
+}
+.top{
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+
+.bottom{
+  margin-top:10cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+.real-total{
+  align-self:flex-end;
+position: relative;
+right: 120cpx;
+}
+
+view.items4{
+  border-bottom:none;
+  justify-content:flex-end;
+
+}
+
+.status{
+   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cell{
+   margin-top:20cpx;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.now-price{
+  color:#ff0000;
+  display: inline-block;
+  letter-spacing: 2cpx;
+  font-size:26cpx;
+}
+
+.tab{
+  background: #fff;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+   font-size: 26cpx;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+          "nav":"/components/nav/nav",
+           "van-tab": "/vant//tab/index",
+            "van-tabs": "/vant/tabs/index",
+            "details-panel":"/components/details-panel/details-panel",
+             "i-spin": "/iview/spin/index",
+              "van-icon": "/vant//icon/index",
+              "van-button": "/vant/button/index",
+              "van-dialog": "/vant/dialog/index",
+              "van-loading": "/vant/loading/index"
+    }
+  }
+}
+</script>

@@ -1,0 +1,210 @@
+<template>
+  <view class="test">
+    <nav title="{{title}}"></nav>
+    <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+    <view class="list" c-for="{{newList}}" c-for-index="index" c-for-item="item">
+        <view class="time">{{item.createTime}}</view>
+        <view class="news">
+          <view class="neirong">{{item.message}}</view>
+          <view class="operation">
+            <view class="looks" c-if="{{item.status==0}}" c-bind:tap="readmessage(item.id,index)">已读</view>
+            <view class="looks" c-else style="color:#999999;border: 3cpx solid #999999;">已读</view>
+            <view class="delete" c-bind:tap="delet(item.id)">删除</view>
+          </view>
+        </view>
+    </view>
+    </list>
+  </view>
+</template>
+
+<script>
+import {getUserNews,readsNews,delNews} from '../../api/index'
+import { moment }  from '../../untils/moment.js'
+import cml from 'chameleon-api';
+class NewsListVer2 implements NewsListVer2Interface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    types: {
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    title:'',
+    newList:[],
+    page:1
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getdata(){
+      getUserNews({pageNum:this.page,type:this.types}).then(res=>{
+        if(res.code==1){
+          this.newList= this.newList.concat(res.data.map(d=>{
+            d.createTime=moment(d.createTime)
+            return d
+          }))
+          console.log('消息列表',res.data);
+        }else if(res.code==0){
+          cml.showToast({
+            message: "没有更多了",
+            duration: 1000
+          })
+        }
+      }).catch(err=>{
+
+      })
+    },
+    //读消息
+    readmessage(id,index){
+      readsNews({id:id}).then(res=>{
+        if(res.code==1){
+          this.newList[index].status=1
+        }else{
+          cml.showToast({
+            message: "已读失败",
+            duration: 1000
+          })
+        }
+      }).catch(err=>{
+
+      })
+    },
+    //删除
+    delet(id){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+        uname=value
+      delNews({uname:uname,id:id}).then(res=>{
+        if(res.code==1){
+          this.newList=this.newList.filter(d=>d.id!== id)
+          cml.showToast({
+            message: "删除成功",
+            duration: 1000
+          })
+        }
+
+      })
+      })
+    },
+    onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+      this.getdata()
+      }, 800)
+
+    },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    if(this.types==1){
+      this.title='系统消息'
+    }else{
+      this.title='订单消息'
+    }
+    this.getdata()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new NewsListVer2();
+</script>
+
+<style >
+.test{
+    width: 750cpx;
+}
+.list{
+  padding: 30cpx;
+}
+.time{
+  text-align: center;
+  background: #E6E6E6;
+  border-radius: 20cpx;
+  width: 40%;
+  font-size: 24cpx;
+  margin: 0 auto;
+  padding: 5cpx;
+  color: #FFFFFF;
+}
+.news{
+    background: #fff;
+    border-radius: 20cpx;
+    padding: 30cpx;
+    margin-top: 30cpx;
+}
+.neirong{
+    font-size: 25cpx;
+    font-weight: 300;
+    color: #222222;
+    border-left: 7cpx solid #D62B1D;
+    padding-left: 10cpx;
+}
+.looks{
+    border: 3cpx solid #DD3A2C;
+    border-radius: 22cpx;
+    width: 15%;
+    font-size: 23cpx;
+    color: #ED4229;
+    text-align: center;
+    padding: 3cpx 0;
+    margin-right: 10cpx;
+}
+.delete{
+    border: 3cpx solid #CACACA;
+    border-radius: 22cpx;
+    width: 15%;
+    font-size: 23cpx;
+    color: #999999;;
+    text-align: center;
+    padding: 3cpx 0;
+}
+.operation{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 20cpx;
+    justify-content: flex-end;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav": "/components/nav-ver2/nav-ver2"
+    }
+  }
+}
+</script>

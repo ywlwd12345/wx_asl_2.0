@@ -1,0 +1,114 @@
+<template>
+  <view class="container">
+<!--  <nav title="{{ title}}"></nav>-->
+<head title="{{title}}"></head>
+
+  <view class="icon">
+  <view class="checkBox">
+  <van-checkbox value="{{ checked }}" 
+  checked-color="#f4211a"
+  bind:change="onChange" icon-size="60px"></van-checkbox>
+  </view>
+  <view style="margin-top:10px;"><text>付款成功</text></view>
+  </view>
+
+
+  <view class="btn">
+   <van-button type="info" 
+   bind:click="goIndex"
+    color="#f44336" block>返回首页</van-button>
+  </view>
+  
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+class PaySucceed implements PaySucceedInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+     title:'支付成功',
+     checked:true
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    goIndex(){
+       cml.redirectTo({
+  path: '/pages/index/index'
+  })
+
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    
+
+    
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PaySucceed();
+</script>
+
+<style  scoped>
+.container{
+  width: 750cpx;
+
+}
+
+.icon{
+  width: 750cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top:200cpx;
+}
+
+.btn{
+  margin:0 auto;
+  margin-top:100cpx;
+  width:80%;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "head":"/components/head/head",
+        "van-button": "/vant/button/index",
+         "van-checkbox": "/vant/checkbox/index"
+
+    }
+  }
+}
+</script>

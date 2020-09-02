@@ -1,0 +1,138 @@
+<template>
+  <view> 
+  <nav title="{{title}}"></nav>
+  <view class="bg">
+  <image src="{{imageSrc}}" style="width:400cpx;height:400cpx;" ></image>
+  </view>
+
+  <view class="gf-about">
+  <view class="gf gf1">
+  <text class="spec-text">官方微信</text>
+  <text class="spec-text">爱生链平台</text>
+  </view>
+  <view class="gf gf2">
+   <text class="spec-text">客服电话</text>
+  <text class="spec-text">400-8567-085</text>
+  </view>
+  </view>
+
+  <view class="bq">
+  <view><text class="spec-text">爱生链共享服务有限公司版权所有</text></view>
+  <view><text class="spec-text">Copyright 02018 Aishenglian.com</text></view>
+  <view><text class="spec-text">All Rights Reserves</text></view>
+  </view>
+   
+
+  </view>
+</template>
+
+<script>
+
+class AboutUs implements AboutUsInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'关于我们',
+    imageSrc: require('../../assets/images/linkIcon/login/gy.png'),
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AboutUs();
+</script>
+
+<style >
+
+.bg{
+  width: 750cpx;
+  margin-top:30cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.gf-about{
+  width: 710cpx;
+  margin:0 auto;
+  margin-top:30cpx;
+  
+ 
+}
+.gf{
+   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom:40cpx;
+  padding-bottom:20cpx;
+  border-bottom:2cpx #eee solid;
+
+}
+
+.bq{
+  width:600cpx;
+  position: fixed;
+  bottom:100cpx;
+  left: 50%;
+  color:#bfbfbf;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.bq view text{
+   font-size: 28cpx;
+}
+.spec-text{
+  letter-spacing: 2cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav"
+    }
+  }
+}
+</script>

@@ -1,0 +1,490 @@
+<template>
+  <view class="container">
+   <nav title="{{title}}"  c-bind:onshowNav="setHt"></nav>
+
+  <view class="del-data" style="position:fixed;top:{{navHeight}}px" >
+  <text class="success" c-bind:tap='success' c-if="{{!showDel}}" >完成</text>
+  <van-icon name="delete" size="30px"  color="#bbbec4" 
+bind:click="deleteGoods" c-if="{{showDel}}"/>
+  </view>
+  <view class="cloumn" style="height:80cpx;"></view>
+   <calendar calendarConfig="{{calendarConfig}}"   bind:whenChangeMonth="whenChangeMonth"    bind:afterTapDay="afterTapDay" ></calendar>
+   <view class="list-goods">
+        <block
+          c-for="{{listData}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+          <view class="panel">
+          <view class="goods-img">
+             <image src="{{item.goodsThumb}}" style="width:200cpx;height:200cpx;" data-gid="{{item.goodsId}}" c-bind:tap="goDetails"></image>
+          </view>
+
+    <view class="goods-price">
+    <text class="now-price">{{item.goodsPrice}}</text>
+    <text class="spec-cirle">...</text>
+    </view>
+
+    <view class="checkbox" c-if="{{!showDel}}">
+    <van-checkbox value="{{ item.checked }}" bind:change="onChange"  checked-color="#ff410f" data-id="{{item.id}}"></van-checkbox>
+    </view>
+
+          </view>
+        </block>   
+   </view>
+
+<!-- list-goods end-->
+
+<view class="dle-btn" c-if="{{!showDel}}">
+
+
+<van-submit-bar
+  button-text="删除"
+  bind:submit="onSubmit"
+  button-class="spec-btn"
+>
+
+<view style="margin-right:100cpx;">
+<van-checkbox value="{{ checked }}" checked-color="#ff410f"  bind:change="onChangeAll">全选</van-checkbox>
+</view>
+
+</van-submit-bar>
+
+</view>
+
+
+
+  </view>
+</template>
+<script>
+ // getCurrentYM() 获取日历当前年月
+
+import { jump,getSelectedDay,setTodoLabels,getCurrentYM,cancelSelectedDates,clearTodoLabels} from '../../rl/calendar/main.js';
+import {getBrowsingHistoryData,browsingGoodsData,delBrowsingGoods} from '../../api/grouping.js' //引入拼团模块接口
+import {momentMs} from '../../untils/moment.js' //引入拼团模块接口
+import cml from 'chameleon-api';
+
+class MyFootprint implements MyFootprintInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+  data = {
+      title:'我的足迹',
+      calendarConfig: {
+      // 配置内置主题
+      theme: 'default',
+      onlyShowCurrentMonth: true
+    },
+    listData:[],
+    showDel:true,
+    period:{},
+    checked:false,
+    navHeight:''//导航栏高度
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    //触底事件
+onBottom(e){
+
+},
+
+setHt(res){
+
+  this.navHeight=res.detail.value
+
+},
+
+    setDefaultData(){
+this.historyData(getCurrentYM())
+  this.setSelectToday() //获取当天数据
+
+  },
+  //获取相关的历史记录数据
+  historyData(data){
+    getBrowsingHistoryData(data).then(res=>{
+      if(res.code && res.data.length){
+        const result=res.data
+        this.setHistoryData(this.dealHistoryData(result))
+
+
+      }else{
+this.tip( '该月份暂无足迹')
+
+      }
+    
+
+}).catch(err=>{})
+
+
+  },
+  tip(msg){
+      cml.showToast({
+    message: msg,
+    duration: 1000
+})
+
+  },
+
+// 设置默认选中数据  
+setSelectToday(){
+  jump()
+  const timestamp=new Date().getTime()
+  const  begin=momentMs(timestamp)
+  const endTimestamp=new Date(timestamp).getTime() + 24 * 60 * 60 * 1000
+  const  end=momentMs(endTimestamp)
+  this.period={begin,end}
+  this.getBrowsingGoods({begin,end})
+
+},
+
+
+
+
+// 处理配置历史记录数据 
+dealHistoryData(arr){
+  let arr1=[]  //返回的数组对象
+  arr.map(d=>{
+     let item=d.split('-').map(c=>{
+      c=Number(c)
+      return c
+    })
+    arr1.push({year:item[0],month:item[1],day:item[2],color:'#ff410f'})
+    return d
+  })
+  return arr1
+},
+//  设置当月足迹数据
+setHistoryData(arr){
+        setTodoLabels({
+  // 待办点标记设置
+  pos: 'bottom', // 待办点标记位置 ['top', 'bottom']
+  dotColor: 'purple', // 待办点标记颜色
+  showLabelAlways: true, // 点击时是否显示待办事项（圆点/文字），在 circle 为 true 及当日历配置 showLunar 为 true 时，此配置失效
+  days:arr
+});
+
+},
+
+
+// 日期点击事件（此事件会完全接管点击事件），需自定义配置 takeoverTap 值为真才能生效
+whenChangeMonth(e){
+  this.historyData(e.detail.next)
+  cancelSelectedDates()
+  this.listData=[]
+},
+
+//选择日期后执行的事件
+
+afterTapDay(e){
+  this.dealPeriod(e.detail)
+
+},
+
+//获取用户具体某天浏览记录商品数据
+getBrowsingGoods(data){
+  browsingGoodsData(data).then(res=>{
+   
+    if(res.code && res.data.length){
+      this.listData=res.data.map(d=>{
+        d.goodsThumb='https://'+d.goodsThumb
+        d.checked=false
+        return d
+      })
+
+    }else{
+      this.listData=[]
+      this.tip('当天无足迹')
+      
+    }
+
+  }).catch(err=>{
+
+  })
+
+
+
+},
+
+// 处理上传时间段数据
+dealPeriod(data){
+  const year=data.year+''
+  const month=(data.month<10?('0'+data.month):data.month)
+  const day =(data.day<10?('0'+data.day):data.day)
+  // const start=year+'-'+month+'-'+day
+   const start=[year,month,day].join('-')
+   const endTimestamp=new Date(start).getTime() + 24 * 60 * 60 * 1000
+   const  end=momentMs(endTimestamp)
+
+   this.period={begin:start,end}
+
+  this.getBrowsingGoods({begin:start,end})
+},
+  goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+  //删除商品数据
+ deleteGoods(){
+   this.showDel=false
+
+
+  },
+  success(){
+    this.showDel=true
+
+
+
+  },
+
+  onChange(e){
+// 记录id
+  const id=e.target.dataset.id
+  this.listData=this.listData.map(d=>{
+    if(d.id===id){
+      d.checked=e.detail
+    }
+
+    return d
+  })
+
+
+
+
+
+  },
+  onSubmit(){
+
+    this.deletRecord()
+  
+
+
+  },
+  onChangeAll(e){
+    this.checked=e.detail
+    this.listData=this.listData.map(d=>{
+      d.checked=e.detail
+    return d
+  })
+
+  
+  },
+
+//执行删除操作
+  deletRecord(){
+      const  postArray=[]
+   this.listData.map(d=>{
+     if(d.checked){
+       postArray.push(d.id)
+     }
+     return d
+   })
+   delBrowsingGoods({id:JSON.stringify(postArray)}).then(res=>{
+     if(res.code){
+       this.tip('删除成功')
+       this.getBrowsingGoods(this.period)
+        clearTodoLabels() //清空所有待办事项
+       this.historyData(getCurrentYM()) //更新当月足迹记录
+     }else{
+       this.tip('删除失败')
+     }
+   }).catch(err=>{})
+
+  }
+
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.setDefaultData()
+
+try {
+  const res = wx.getSystemInfoSync()
+  //判断是否为iphonex
+
+if(res.model.includes("iPhone X")){
+  // this.flag=true
+}
+
+
+} catch (e) {
+  // Do something when catch error
+}
+ 
+
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new MyFootprint();
+</script>
+
+<style scoped>
+
+
+.list-goods{
+  margin:0 auto;
+  margin-top:20cpx;
+  /* position: relative; */
+  width:710cpx;
+  padding-bottom:130cpx;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content:flex-start;
+  align-items: center;
+}
+
+.panel{
+flex:0.333;
+margin-bottom:20cpx;
+padding:0 10cpx;
+  
+}
+
+/* .cell{
+   width: 33.33%;
+display:inline-block ;
+margin-bottom:20cpx;
+
+} */
+
+
+.goods-price{
+  margin-top:15cpx;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+}
+
+.now-price{
+  color:#ff0000;
+  letter-spacing: 2cpx;
+  font-size: 28cpx;
+  /* font-weight: bold; */
+}
+
+.spec-cirle{
+   letter-spacing: 2cpx;
+  font-size: 28cpx;
+  font-weight: bold;
+  color: #80848f;
+}
+
+.del-data{
+  width: 100%;
+  min-height: 80cpx;
+  background:#fff;
+  padding-right: 10cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom:10cpx;
+ 
+  z-index: 9999; 
+  
+}
+
+
+.del-data1{
+  width: 100%;
+  min-height: 80cpx;
+  background:#fff;
+  padding-right: 10cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom:10cpx;
+  z-index: 9999;
+}
+
+
+@media screen and (max-width: 320px) {
+ .del-data{
+  width: 100%;
+  min-height: 80cpx;
+  background:#fff;
+  padding-right: 10cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom:10cpx;
+  position: fixed;
+  top:150cpx;
+  z-index: 9999;
+}
+}
+
+
+
+
+
+.spec-btn{
+  background: linear-gradient(to right, #ff512f, #f09819);
+  border:none;
+
+}
+
+.success{
+    letter-spacing: 2cpx;
+  font-size: 36cpx;
+
+}
+
+
+
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+       "calendar":"/rl/calendar/index",
+        "van-icon": "/vant/icon/index",
+        "van-submit-bar":"/vant/submit-bar/index",
+          "van-checkbox": "/vant/checkbox/index",
+          "van-checkbox-group": "/vant/checkbox-group/index"
+         
+    }
+  }
+}
+</script>

@@ -1,0 +1,132 @@
+<template>
+  <view>
+  <my-footprint></my-footprint>
+    <view class="back-top1" c-bind:tap="goTop" >
+    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+  </view>
+  
+  
+  </view>
+</template>
+
+<script>
+
+class MyFootprint   {
+
+  data = {
+  backTop:require("../../assets/images/back-top.png")
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+
+ //监听小程序页面滚动
+        onPageScroll:function(e){
+
+    
+},
+//小程序页面回到顶部
+goTop(){
+   wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 1000
+    })
+
+}
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new MyFootprint();
+</script>
+
+<style scoped>
+
+
+
+
+.back-top1{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.6;
+  position: fixed;
+  z-index: 999;
+  bottom: 18%;
+  right:0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "my-footprint": "/components/my-footprint/my-footprint"
+
+    }
+  },
+  "wx": {
+     "navigationStyle":"custom"
+  },
+  "alipay": {
+    "defaultTitle": "index",
+    "pullRefresh": false,
+    "allowsBounceVertical": "YES",
+    "titleBarColor": "#ffffff"
+  },
+  "baidu": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "index",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  },
+  "qq": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

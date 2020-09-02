@@ -1,0 +1,138 @@
+<template>
+  <view>
+<view class="pop-wrap">
+<view class="pop-del-wrap" >
+<view class="pop-delte"  c-bind:tap="close">
+<van-icon name="cross"  size="30px" color="#bbbec4" />
+</view>
+</view>
+
+<view class="pop-img"> 
+ <image src="{{'https://w.aishenglian.com/static/icon/big/'+singNum+'t.png'}}" style="width:628cpx;;height:628cpx;"></image>
+</view>
+
+
+ <origin-button open-type='share'
+   class="share-btn" size="mini" type="primary" id="2">去分享</origin-button>
+
+</view>
+
+
+  </view>
+</template>
+
+<script>
+import store from '../../store'
+
+class SingPop implements SingPopInterface {
+  props = {
+   
+  }
+
+  data = {
+    
+   
+  }
+   computed = store.mapState({
+  singNum:state=>state.singNum
+
+  })
+
+  watch = {
+  }
+
+  methods = {
+    close(){
+          this.$cmlEmit('onshowPop', {value:'3'})
+
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+     this.imgSrc=`https://w.aishenglian.com/static/icon/big/${this.num}t.png`
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new SingPop();
+</script>
+
+<style >
+.pop-wrap{
+  position: fixed;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  z-index: 10000;
+}
+
+.pop-img{
+  width: 628cpx;
+  margin:0 auto;
+}
+
+.pop-del-wrap{
+  width: 628cpx;
+  margin:0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+
+.pop-delte{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #1c2438;
+   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top:45cpx;
+  z-index: 10001;
+}
+
+
+.share-btn{
+  width: 300cpx;
+  position: absolute;
+  bottom:42cpx;
+  left:146cpx;
+  opacity: 0;
+
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-icon": "/vant/icon/index"
+
+
+    }
+  }
+}
+</script>

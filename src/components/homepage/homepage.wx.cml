@@ -1,0 +1,532 @@
+<template>
+   <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+    <view class="nav">
+   <view class="purse-title"><view class="icon"  ><van-icon name="arrow-left" size="24px" bind:click="goBack" color="#fff"/>
+   </view><text  class="wallet">超值拼团</text></view>
+   <view class="period">
+    <scroller
+    scroll-direction="{{scrollDirection}}"
+    width="{{740}}"
+    height="{{-1}}"
+  >
+  <block  c-for="{{listArray}}"
+        c-for-index="i"
+        c-for-item="item"
+        c-key="id"
+        >
+  <view class="panels"  c-bind:click="getIndexData" data-id="{{item.id}}" >
+  <view class="panel-text"><text class="spec-text">{{item.timeTip}}</text></view>
+  <view  class="panel-text" ><text class="{{item.flag?'btn-text':'btn-text1'}}">{{item.statusTip}}</text></view>
+  </view>
+  </block>
+  
+  </scroller>
+<view class="remaining"><text class="spec-text">还剩:</text>
+<view class="count-tiem">
+<van-count-down use-slot  time="{{specTime }}" bind:change="onChangeCount" data-id="{{item.id}}" format="DD天 HH:mm:ss">
+<view class="item-count"><text class="spec-text">{{timeData.hours<10?0:'' }}{{timeData.hours }}:</text><text class="spec-text">{{timeData.minutes<10?0:'' }}{{timeData.minutes }}:</text>
+ <text class="spec-text">{{timeData.seconds<10?0:'' }}{{timeData.seconds }}</text></view>
+</van-count-down>
+</view></view>
+   </view>
+   <view class="purse-wrap">
+    <list
+      bottom-offset="{{bottomOffset}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{lists}}"
+          c-for-index="i"
+          c-for-item="item"
+       c-key="id"
+        >
+        <van-transition   name="fade-down"   duration="{{ { enter: 500 } }}">
+          <view class="panel">
+          <view class="goods-img">
+            <image src="{{item.thumb}}" 
+            style="width:150cpx;height:150cpx;border-radius:10cpx;"></image>
+          </view>
+          <view class="goods-desc">
+          <view class="goods-name">
+          {{item.name}}
+          </view>
+          <view class="goods-price">
+          <view>
+          <text class="original-price">￥{{item.market_price}}</text>
+          <text class="now-price">￥{{item.price}}</text>
+          </view>
+           <view class="btn">
+          <van-button round type="info"
+  size="small"
+ color="#ff0000"  bind:click="goGroupGoodsdetails" data-id="{{item.id}}" >立即拼</van-button>
+      </view>   
+          </view>
+          
+         
+          </view>
+          <!--goods-price end-->
+
+          </view>
+          <!-- panel end-->
+
+          </van-transition>
+          
+           
+        </cell>
+    </list>
+
+
+    </view>
+ 
+    </view>
+    <!--nav end-->
+     <view class="loading">
+    <i-spin  c-if="{{loading}}"  size="large"></i-spin>
+  </view>
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getGroupPeriod,getClassificationData} from '../../api/grouping.js' //引入拼团模块接口
+import {momentTime} from '../../untils/moment.js' //引入拼团模块接口
+import { dealStoreTitleName } from '../../untils/processData'
+
+
+
+class Homepage implements HomepageInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    lists:[],
+     viewPortHeight:'',
+     avatar:require('../../assets/group-images/ceshi.jpg'),
+     scrollDirection:'horizontal',
+     listArray:[],
+     listArray:[],
+     timeData:{},
+     specTime:0,
+    loading:false
+   
+    
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getData(){
+      this.loading=true
+      getGroupPeriod({}).then(res=>{
+        this.loading=false
+        if(res.code){
+          this.listArray=res.data.map((d,index)=>{
+           
+            d.statusTip=this.dealStatus(d.status)
+            d.name=dealStoreTitleName(d.name,14)
+            d.timeTip=this.dealTimePeriod(d.time)
+            d.flag=false
+            if(d.status===1){
+              d.flag=true
+              this.specTime=this.setTime(d.time)
+              this.getClassifiyData(d.id)
+            }
+            return d
+          })
+          // 防止空数据时间段
+          if(!this.listArray.find(d=>d.status===1)){
+            this.listArray[0].flag=true
+            this.specTime=this.setTime(this.listArray[0].time)
+            this.getClassifiyData(this.listArray[0].id)
+          }
+
+
+
+
+        }
+      }).catch(err=>{})
+    },
+
+    dealTimePeriod(str){
+      let arr=str.split(':')
+      return `${arr[0]}:${arr[1]}`
+
+
+    },
+
+    dealStatus(status){
+    switch(status) {
+     case 0:
+        return '待开售'
+        break;
+     case 1:
+         return '进行中'
+        break;
+      default:
+      return '已结束'
+} 
+    },
+
+    setTime(tm){
+    let num
+     if(parseInt(tm.split(":")[0])===0){
+      tm='24:00:00'
+    }
+
+    const  newDate = new Date();
+  
+
+    const startTime= momentTime(newDate)+`${tm}`
+
+  //获取整点开奖的时间戳
+    let timestamp1= new Date(startTime).getTime()
+
+    let timestamp2= new Date().getTime()
+    
+    
+    num=timestamp1-timestamp2
+
+    return num
+
+    
+  },
+
+  onChangeCount(e){
+    this.timeData=e.detail
+
+  },
+  getIndexData(e){
+    let id=e.currentTarget.dataset.id
+     this.listArray.map(d=>{
+       if(d.id===id){
+         d.flag=true
+         this.specTime=this.setTime(d.time)
+       }else{
+         d.flag=false
+       }
+       return d
+     })
+     this.getClassifiyData(id)
+  },
+  getClassifiyData(id){
+      this.loading=true
+    this.lists=[]
+  getClassificationData({id:id}).then(res=>{
+    this.loading=false
+    if(res.code){
+      this.lists=res.data
+    }
+
+
+  }).catch(err=>{})
+
+  },
+
+     goGroupGoodsdetails(e){
+  let id=e.currentTarget.dataset.id
+  cml.navigateTo({
+  path: '/pages/goroup-goods-details/goroup-goods-details',
+  query:{id:id}
+  })
+  },
+
+  goBack(){
+    cml.navigateBack(-1);
+  },
+
+
+
+
+    init(){
+      this.getData()
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.init()
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+   
+})
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Homepage();
+</script>
+
+<style  scoped>
+.period{
+  width:740cpx;
+  margin:0 atuo;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.remaining{
+  width: 100%;
+   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.container{
+  background: #f8f8f9;
+}
+
+.nav{
+width: 750cpx;
+height: 480cpx;
+background: #e43a15;  /* fallback for old browsers */
+
+background: linear-gradient(to right, #ff416c, #ff4b2b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+display: flex;
+flex-direction:column;
+justify-content: start;
+align-items: center;
+border-radius: 0 0 80cpx 80cpx;
+position: relative;
+}
+.purse-title{
+  margin-top:80cpx;
+  width:750cpx;
+  min-height: 100cpx;
+display: flex;
+flex-direction:row;
+justify-content:space-between;
+align-items: center;
+position: relative;
+
+}
+
+.purse-wrap{
+  width:710cpx;
+  /* margin:0 auto; */
+  position: absolute;
+  top:350cpx;
+
+}
+
+.wallet{
+  color:#fff;
+  font-size:36cpx;
+  position: absolute;
+  transform: translateX(-50%);
+  left:50%;
+}
+
+.icon{
+  margin-left:20cpx;
+}
+
+.panel{
+  width:100%;
+  min-height: 250cpx;
+  background: #fff;
+  border-radius: 20cpx;
+  display: flex;
+flex-direction:row;
+justify-content:flex-start;
+align-items: center;
+border-bottom:2cpx solid #e9eaec;
+margin-top:25cpx;
+padding:0 20cpx;
+
+}
+
+.goods-desc{
+  margin-left:20cpx;
+  min-height: 150cpx;
+  display: flex;
+flex-direction:column;
+justify-content:space-between;
+align-items:flex-start;
+flex-grow: 0.7;
+
+}
+
+.tags{
+background-color: #ff9900;
+/* color: red; */
+}
+
+
+.goods-group-btn{
+display: flex;
+flex-direction:row;
+justify-content:space-between;
+align-items: center;
+
+}
+
+
+.original-price{
+  color:#b0bec5;
+  text-decoration:line-through;
+  font-size: 26cpx;
+
+}
+
+.now-price{
+  color:#ff2626;
+  font-size: 26cpx;
+}
+
+.spec-btn{
+/* padding:0 10cpx!important; */
+ animation: switch 1s ease-out infinite;
+
+}
+
+
+
+
+@keyframes switch {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.6);
+    }
+}
+
+
+
+.goods-name{
+  max-width:300cpx;
+}
+
+
+.goods-price{
+  width:100%;
+  display: flex;
+flex-direction:row;
+justify-content:space-between;
+align-items: center;
+
+}
+
+.price{
+    width: 150cpx;
+   display: flex;
+flex-direction:column;
+justify-content:space-around;
+align-items: center;
+}
+
+
+.panels{
+  min-width:152cpx;
+  min-height:50cpx;
+  display: inline-block;
+  margin-right: 5cpx;
+  padding:10cpx;
+}
+
+.spec-text{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+  color:#fff;
+}
+
+.spec-btn{
+padding:0 20cpx!important;
+}
+
+.panel-text{
+  margin-top:10cpx;
+}
+
+
+.item-count{
+  min-width:180cpx;
+  position: relative;
+  top:5cpx;
+  margin-left:10cpx;
+  display: flex;
+flex-direction:row;
+justify-content:space-around;
+align-items: center;
+}
+
+.btn-text{
+ display: inline-block;
+ padding:5cpx 10cpx;
+ border-radius: 10px;
+background: #ff9900;
+text-overflow: ellipsis;
+white-space: nowrap;
+letter-spacing: 2cpx;
+color:#fff;
+text-align: center;
+font-size: 26cpx;
+}
+
+.btn-text1{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+  color:#fff;
+  font-size:24cpx;
+  color: #bbbec4;
+  transition: all 0.6s;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+    "van-icon": "/vant/icon/index",
+    "i-tag": "/iview/tag/index",
+    "van-button": "/vant/button/index",
+     "van-count-down": "/vant/count-down/index",
+      "i-spin": "/iview/spin/index",
+      "van-transition": "/vant/transition/index"
+  
+
+    }
+  }
+}
+</script>

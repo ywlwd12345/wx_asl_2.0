@@ -1,0 +1,366 @@
+<template>
+ <view class="container">
+    <nav title="{{title}}"></nav>
+ 
+  <view class="content-all">
+  <view class="slider">
+  <van-sidebar active-key="{{ activeKey }}" bind:change="onChange">
+  <van-sidebar-item title="全部"  />
+  <block  c-for="{{classifyLists}}"
+          c-for-index="i" 
+          c-for-item="item">
+           <van-sidebar-item title="{{item.name}}"  />
+          </block>
+</van-sidebar>
+  </view>
+  <!-- slider end-->
+
+  <view class="goods-detais">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{goodsLists}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+          <view class="panel" c-bind:click="goDetails" data-gid="{{item.id}}">
+          <view class="goods-img"><image src="{{item.thumb}}" style="width:250cpx;height:250cpx; border-radius:20cpx;"></image></view>
+          <view class="goods-name"><text class="spec-name">{{item.name}}</text></view>
+          </view>
+        </cell>  
+  </list>
+  </view>
+
+  </view>
+   <!-- content-all end-->
+    <view class="loading">
+    <i-spin  c-if="{{loading}}"  size="large"></i-spin>
+  </view>
+
+
+   
+
+
+
+   
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import {getGoodCate,getclassificationgoods} from '../../api/index'
+import { objChangeArray ,dealStoreTitleName} from '../../untils/processData'
+class Classify implements ClassifyInterface {
+  props = {
+    name: { 
+      type: String,
+      default: '默认值'
+    },
+   classifyData: {
+      type:Object,
+      default: {}
+    },
+  }
+
+  data = {
+    classid:'',
+    pid:'',
+    title:"分类",
+    activeKey: 0,
+    goodsLists:[],
+    classifyLists:[],
+    imageSp2:require('../../assets/images/sp2.png'),
+    dealAfterArray:[],
+    list:[],
+    page:1,
+    loading:false,
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+     onClickLeft(){
+      cml.navigateBack(-1);
+    },
+    onBottom(){
+
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.search()
+      }, 800)
+
+    },
+    onChange(e){
+      console.log('这里',e)
+      if(e.detail==0){
+        this.activeKey=e.detail
+        this.page=1
+        this.goodsLists=[]
+        this.list=e.dealAfterArray
+        // this.classid=this.dealAfterArray[this.activeKey].id
+        // console.log('全部',this.dealAfterArray)
+        this.search()
+      }else{
+        this.activeKey=e.detail
+        // console.log("排位",this.activeKey)
+        this.page=1
+        this.goodsLists=[]
+        this.list=e.dealAfterArray
+        this.classid=this.dealAfterArray[this.activeKey-1].id
+        // console.log('这里2',this.dealAfterArray)
+        this.search()
+      }
+
+    },
+    //获取
+    getClassifyItems(){
+      let pid
+      // console.log("这里",this.classifyData)
+      getGoodCate().then(res=>{
+        if(res.code){
+           console.log("这里是ID",res)
+          res.data.forEach(val => {
+            if(val.name===this.classifyData.name){
+              pid=val.id
+              this.pid=val.id
+              getGoodCate({pid:this.pid}).then(res=>{
+                if(res.code){
+                  this.dealAfterArray=objChangeArray(res.data)
+                  this.defaultSidebar()
+                  this.classifyLists=res.data
+                }
+              }).catch(err=>{})
+            }
+
+          });
+        console.log(pid)
+        }
+
+      }).catch(err=>{})
+
+    },
+
+//默认显示侧边栏
+defaultSidebar(){
+ this.dealAfterArray.map((d,key)=>{
+   if(d.name===this.classifyData.name){
+     this.activeKey=key+1
+   }
+   return d 
+ })
+ this.search()
+// this.getClassifyData({category:this.classifyData.id,level:2})
+},
+//去详情
+goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+//查询类目数据 中间函数
+search(){
+  if(this.activeKey===0){
+    this.getClassifyData({category:this.pid,level:1})
+  }else{
+   this.getClassifyData({category:this.classid,level:2})
+  }
+
+},
+getClassifyData(data){
+
+  console.log(this.data,999988877)
+  data.pageNum=this.page
+  this.loading=true
+  getclassificationgoods(data).then(res=>{
+    this.loading=false
+    if(res.code==1){
+      res.data.forEach(value => {
+        value.thumb='http://'+value.thumb
+        value.name=dealStoreTitleName(value.name,15)
+        this.goodsLists.push(value)
+      });
+      console.log("全部商品")
+      console.log(this.goodsLists)
+      if(this.goodsLists.length==0){
+               cml.showToast({
+        message: "没有更多",
+        duration: 1000
+      })
+      }
+      // this.goodsLists=this.goodsLists.concat(res.data.data.map(d=>{
+      //   d.thumb=store.state.domainUrl+ d.thumb
+      //   d.name=dealStoreTitleName(d.name,15)
+      //   return d
+      // }))
+    }
+   
+
+
+  }).catch(err=>{
+
+  })
+
+},
+
+  init(){
+    if(this.classifyData.sort==10){
+      console.log(this.classifyData)
+      console.log("注意，传递")
+      //传递
+      this.transmit()
+    }else{
+      this.getClassifyItems()
+    }
+  },
+  transmit(){
+      getGoodCate({pid:this.classifyData.pid}).then(res=>{
+        this.pid=this.classifyData.pid
+        if(res.code){
+          this.dealAfterArray=objChangeArray(res.data)
+          // this.defaultSidebar()
+          this.classifyLists=res.data
+          let nums=0
+           this.classifyLists.forEach(element => {
+             nums++
+             if(this.classifyData.name==element.id){
+               this.activeKey=nums
+             }
+          });
+          this.getClassifyData({category:this.classifyData.name,level:2})
+
+
+        }
+      }).catch(err=>{})
+  }
+    
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    this.init()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Classify();
+</script>
+
+<style scoped>
+
+.spec-name{
+  font-size: 28cpx;
+  letter-spacing: 2cpx;
+}
+
+.container{
+width: 750cpx;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.goods-name{
+  margin:10cpx;
+}
+
+
+.goods-detais {
+  position: absolute;
+  top: 10cpx;
+  left: 200cpx;
+  right: 0;
+  bottom: 0;
+}
+
+
+.slider{
+  margin-left:20cpx;
+}
+
+.content-all{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.panel{
+  width: 250cpx;
+  height: 385cpx;
+  margin-right: 20cpx;
+  background: #fff;
+  /* background: red; */
+  border-radius:0 0 20cpx 20cpx;
+}
+
+
+
+.cell{
+  display:inline-block;
+  margin-bottom:20cpx;
+}
+
+
+
+.list{
+  width:100%;
+  border-radius: 10cpx;
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "van-nav-bar": "/vant/nav-bar/index",
+         "van-icon": "/vant/icon/index",
+         "van-sidebar": "/vant/sidebar/index",
+         "van-sidebar-item": "/vant/sidebar-item/index",
+          "i-spin": "/iview/spin/index",
+           "nav":"/components/nav/nav"
+    }
+  }
+}
+</script>

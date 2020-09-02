@@ -1,0 +1,75 @@
+<template>
+  <view class="container">
+    <everydayList></everydayList>
+  </view>
+</template>
+
+<script>
+
+class EverydayList   {
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new EverydayList();
+</script>
+
+<style>
+.container{
+  width: 750cpx;
+  min-height: 1500cpx;
+  background: #eee;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "everydayList": "/components/everydayList/everydayList"
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

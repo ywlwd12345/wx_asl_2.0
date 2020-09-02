@@ -1,0 +1,280 @@
+<template>
+  <view class="container">
+  <view class="pop-wrap" c-if="{{isShow}}">
+  <view class="img">
+  <image src="{{imgSrc}}" style="width:749cpx;;height:749cpx;"></image>
+  </view>
+  
+  
+<view class="{{flag?'goods-wrap1':'goods-wrap'}}">
+<!-- 图片 start-->
+<view class="goods-img">
+  <image src="{{goodsImg}}" style="width:320cpx;;height:300cpx;border-radius:20cpx;"></image>
+</view>
+<!-- 图片end -->
+<!-- 名字 start-->
+<view class="goods-name">
+<text class="spec-text">{{goodsData.name}}</text>
+</view>
+
+<!-- 名字 end-->
+
+<!-- price start-->
+<view class="goods-price">
+<text class="now-price">{{goodsData.price}}￥</text>
+<text class="origin-price">{{goodsData.marketPrice}}￥</text>
+</view>
+
+<view class="asl3-mount">
+<text class="now-price"> 可获得asl3的数量：{{goodsData.getAsl3}}</text>
+</view>
+<!-- price end-->
+
+
+</view>
+ <!-- goods-wrap end-->
+
+  <!-- icon-->
+  <view class="icon" c-bind:tap="close">
+  <van-icon name="cross" size="30px" color="#fff"/>
+  </view>
+<!-- icon end-->
+<view class="{{flag?'purse-btn1':'purse-btn'}}" data-gid="{{ goodsData.id}}" c-bind:tap="goDetails"></view>
+  </view>
+ 
+  </view>
+</template>
+<script>
+import { dealStoreTitleName} from '../../untils/processData'
+import cml from 'chameleon-api';
+import { getIndexgoods } from '../../api/index'
+class RecommendePop implements RecommendePopInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    imgSrc:'https://w.aishenglian.com/static/icon/big/bg.png',
+    goodsData:{},
+    flag:false,
+    goodsImg:'',
+    isShow:false// 决定弹框是否显示
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    
+
+    // 5037 推送 
+    getData(){
+       getIndexgoods({isPush:1,pageNum:1}).then(res=>{
+         console.log(res,'889995566')
+  if(res.code && res.data.length){
+    this.isShow=true
+    this.goodsData=res.data[0]
+    this.goodsData.name=dealStoreTitleName(this.goodsData.name)
+    this.goodsImg='https://'+res.data[0].thumb
+}
+
+
+
+       }).catch(err=>{
+
+       })
+
+
+    },
+     goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+
+  // 关闭弹框
+  close(e){
+
+    this.isShow=false
+
+
+
+  }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getData()
+      const res = wx.getSystemInfoSync()
+  //判断是否为iphonex
+if(res.model.includes("iPhone X")){
+  this.flag=true
+}
+   
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new RecommendePop();
+</script>
+
+<style scoped >
+
+.container{
+  width: 100%;
+}
+.pop-wrap{
+position: fixed;
+top:0;
+width: 100vw;
+height:100vh;
+background-color:rgba(0,0,0,0.65);
+z-index: 999;
+}
+
+.img{
+  position: absolute;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+}
+
+
+.icon{
+  position: absolute;
+  left: 50%;
+  top:73vh;
+  transform: translate(-50%);
+  width: 100cpx;
+  height: 100cpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border:4cpx solid #fff;
+}
+
+
+.goods-wrap{
+  width: 320cpx;
+  min-height: 550cpx;
+  position: absolute;
+  background:#fff;
+  border-radius:20cpx 20cpx  45cpx 45cpx;
+  left: 53%;
+  top:16%;
+  transform: translate(-50%);
+  z-index: 2;
+}
+.goods-wrap1{
+  width: 320cpx;
+  min-height: 550cpx;
+  position: absolute;
+  background:#fff;
+  border-radius:20cpx 20cpx  45cpx 45cpx;
+  left: 53%;
+  top:22%;
+  transform: translate(-50%);
+  z-index: 2;
+}
+
+.spec-text{
+  letter-spacing: 2cpx;
+  font-size: 28cpx;
+}
+
+.goods-name{
+  padding:0 10cpx;
+  margin-top:20cpx;
+}
+
+.goods-price{
+  width: 320cpx;
+  padding:0 10cpx;
+  margin-top:20cpx;
+  display: flex;
+  justify-content:space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+.origin-price{
+  text-decoration:line-through;
+  color:#bfbfbf;
+  letter-spacing: 2cpx;
+   font-size: 25cpx;
+}
+
+.now-price{
+  color:#ff0000;
+  letter-spacing: 2cpx;
+  font-size: 25cpx;
+  /* font-weight: bold; */
+}
+
+.asl3-mount{
+   padding:0 0 0 10cpx;
+   margin-top:20cpx;
+}
+
+.purse-btn{
+  width: 303cpx;
+  height: 90cpx;
+ 
+  opacity: 0;
+  position: absolute;
+  left:50%;
+  top:64%;
+  transform: translate(-50%,-50%);
+  z-index: 3;
+}
+
+
+.purse-btn1{
+  width: 303cpx;
+  height: 90cpx;
+ 
+  position: absolute;
+  left:50%;
+  top:61%;
+  opacity: 0;
+  transform: translate(-50%,-50%);
+  z-index: 3;
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

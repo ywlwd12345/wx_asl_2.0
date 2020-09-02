@@ -1,0 +1,331 @@
+<template>
+  <view class="container">
+  <view class="share-btn"  c-bind:click="showPop">
+<image src="{{shareImg}}" style="width:42cpx;height:42cpx;"></image>
+  </view>
+ <view class="up-pop" c-if="{{popFlag}}">
+ <view class="top">
+ <view class="left-wrap">
+ <view class="left">
+ <image src="{{shareUser}}" style="width:64cpx;height:64cpx;"></image>
+ </view>
+  <text>分享给朋友</text>
+ </view>
+ <!-- left-wrap end-->
+
+  <view class="right-wrap">
+
+ <view class="right" c-bind:tap="friends">
+  <image src="{{shareFriends}}" style="width:64cpx;height:64cpx;"></image>
+ </view>
+ <text>分享到朋友圈</text>
+ </view>
+ <!-- right-wrap end-->
+ <origin-button open-type='share' data-goodsdata="{{obj}}"
+   class="origin-share-btn" size="mini" type="primary" id="1">分享</origin-button>
+ </view>
+ <!-- top end-->
+ <view class="bot" c-bind:click="cancel">
+ <text class="pop-text">取消</text>
+ </view>
+
+ </view>
+
+ <!-- up-pop end-->
+
+  <canvas-share bindclose="close" userInfo="{{userInfo}}" visible="{{visible}}" />
+
+
+   
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+
+class SharePop implements SharePopInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     obj: {
+      type: Object,
+      default: {}
+    },
+
+ 
+  }
+  data = {
+     shareImg:require("../../assets/group-images/icon/fx.png"),
+     shareUser:require("../../assets/group-images/icon/user.png"),
+     shareFriends:require("../../assets/group-images/icon/pyq.png"),
+     popFlag:false,
+     visible:false,
+     userInfo:{}
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+ close: function() {
+            this.visible=false 
+},
+  tip(msg){
+     cml.showToast({
+        message:msg,
+        duration: 1500
+        })
+
+
+  },
+
+  friends(e){
+    // this.tip('测试中...')
+
+    console.log(66558899)
+
+    this.isAuthorize()
+},
+    showPop(e){
+      this.popFlag=true
+        this.$cmlEmit('onshow',{
+      value:'background:rgba(0,0,0,0.6);display:block;'
+    })
+
+
+    },
+    cancel(e){
+      this.popFlag=false
+        this.$cmlEmit('onshow',{
+      value:'display:none;'
+    })
+
+    },
+    //验证小程序是否授权
+    isAuthorize(){
+        wx.getSetting({
+            success: res => {
+                if (res.authSetting['scope.userInfo']) {
+                    // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
+                    wx.getUserInfo({
+                        success: res => {
+                            // 可以将 res 发送给后台解码出 unionId
+
+                           
+                            this.userInfo = res.userInfo
+                           
+                            this.userInfo.obj=this.obj
+                            this.visible=true
+                           
+                               
+                        }
+                    })
+                }else{
+                 cml.navigateTo({path: '/pages/asl-authorize/asl-authorize'})
+            
+                }
+            }
+        })
+
+    }
+
+
+
+
+
+  }
+
+  beforeCreate() {
+    
+  }
+
+  created() {
+  
+   
+
+  }
+
+  beforeMount() {
+  
+  }
+
+  mounted() {
+
+    console.log(555668899)
+
+    console.log(this.obj,'传输数据')
+  
+  
+
+
+
+
+
+
+ 
+   
+
+
+  }
+
+  beforeDestroy() {
+   
+  }
+
+  destroyed() {
+  
+  }
+}
+
+export default new SharePop();
+</script>
+
+<style  scoped>
+
+.share-btn{
+   width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+  position: fixed;
+  z-index: 999;
+  bottom: calc(18% + 45px) ;
+  right:0;
+  opacity: 0.6;
+}
+
+.left,.right{
+  width: 120cpx;
+  height: 120cpx;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.left-wrap,.right-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+
+
+}
+
+
+.up-pop{
+  width:750cpx;
+  min-height: 450cpx;
+  position: fixed;
+  bottom: 0cpx;
+  z-index: 1000;
+
+  
+animation:backInUp  1.5s ease-out  1 ;
+/* Firefox: */
+/* Safari 和 Chrome: */
+-webkit-animation:backInUp  1.5s ease-out 1;
+}
+
+.top{
+  width: 100%;
+  height:350cpx;
+  background: #f8f8f9;
+ display: flex;
+  justify-content:space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+.bot{
+   width: 100%;
+  height:100cpx;
+  background:#fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.pop-text{
+  letter-spacing: 2cpx;
+
+}
+
+.origin-share-btn{
+  position: absolute;
+  width: 200cpx;
+  height: 130cpx;
+  top:100cpx;
+  left:100cpx;
+  opacity: 0;
+}
+
+
+@-webkit-keyframes backInUp {
+  0% {
+    -webkit-transform: translateY(1200px) scale(0.7);
+    transform: translateY(1200px) scale(0.7);
+    opacity: 0.7;
+  }
+
+  80% {
+    -webkit-transform: translateY(0px) scale(0.7);
+    transform: translateY(0px) scale(0.7);
+    opacity: 0.7;
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes backInUp {
+  0% {
+    -webkit-transform: translateY(1200px) scale(0.7);
+    transform: translateY(1200px) scale(0.7);
+    opacity: 0.7;
+  }
+
+  80% {
+    -webkit-transform: translateY(0px) scale(0.7);
+    transform: translateY(0px) scale(0.7);
+    opacity: 0.7;
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+
+        "canvas-share": "/canvas-share/index"
+
+
+    }
+  }
+}
+</script>

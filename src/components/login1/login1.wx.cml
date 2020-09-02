@@ -1,0 +1,177 @@
+<template>
+  <view class="container">
+   <view class="head">
+   <view class="head-img">
+    <image src="{{imageHead}}" style="width:248cpx;height:196cpx;"></image>
+   </view>
+   
+
+   </view>
+   <!-- head end-->
+   <view class="user-registered">
+   <view class="input">
+   <van-cell-group>
+  <van-field
+    value="{{ value1 }}"
+    placeholder="请输入手机号或账号"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img1}}"
+    label="账号："
+    custom-style="color:#f63725;"
+    input-class="spec-text"
+      disabled
+  />
+
+
+<van-field
+    value="{{ value2 }}"
+    placeholder="请输入密码"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img2}}"
+    label="手机："
+    custom-style="color:#f63725;"
+    input-class="spec-text"
+    disabled
+  />
+
+  </van-cell-group>
+   </view>
+   <!-- input  end-->
+   <view class="submit">
+   <van-button block type="info" color="linear-gradient(to right, #e65245, #e43a15);" custom-style="border-radius:20rpx;">登录</van-button>
+   </view>
+
+   <view class="registered-question">
+   <text>用密码登录>></text>
+   </view>
+   </view>
+   <!-- user-registered end-->
+  
+
+  </view>
+</template>
+
+<script>
+
+class Login1 implements Login1Interface {
+ props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    value:'',
+    value1:'1234656',
+    value2:'12345678',
+    img1:require('../../assets/images/linkIcon/login/dlsjh.png'),
+    img2:require('../../assets/images/linkIcon/login/dlzh.png'),
+    imageHead:require('../../assets/images/linkIcon/login/logo.png')
+
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Login1();
+</script>
+
+<style scoped>
+
+.container{
+  width: 750cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.head{
+width: 750cpx;
+height:580cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+
+}
+
+.user-registered{
+  position: absolute;
+  top:450cpx;
+  width: 710cpx;
+  min-height: 500cpx;
+  border-radius: 20cpx;
+  background: #fff;
+}
+.input{
+  margin-top:20cpx;
+}
+
+.submit{
+  margin:20cpx  10cpx;
+}
+
+.registered-question{
+  width: 710cpx;
+  display: flex;
+flex-direction: row;
+justify-content: flex-end;
+align-items: center;
+}
+
+.spec-text{
+  color:#f63725;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+          "van-field": "/vant/field/index",
+          "van-button": "/vant//button/index"
+    }
+  }
+}
+</script>

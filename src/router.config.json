@@ -1,0 +1,323 @@
+{
+    "mode": "history",
+    "domain": "https://www.chameleon.com",
+    "routes": [{
+            "url": "/cml/h5/index",
+            "path": "/pages/index/index",
+            "name": "首页",
+            "mock": "index.php"
+        },
+        {
+            "url": "/cml/h5/index",
+            "path": "/pages/ceshiPage/ceshiPage",
+            "name": "测试页",
+            "mock": "index.php"
+        },
+        {
+            "url": "/cml/h5/register",
+            "path": "/pages/register/register",
+            "name": "注册页"
+        },
+        {
+            "url": "/cml/h5/login",
+            "path": "/pages/login/login",
+            "name": "登录页"
+        },
+        {
+            "url": "/cml/h5/login1",
+            "path": "/pages/login1/login1",
+            "name": "登录页1"
+        },
+        {
+            "url": "/cml/h5/ASL",
+            "path": "/pages/ASL/ASL",
+            "name": "ASL明细"
+        },
+        {
+            "url": "/cml/h5/address",
+            "path": "/pages/address/address",
+            "name": "地址管理"
+        },
+        {
+            "url": "/cml/h5/order-details",
+            "path": "/pages/order-details/order-details",
+            "name": "订单详情"
+        },
+        {
+            "url": "/cml/h5/details",
+            "path": "/pages/details/details",
+            "name": "详情"
+        },
+        {
+            "url": "/cml/h5/classify",
+            "path": "/pages/classify/classify",
+            "name": "分类"
+        },
+        {
+            "url": "/cml/h5/serach",
+            "path": "/pages/serach/serach",
+            "name": "查询"
+        },
+        {
+            "url": "/cml/h5/studay",
+            "path": "/pages/studay/studay",
+            "name": "学习中心"
+        },
+        {
+            "url": "/cml/h5/article-details",
+            "path": "/pages/article-details/article-details",
+            "name": "文章详情"
+        },
+        {
+            "url": "/cml/h5/rebate-credits",
+            "path": "/pages/rebate-credits/rebate-credits",
+            "name": "积分和返利"
+        },
+        {
+            "url": "/cml/h5/agreements",
+            "path": "/pages/agreements/agreements",
+            "name": "隐私声明和用户协议"
+        },
+        {
+            "url": "/cml/h5/my-order ",
+            "path": "/pages/my-order/my-order",
+            "name": "我的订单"
+        },
+        {
+            "url": "/cml/h5/payment ",
+            "path": "/pages/payment/payment",
+            "name": "支付页"
+        },
+        {
+            "url": "/cml/h5/pay-succeed ",
+            "path": "/pages/pay-succeed/pay-succeed",
+            "name": "支付成功页"
+        },
+        {
+            "url": "/cml/h5/persona-details ",
+            "path": "/pages/persona-details/persona-details",
+            "name": "个人信息页"
+        },
+        {
+            "url": "/cml/h5/change-phone ",
+            "path": "/pages/change-phone/change-phone",
+            "name": "修改手机号"
+        },
+        {
+            "url": "/cml/h5/change-password",
+            "path": "/pages/change-password/change-password",
+            "name": "修改密码"
+        },
+
+        {
+            "url": "/cml/h5/change-pay",
+            "path": "/pages/change-pay/change-pay",
+            "name": "修改支付密码"
+        },
+        {
+            "url": "/cml/h5/add-location",
+            "path": "/pages/add-location/add-location",
+            "name": "新增地址"
+        },
+        {
+            "url": "/cml/h5/confirm-order",
+            "path": "/pages/confirm-order/confirm-order",
+            "name": "确认订单"
+        },
+        {
+            "url": "/cml/h5/sure-cart",
+            "path": "/pages/sure-cart/sure-cart",
+            "name": "确认购物车订单"
+        },
+        {
+            "url": "/cml/h5/points",
+            "path": "/pages/points/points",
+            "name": "积分明细"
+        },
+        {
+            "url": "/cml/h5/share-coin",
+            "path": "/pages/share-coin/share-coin",
+            "name": "分享收益"
+        },
+        {
+            "url": "/cml/h5/put-coin",
+            "path": "/pages/put-coin/put-coin",
+            "name": "提现"
+        },
+        {
+            "url": "/cml/h5/eft-bank",
+            "path": "/pages/eft-bank/eft-bank",
+            "name": "转账"
+        },
+        {
+            "url": "/cml/h5/put-log",
+            "path": "/pages/put-log/put-log",
+            "name": "提现日志"
+        },
+        {
+            "url": "/cml/h5/indv-market",
+            "path": "/pages/indv-market/indv-market",
+            "name": "个人市场"
+        },
+        {
+            "url": "/cml/h5/update",
+            "path": "/pages/update/update",
+            "name": "申请升级"
+        },
+        {
+            "url": "/cml/h5/about-us",
+            "path": "/pages/about-us/about-us",
+            "name": "关于我们"
+        },
+        {
+            "url": "/cml/h5/account-login",
+            "path": "/pages/account-login/account-login",
+            "name": "账户登录"
+        },
+        {
+            "url": "/cml/h5/share-registration",
+            "path": "/pages/share-registration/share-registration",
+            "name": "分享注册"
+        },
+        {
+            "url": "/cml/h5/retrieve-password",
+            "path": "/pages/retrieve-password/retrieve-password",
+            "name": "找回密码"
+        },
+        {
+            "url": "/cml/h5/goroup-goods-details",
+            "path": "/pages/goroup-goods-details/goroup-goods-details",
+            "name": "拼团商品详情"
+        },
+        {
+            "url": "/cml/h5/recharge",
+            "path": "/pages/recharge/recharge",
+            "name": "拼团充值记录"
+        },
+        {
+            "url": "/cml/h5/group-income",
+            "path": "/pages/group-income/group-income",
+            "name": "拼团收支明细"
+        },
+        {
+            "url": "/cml/h5/walle-Purse",
+            "path": "/pages/walle-Purse/walle-Purse",
+            "name": "拼团钱包"
+        },
+        {
+            "url": "/cml/h5/top-up",
+            "path": "/pages/top-up/top-up",
+            "name": "充值"
+        },
+        {
+            "url": "/cml/h5/group-withdrawal",
+            "path": "/pages/group-withdrawal/group-withdrawal",
+            "name": "拼团提现"
+        },
+
+        {
+            "url": "/cml/h5/group-order",
+            "path": "/pages/group-order/group-order",
+            "name": "拼团订单"
+        },
+
+        {
+            "url": "/cml/h5/successfully-paid-together",
+            "path": "/pages/successfully-paid-together/successfully-paid-together",
+            "name": "拼团支付成功页面"
+        },
+        {
+            "url": "/cml/h5/homepage",
+            "path": "/pages/homepage/homepage",
+            "name": "拼团首页"
+        },
+
+        {
+            "url": "/cml/h5/group-order-info",
+            "path": "/pages/group-order-info/group-order-info",
+            "name": "拼团订单详情页"
+        },
+        {
+            "url": "/cml/h5/group-pay",
+            "path": "/pages/group-pay/group-pay",
+            "name": "拼团支付"
+        },
+        {
+            "url": "/cml/h5/group-pay",
+            "path": "/pages/group-exchange/group-exchange",
+            "name": "拼团兑换"
+        },
+
+        {
+            "url": "/cml/h5/group-agreement",
+            "path": "/pages/group-agreement/group-agreement",
+            "name": "拼团协议"
+        },
+
+        {
+            "url": "/cml/h5/live-room",
+            "path": "/pages/live-room/live-room",
+            "name": "直播间"
+        },
+
+        {
+            "url": "/cml/h5/my-footprint",
+            "path": "/pages/my-footprint/my-footprint",
+            "name": "我的足迹"
+        },
+
+        {
+            "url": "/cml/h5/collection_list",
+            "path": "/pages/collection_list/collection_list",
+            "name": "收藏夹"
+        },
+        {
+            "url": "/cml/h5/logistics_details",
+            "path": "/pages/logistics_details/logistics_details",
+            "name": "物流详情"
+        },
+        {
+            "url": "/cml/h5/search-center",
+            "path": "/pages/search-center/search-center",
+            "name": "搜索中转"
+        },
+
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/asl-authorize/asl-authorize",
+            "name": "授权页"
+        },
+
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/verified-page/verified-page",
+            "name": "实名认证"
+        },
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/everydayList/everydayList",
+            "name": "每日上新列表"
+        },
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/seckilZone/seckilZone",
+            "name": "秒杀专区"
+        },
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/news-ver2/news-ver2",
+            "name": "消息中心"
+        },
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/newsList-ver2/newsList-ver2",
+            "name": "消息列表"
+        },
+        {
+            "url": "/cml/h5/asl-authorize",
+            "path": "/pages/brandZone/brandZone",
+            "name": "品牌专区"
+        }
+
+    ]
+}

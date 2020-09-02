@@ -1,0 +1,299 @@
+<template>
+  <view class="container">
+  <nav title="{{ title}}"></nav>
+  <view class="panel-list">
+    <cell
+      class="cell"
+      c-for="{{collectionList}}"
+      c-for-index="i"
+      c-for-item="items"
+      data-idx="{{i}}"
+    >
+      <view class="panel">
+        <view class="items items2"  data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)" >
+        <view>
+          <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
+        </view>
+        <view style="width:300cpx;">
+          <text class="spec-order-text" style="font-size:22cpx;">{{items.name}}</text> 
+          <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
+        </view>
+        <view>
+          <text class="spec-order-text">￥{{items.price}}</text>
+        </view>
+        </view>
+
+
+      <view class="items items4">
+      <view style="margin-left:10cpx;" c-bind:tap="Cancel(items.id)" data-id="{{items.id}}" >
+          <van-button round type="info" size="small" color="#f44336">取消收藏</van-button>
+      </view>
+
+      </view>
+          </view>
+
+    </cell>
+  </view>
+  
+
+    <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+  <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+
+
+
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {get_Goods,deletesGoods} from '../../api/index'
+import store from '../../store'
+class Collection_list implements  Collection_listInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     type: {
+      type: Number,
+      default: 0
+    }
+  }
+
+  data = {
+    title:"收藏列表", 
+    loading:false,
+    detailsList:[],
+    collectionList:[],
+    page:1,
+    otherLoading:false,
+    setBtnName:'取消订单',
+    statuss:'',
+    confirmReceipt:'确认收货',
+    returnGoods:'申请退货'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    // 获取收藏列表
+    getGoodlist(){
+        get_Goods().then(res=>{
+          this.loading=false
+          if(res.code){
+              this.collectionList=res.data.map(d=>{
+                d.thumb='http://'+d.thumb
+              return d
+              })
+          }
+        })    
+    },
+
+    goDetails(val){
+      cml.navigateTo({
+        path: '/pages/details/details',
+        query:{gid:val}
+      })
+    },
+    //点击取消支付
+    Cancel(val){
+      console.log(val)
+      deletesGoods({goodsId:val}).then(res=>{
+          console.log("取消",res)
+          if(res.code==1){
+            this.getGoodlist()
+            cml.showToast({
+              message: "取消成功",
+              duration: 1000
+            })         
+          }
+        }).catch(err=>{
+
+        })
+
+
+    },
+    tip(msg){
+        cml.showToast({
+        message: msg,
+        duration: 1500
+      })
+
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getGoodlist()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Collection_list();
+</script>
+
+<style scoped >
+
+.container{
+  width:750cpx;
+ 
+  
+
+
+}
+
+.items2{
+  padding:10cpx!important;
+}
+
+.num-posi{
+  margin-top:5cpx;
+}
+
+
+
+.panel-list{
+  /* position: absolute;
+  top: 250cpx;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+
+}
+
+.panel{
+  width:750cpx;
+  min-height: 250cpx;
+  background: #fff;
+  padding:10cpx;
+}
+
+.items{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top:10cpx;
+  padding-bottom:5cpx;
+  border-bottom:2cpx solid #eee;
+}
+.cell{
+  border-bottom:1cpx solid #eee;
+  border-top:1cpx solid #eee;
+}
+.items3{
+  padding:10cpx!important;
+  width: 100%;
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  border-bottom:2cpx solid #eee;
+
+}
+.top{
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+
+.bottom{
+  margin-top:10cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+.real-total{
+  align-self:flex-end;
+position: relative;
+right: 120cpx;
+}
+
+view.items4{
+  border-bottom:none;
+    justify-content:flex-end;
+
+}
+
+.status{
+   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cell{
+   /* margin-top:20cpx; */
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.now-price{
+  color:#ff0000;
+  display: inline-block;
+  letter-spacing: 2cpx;
+  font-size:26cpx;
+}
+
+.tab{
+  background: #fff;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+   font-size: 26cpx;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+          "nav":"/components/nav/nav",
+           "van-tab": "/vant//tab/index",
+            "van-tabs": "/vant/tabs/index",
+            "details-panel":"/components/details-panel/details-panel",
+             "i-spin": "/iview/spin/index",
+              "van-icon": "/vant//icon/index",
+              "van-button": "/vant/button/index",
+              "van-loading": "/vant/loading/index"
+    }
+  }
+}
+</script>

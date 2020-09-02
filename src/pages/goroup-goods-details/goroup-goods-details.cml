@@ -1,0 +1,173 @@
+<template>
+  <view>
+  <goroup-goods-details gid="{{id}}" c-bind:onshow="setShartTitle"></goroup-goods-details>
+   <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" >
+    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+
+  </view>
+  </view>
+</template>
+
+<script>
+
+class GoroupGoodsDetails   {
+
+  data = {
+    id:'',
+    title:'',
+    backTopFlag:true,
+    backTop:require("../../assets/images/back-top.png")
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+    
+
+    setShartTitle(e){
+          this.title=e.detail.value
+    },
+      onShareAppMessage: function (res) {
+        return {
+      title:this.title,
+      desc: ''
+    }
+   },
+
+    //监听小程序页面滚动
+        onPageScroll:function(e){
+
+       
+    if(e.scrollTop>800){
+       this.backTopFlag=false
+       
+    }else{
+        this.backTopFlag=true 
+    }
+        },
+
+        //小程序页面回到顶部
+goTop(){
+   wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 2000
+    })
+
+}
+
+
+
+  }
+
+ 
+
+  beforeCreate(query) {
+    this.id=query.id
+ 
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new GoroupGoodsDetails();
+</script>
+
+<style scoped>
+
+.back-top{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  position: fixed;
+  z-index: 999;
+  bottom: 18%;
+  right:0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transition: all 1.5s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+
+
+.back-top1{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.6;
+  position: fixed;
+  z-index: 999;
+  bottom: 18%;
+  right:0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "goroup-goods-details": "/components/goroup-goods-details/goroup-goods-details"
+
+
+
+    }
+  },
+  "qq": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  },
+  "wx": {
+     "navigationStyle":"custom"
+  },
+  "alipay": {
+    "defaultTitle": "index",
+    "pullRefresh": false,
+    "allowsBounceVertical": "YES",
+    "titleBarColor": "#ffffff"
+  },
+  "baidu": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "index",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  }
+}
+</script>

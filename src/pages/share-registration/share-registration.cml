@@ -1,0 +1,102 @@
+<template>
+  <view>
+  <share-registration uid="{{uid}}"></share-registration>
+  </view>
+</template>
+
+<script>
+
+class ShareRegistration   {
+
+  data = {
+    uid:''
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+    
+    this.uid=query.id
+   
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+  onLoad(options){
+   
+    
+  }
+
+}
+
+export default new ShareRegistration();
+</script>
+
+<style>
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "share-registration": "/components/share-registration/share-registration"
+
+
+    }
+  },
+  "qq": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  },
+  "wx": {
+
+      "backgroundTextStyle":"light",
+      "navigationBarBackgroundColor": "#ff410f",
+      "navigationBarTextStyle":"white",
+      "navigationBarTitleText": "分享注册"
+   
+  },
+  "alipay": {
+    "defaultTitle": "index",
+    "pullRefresh": false,
+    "allowsBounceVertical": "YES",
+    "titleBarColor": "#ffffff"
+  },
+  "baidu": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "index",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  }
+}
+</script>

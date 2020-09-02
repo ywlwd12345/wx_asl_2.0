@@ -1,0 +1,164 @@
+<template>
+     <view class="container" >
+    <origin-view    class="nav">
+   <van-nav-bar
+
+  title="{{title}}"
+  left-arrow="{{false}}"
+  bind:click-left="onClickLeft"
+  border="{{false}}"
+  custom-class="nav-root"
+  title-class="title-style"
+ 
+>
+<van-icon name="arrow-left"  slot="left" color="#fff" size="60rpx" custom-class="icon-nav"/>
+</van-nav-bar>
+  </origin-view>
+  <!-- nav end-->
+   <view class="column"  style="height:{{navHeight}}px;"></view>
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+
+class Nav implements NavInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    title: {
+      type: String,
+      default: ''
+    }
+
+  }
+
+  data = {
+
+    navHeight:''
+
+  
+   
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+     onClickLeft(){
+      cml.navigateBack(-1);
+    },
+  // 获取导航的高度
+  getNavHeight(){
+  console.log()
+
+  const query=wx.createSelectorQuery().in(this)
+
+  query.select('.nav').boundingClientRect(res => {
+
+
+    this.navHeight=res.height
+        this.$cmlEmit('onshowNav',{
+      value:res.height
+    })
+
+}).exec()
+
+ 
+
+  }
+
+
+
+
+
+  
+
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    this.getNavHeight()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Nav();
+</script>
+
+<style scoped>
+.container{
+width: 750cpx;
+
+
+}
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+ 
+}
+
+.title-style{
+  color:#fff!important;
+}
+
+.icon-nav{
+  margin-bottom: 16cpx;
+}
+ .column{
+   /* height: 140cpx; */
+   width: 100%;
+ }
+
+/* @media screen and (min-width: 375px) {
+ .column{
+ height:150cpx;
+}
+
+   
+} */
+
+.nav{
+  width:750cpx;
+  position: fixed;
+  top:0;
+  z-index: 99999;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-nav-bar": "/vant/nav-bar/index",
+        "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

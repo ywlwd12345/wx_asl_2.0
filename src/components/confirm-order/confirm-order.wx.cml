@@ -1,0 +1,434 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+<nav title="{{title}}"></nav>
+<view class="address"  c-bind:tap="goAddress">
+<view class="icon">
+<!--<van-icon name="location"  color="#ff410f" size="20px"/>-->
+  <image src="{{addressUrlIcon}}" style="width:40cpx;height:40cpx;margin-right: 22cpx;"></image>
+  <view class="area-text"> 
+  <view class="area1" style="margin-bottom:10cpx;">
+    <text style="color:#ff410f;" class="spec-order-text">{{address.receiver}}</text>
+    <text style="margin-left:5cpx;" style="font-size:27cpx;">{{address.mobile}}</text>
+  </view>
+  <view class="area2">
+    <text class="spec-order-text" style="color:#C0C0C0">{{address.province+address.city+address.district+address.place}}</text>
+  </view>
+  </view>
+</view>
+<view class="icon1">
+<van-icon name="arrow" size="20px"/>
+
+</view>
+</view>
+ <!-- address end-->
+
+ <view class="details">
+ <view class="good-details">
+ <view>
+    <image src="{{allDetails.thumb}}" style="width: 220cpx;height:220cpx;border-radius:20cpx;"></image>
+ </view>
+
+ <view class="goods-text" style="width:270cpx;margin-right: 10cpx;">
+ <text class="spec-order-text" style="margin-bottom: 10px;">{{allDetails.name}}</text>
+ <text c-if="{{style}}" style="color:#e0e0e0;font-size:28cpx;margin:10cpx 0;" class="spec-order-text">{{style}}</text>
+ <text class="now-price pec-order-text">￥{{allDetails.price}}</text>
+ </view>
+
+ <view class="step">
+ <van-stepper value="{{values}}" bind:change="onChange" />
+ </view>
+ 
+ </view>
+
+ <!--good-details end-->
+
+ <view class="input-area">
+ <view style="margin-top:10cpx;"><text class="spec-order-text">备注：</text></view>
+
+ <van-cell-group>
+  <van-field
+    type="textarea"
+    placeholder="请输入留言"
+    border="{{ false }}"
+    input-class="spec-input"
+    focus="{{false}}"
+  bind:change="onChangeMemo"
+
+  />
+</van-cell-group>
+ 
+ </view>
+
+ 
+ </view>
+
+ <view class="submit">
+ 
+
+
+<van-submit-bar
+  price="{{ total }}"
+  button-text="提交订单"
+  bind:submit="onClickButton"
+  tip="{{ true }}"
+  custom-class="add-height"
+  loading="{{false}}"
+>  
+</van-submit-bar>
+</view>
+<van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import Dialog from '../../vant/dialog/dialog'
+import {getGoodDetails,getDefaultAddress,createOrderNumber,getStyle,getAddrlist} from '../../api/index'
+import { dealDetailsStrData,getSingleTotal} from '../../untils/processData'
+import store from '../../store'
+import {addressUrlIcon} from '../../untils/icon.js'
+class ConfirmOrder implements ConfirmOrderInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     order:{
+        type: Object,
+        default: {}
+
+     }
+  }
+
+  data = {
+    addressUrlIcon:addressUrlIcon,
+    title:'确认订单',
+    values:0,
+    imageSrc:require('../../assets/images/sp2.png'),
+    ensureSrc:'',
+    allDetails:{},
+    address:{},
+    step:1,
+    total:'',
+    memo:'',
+    viewPortHeight:'',
+    style:'',
+    orderlist:{
+      uname:'',
+      addressId:'',
+      spec:'',
+      count:'',
+      goodsId:''
+    }
+  }
+
+  computed = {
+      f1() {
+        return store.state.address
+      },
+      f2() {
+        return store.state.newaddress
+      }
+  }
+
+  watch = {
+    //监听数据变化  刷新数据重新获取默认地址
+    f1(curVal, oldVal) {
+      this.Receiving()
+    },
+    //监听数据变化  点击新地址进行切换
+    f2(curVal, oldVal) {
+      this.newAddress()
+    }
+  }
+
+  methods = {
+    newAddress(){
+      cml.getStorage('address').then((value)=>{
+        if(value){
+          this.address.receiver=value.receiver
+          this.address.mobile=value.mobile
+          this.address.province=value.province
+          this.address.city=value.city
+          this.address.district=value.district
+          this.address.place=value.place
+          cml.removeStorage('payData')
+        }
+      })
+      store.commit('changeNewaddress',true)
+    },
+    onChange(e){
+      this.step=e.detail
+      let value=getSingleTotal(this.step,this.allDetails.price)
+      this.total=(Math.floor(value * 100) / 100)*100
+    },
+     getDetailsData(data){
+      getGoodDetails(data).then(res=>{
+        if(res.code){
+          this.allDetails=res.data
+          this.total=(Math.floor(Number(this.allDetails.price)* 100) / 100)*100
+          this.ensureSrc=store.state.domainUrl+res.data.thumb
+           getStyle({gid:this.order.gid}).then(res=>{
+             console.log(res,9999123)
+              if(res.code && this.order.attr){
+            this.style=res.data.attr.find(d=>d.id==this.order.attr).attr.join(',')
+            this.allDetails.price=res.data.attr.find(d=>d.id==this.order.attr).price
+            this.total=(Math.floor(Number(res.data.attr.find(d=>d.id==this.order.attr).price)* 100) / 100)*100
+         }
+
+
+           }).catch(err=>{})
+
+
+         
+         
+        }
+
+
+      })
+
+
+    },
+    getAddress(){
+      getDefaultAddress({}).then(res=>{
+  if(res.code){
+    this.address=res.data
+    
+  }
+
+
+      }).catch(err=>{
+
+      })
+
+    },
+    onClickButton(){
+      //没设置地址
+      console.log('提交',this.address.length)
+      if(this.address.province){
+        this.createNum()
+      }else{
+        this.Verification()
+      }
+    },
+    //创建订单
+    createNum(){
+      let uname
+      cml.getStorage("uname").then(value => {
+      this.orderlist.uname=value
+      this.orderlist.addressId=this.address.id,
+      this.orderlist.spec=this.order.attr,
+      this.orderlist.count=this.step,
+      this.orderlist.goodsId=this.order.gid,
+      this.orderlist.DIN=1
+      this.orderlist=JSON.stringify(this.orderlist)
+      createOrderNumber(this.orderlist).then(res=>{
+        if(res.code){
+          console.log("提交订单信息")
+          console.log(res)
+          res.data[0].addressid=this.address.id
+          cml.setStorage('payData',res.data[0])
+          this.orderlist=JSON.parse(this.orderlist)
+        cml.navigateTo({
+          path: '/pages/payment/payment',
+          query:{osn:res.data[0].totalMoney}
+        })
+        }else{
+           cml.showToast({
+        message: res.msg,
+        duration: 1000
+      })
+
+        }
+      })
+      })
+    },
+    onChangeMemo(e){
+      this.memo=e.detail
+
+
+    },
+      goAddress(){
+       cml.navigateTo({
+  path: '/pages/address/address',
+  query:{add:1}
+  })
+    },
+    //获取商品属性
+    getGoodsStyle(){
+       getStyle({gid:this.order.gid}).then(res=>{
+        //  console.log(res,999888456123)
+         if(res.code && this.order.attr){
+            this.style=res.data.attr.find(d=>d.id==this.order.attr).attr.join(',')
+
+         }
+
+
+       }).catch(err=>{})
+
+    },
+  init(){
+    console.log("传值")
+    console.log(this.order)
+    // 获取产品详情 this.order
+    getGoodDetails({id:this.order.gid}).then(res=>{
+      if(res.code==1){
+        res.data[0].thumb='http://'+res.data[0].thumb
+        res.data[0].specs.forEach(val => {
+          if(val.id==this.order.attr){
+            console.log(this.order.attr)
+            res.data[0].price=val.price
+          }
+        });
+        this.allDetails=res.data[0]
+        this.total=(Math.floor( this.allDetails.price * 100) / 100)*100
+        console.log("信息",this.allDetails)
+      }
+    })
+  },
+  Receiving(){
+    store.commit('changeaddress',true)
+    let uname
+    cml.getStorage("uname").then(value => {
+      uname=value
+      getAddrlist({uname:uname}).then(res=>{
+        console.log(res,888444666)
+        if(res.code==1){
+          //没有设置地址
+          if(res.data.length==0){
+            this.Verification()
+          }else{
+            res.data.forEach(element => {
+              if(element.isDefault==true)
+              this.address=element
+            });
+          }
+        }
+      }).catch(err=>{})
+    })
+  },
+Verification(){
+    Dialog.confirm({
+      title: '提示',
+      context:this,
+      message: '你还没有设置收货地址,是否去设置？'
+    }).then(() => {
+    cml.redirectTo({
+      path: '/pages/add-location/add-location'
+    }) 
+    }).catch(() => {
+      
+    });
+},
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.init()
+    this.Receiving()
+    this.values=1
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ConfirmOrder();
+</script>
+
+<style scoped>
+
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+   font-size:25cpx;
+ 
+}
+
+.container{
+  width: 750cpx;
+  background: #eee;
+}
+.address{
+  margin-top: 15cpx;
+  padding:10cpx 20cpx;
+  width: 750cpx;
+  display: flex;
+justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+
+}
+
+.area1{
+  width: 80%;
+   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.now-price{
+  color:#ff0000;
+}
+
+.details{
+  padding:15cpx;
+  width: 750cpx;
+  background:#fff;
+  margin-top:15cpx;
+
+}
+
+.good-details{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+.spec-input{
+  height: 300cpx;
+  background:#eee;
+  padding-top:15cpx;
+  padding-left:15cpx;
+}
+
+.submit{
+  width: 750cpx;
+}
+.icon{
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "van-icon": "/vant/icon/index",
+        "van-stepper": "/vant/stepper/index",
+         "van-field": "/vant/field/index",
+         "van-dialog": "/vant/dialog/index",
+          "van-submit-bar": "/vant/submit-bar/index"
+    }
+  }
+}
+</script>

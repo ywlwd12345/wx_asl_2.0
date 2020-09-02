@@ -1,0 +1,79 @@
+<template>
+  <view class="container">
+    <newsList types="{{types}}"></newsList>
+  </view>
+</template>
+
+<script>
+
+
+class NewsListVer2   {
+
+  data = {
+    types:''
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+    this.types=query.types
+    console.log('收到',this.types)
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new NewsListVer2();
+</script>
+
+<style>
+.container{
+  width: 750cpx;
+  min-height: 1500cpx;
+  background: #eee;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "newsList": "/components/newsList-ver2/newsList-ver2"
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

@@ -1,0 +1,85 @@
+<template>
+  <view>
+  <!--<nav title="{{title}}"></nav>-->
+   <view class="web-view">
+  <origin-web-view src="{{src}}"></origin-web-view>
+  </view>
+  </view>
+</template>
+
+<script>
+
+class Agreements implements AgreementsInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    flag: {
+      type: Number,
+      default: ''
+    }
+
+  }
+
+  data = {
+    title:'隐私声明',
+    src:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    setView(){
+      if(this.flag){
+        this.src= 'https://w.aishenglian.com/pri.html'
+      }else{
+          this.src='https://w.aishenglian.com/user.html'
+      }
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    this.setView()
+    
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Agreements();
+</script>
+
+<style >
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav": "/components/nav/nav"
+    }
+  }
+}
+</script>

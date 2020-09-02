@@ -1,0 +1,181 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+ <nav title="{{title}}"></nav>
+ <view class="list">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+       <cell
+          class="cell"
+          c-for="{{logLists}}"
+          c-for-index="i"
+          c-for-item="item"
+        >
+          <view class="panel">
+          <view class="left" >
+          <view><text>提现</text></view>
+          <view><text>{{item.createTime}}</text></view>
+          <view><text>币种：{{item.type}}</text></view>
+          <view><text>{{item.status}}</text></view>
+          </view>
+          <view class="right tip">
+          <text>{{item.money}}</text>
+          </view>
+          </view>
+        </cell>
+    </list>
+
+    </view>
+
+  </view>
+
+
+
+
+
+
+</template>
+
+<script>
+
+  import cml from 'chameleon-api'
+ import { putLog} from '../../api/index'
+ import { moment }  from '../../untils/moment.js'
+class PutLog implements PutLogInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'提现日志',
+    page:1,
+    logLists:[],
+    viewPortHeight:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getData(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+        uname=value
+      putLog({pageNum:this.page,uname:uname}).then(res=>{
+
+      if(!res.code || !res.data.length){
+         cml.showToast({
+              message: '没有更多',
+              duration: 1000
+            })
+            return 
+      }
+      this.logLists=this.logLists.concat(res.data)
+      this.logLists.forEach((value)=>{
+      //处理json时间
+      value.createTime=moment(value.createTime);
+     
+      })
+      }).catch(err=>{})
+      })
+    }, 
+    onBottom(e){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getData()
+      }, 800)
+
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+     cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+    this.getData()
+    
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PutLog();
+</script>
+
+
+<style scoped>
+.container{
+  width: 750cpx;
+  
+}
+
+.list{
+   position: absolute;
+  top: 135cpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+
+}
+
+.panel{
+  
+  margin:0 auto;
+  width: 710cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+  background: #fff;
+  border-bottom: 2cpx solid #eee;
+  padding:20cpx 20cpx;
+  margin-top:20cpx;
+}
+
+.tip{
+  color:#f44336;
+ 
+}
+
+.left view{
+  margin-top:15cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav"
+    }
+  }
+}
+</script>

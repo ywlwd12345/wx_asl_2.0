@@ -1,0 +1,1859 @@
+
+<template>
+  <view class="container-wrap">
+  <van-loading size="80px" vertical color="#ff410f" c-if="{{indexLoading}}" custom-class="index-loading">加载中...</van-loading>
+  <view class="{{indexLoading?'content-all':'content-all1'}}">
+  <view class="fixed-nav" style="height:{{marginTop}}px;"><text style="margin-top:{{textTop}}px;">爱生链</text></view>
+ <view  style="margin-top:{{marginTop}}px;" id="container">
+    <van-sticky offset-top="{{marginTop}}">
+      <view class="serach">
+    <van-search
+      placeholder="寻找宝贝"
+      bind:focus="recordShow"
+      custom-class="out-style"
+      input-align="center"
+      field-class="spec-input"
+      shape="round"
+    />
+    <view >
+      <image src="{{newsimg}}" c-bind:tap="goNews"></image>
+    </view>
+    </view>
+    </van-sticky>
+    </view>
+    <!-- serach end -->
+  
+
+    <view class="carousel">
+    <view>
+    <carousel class="container" indicator-dots="{{true}}"  current="{{1}}" circular="{{true}}" autoplay>
+      <block  c-for="{{ bannerList}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+         >
+      <carousel-item class="item-wrap">
+        <view class="carousel-item" style="background-color: #EBDEAA;border-radius:20cpx;" c-bind:tap="carouselJump" data-item="{{item}}">
+           <image src="{{item.icon}}" style="width:710cpx;height:315cpx;border-radius:20cpx;"></image>
+        </view>
+      </carousel-item>
+      </block>
+    </carousel>
+  </view>
+    </view>
+    <!-- Carousel end-->
+    <view class="grid" style="border-radius:20cpx;padding:10cpx;">
+    <van-grid gutter="{{ 0}}" border="{{false}}"  column-num="{{5}}">
+    <block  c-for="{{img}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+         >
+  <van-grid-item  use-slot  >
+  <view c-bind:tap="goPrefecture" data-name="{{item.text}}" class="spec-grid">
+    <image src="{{item.imageSrc}}" style="width:70cpx;height:70cpx;" class="{{item.text==='爱拼吧'?'spec-pb-img':''}}" ></image>
+    <view  ><text class="icon-text">{{item.text}}</text></view>
+  </view>
+  </van-grid-item>
+  </block>
+</van-grid>
+<!--等级高于店长才能分享-->
+<view class="share-btn" c-if="{{userLevel}}">
+<van-button type="primary" size="normal"
+custom-style="opacity:0;"
+ open-type="share">普通按钮</van-button>
+</view>
+  </view>
+    <!--grid end-->
+  
+
+
+<view class="cotent">
+<!-- broadcast -->
+<view class="broadcast">
+ <image src="{{broadcast}}" style="width:40cpx;height:40cpx;"  class="spec-broadcast"></image>
+
+<origin-swiper class="swiper_container" vertical="true" autoplay="true" circular="true" interval="3000">
+     <block wx:for="{{msgList}}" wx:key="key">
+         <origin-swiper-item>
+         <view class="swiper-wrap">
+           <view class="swiper_item">{{item.content}}</view>
+           </view>
+         </origin-swiper-item>
+
+     </block>
+   </origin-swiper>
+  </view>
+<!-- broadcast end-->
+
+<view class="notice-tip">
+<view class="notice-store" c-if="{{true}}" c-bind:tap="goShopOwner">
+  <image src="{{imageStore}}" style="width:100%;height:200cpx;"></image>
+</view>
+</view>
+<!-- notice-tip  notice-tip end-->
+
+<!-- 拼团 start-->
+<view class="title" c-if="{{groupFlag.length && indexAnmationFlag}}"><text class="text-store">. 爱拼吧 .</text></view>
+
+<block    
+        c-for="{{groupList}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+        
+          >
+<van-transition show="{{  indexAnmationFlag }}" name="slide-left"  duration="{{700}}">
+<view class="activity-area"    c-if="{{item.status===1}}">
+<view class="activie-panel">
+<view class="pos-count">
+<view class="count-tip"><text class="count-name">距离拼团结束还剩:</text></view>
+<view class="count-tiem">
+<van-count-down use-slot  time="{{item.specTime }}" bind:change="onChangeCount" data-id="{{item.id}}" format="DD天 HH:mm:ss">
+<view class="item-count">
+<text class="count-time">{{item.timeData.hours<10?0:'' }}{{item.timeData.hours}}：</text>
+<text  class="count-time">{{item.timeData.minutes<10?0:'' }}{{item.timeData.minutes}}：</text>
+<text  class="count-time">{{item.timeData.seconds<10?0:'' }}{{item.timeData.seconds}}</text>
+</view>
+
+  <!--<origin-text class="item-count">{{item.timeData.hours}}：{{item.timeData.minutes }}：{{item.timeData.seconds}} </origin-text>-->
+ 
+</van-count-down>
+</view>
+</view>
+<view class="acti-img"  c-bind:tap="goGroupGoodsdetails" data-id="{{item.id}}">
+<image src="{{item.homeimg}}" style="width:710cpx;height:280cpx;border-radius:20cpx;"  ></image></view>
+</view>
+<!--<view class="group-share">
+<view class="group-share-img" style="margin-right:20cpx;">
+<image src="{{groupShare}}" style="width:32cpx;height:32cpx;" 
+ ></image>
+</view >
+<view>
+<van-button round type="info"
+  size="small" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
+  拼团</van-button>
+</view>
+</view>-->
+
+<view class="group-desc">
+<view>
+<text  class="group-name">{{item.name}}</text>
+</view>
+<!--<view class="acti-price">
+<view class="acti-now"><text class="now-price">￥{{item.price}}</text></view>
+
+</view>
+-->
+
+<view class="group-desc-price">
+<view class="acti-now"><text class="now-price">￥{{item.price}}</text></view>
+<view class="acti-btn">
+<van-button round type="info"
+ custom-class="spec-btn"
+ size="small"
+ color="#ff0000" bind:click="goGroupGoodsdetails" data-id="{{item.id}}">去拼团</van-button>
+</view>
+</view>
+
+
+</view>
+</view>
+</van-transition>
+</block>
+<!-- 拼团 end-->
+
+<!-- 2.0版本新组件-->
+<homever2></homever2>
+
+
+<!--<view class="title" c-if="{{activityList.length}}"><text class="text-store" c-bind:click="ceshia">. 限时抢购 .</text></view>
+<block    c-for="{{activityList}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+          data-idx="{{i}}" >
+<view class="activity-area">
+<view class="activie-panel">
+<view class="pos-img">
+<image src="{{posImg}}" style="width:162cpx;height:38cpx;"></image>
+</view>
+<view class="acti-img"  c-bind:tap="goDetails" data-gid="{{item.id}}">
+<image src="{{item.banner}}" style="width:710cpx;height:280cpx;border-radius:20cpx;"></image></view>
+</view>
+<view class="acti-text">
+<text class="spec-acti-text">{{item.name}}</text>
+</view>
+<view class="acti-price">
+<view class="acti-now"><text class="now-price">￥{{item.price}}</text></view>
+<view class="acti-market"><text class="original-price">￥{{item.marketPrice}}</text></view>
+<view class="acti-btn">
+<van-button round type="info"
+ custom-class="spec-btn"
+ size="small"
+ color="#ff0000" bind:click="goDetails" data-gid="{{item.id}}">去抢购</van-button>
+</view>
+</view>
+
+</view>
+</block>-->
+
+<!-- activity-area end-->
+<!--下面注释的是1.0长图部分产品-->
+<!--<block c-for="{{whilist}}" c-for-index="idx" c-for-item="item" c-key="id">
+
+<view class="series graphene" >
+<view class="guide" c-bind:click="goClassify(item.id,item.pid)" data-pid="{{item.id}}"
+data-sort="{{item.sort}}" data-name="{{item.name}}">
+<image src="{{item.icon}}" style="width:710cpx;height:242cpx;border-radius:20cpx;"></image>
+
+</view>
+
+
+   <scroller
+    scroll-direction="{{scrollDirection}}"
+    width="{{710}}"
+    height="{{-1}}"
+  >
+  <block  c-for="{{item.goodsData}}"
+        c-for-index="i"
+        c-for-item="item"
+        c-key="id"
+        >
+        
+  <view class="panels"  c-bind:click="goDetails" data-gid="{{item.id}}" >
+   <image src="{{item.thumb}}" style="width:200cpx;height:200cpx;border-radius:20cpx;"></image>
+   <view class="goods-wrap">
+  <view class="price">
+  <view class="price-left"><text>￥{{item.price}}</text></view>
+  <view class="price-right"><text>￥{{item.marketPrice}}</text></view>
+  </view>
+
+  <view class="titles"><text class="title-text">{{ item.name }}</text></view>
+   </view>
+
+               
+    </view>
+
+    </block>
+  
+  </scroller>
+</view>
+</block>-->
+
+
+
+
+
+
+<van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+</view>
+<!-- cotent end-->
+
+<van-notify id="van-notify"/>
+
+
+
+<view class="popups">
+  <van-popup show="{{newUser}}" custom-style="background: none!important;">
+    <image src="{{imageStoreto}}" class="img1"></image>
+    <image src="{{imageclos}}" class="img2" c-bind:click="onClose"></image>
+    <view class="popupas_text">
+      <view style="font-size: 37.45cpx;text-align: center;margin-bottom: 13rpx;">恭喜你</view>
+      <view style="font-size: 27.24cpx;text-align: center;">注册成功</view>
+    </view>
+    <view class="rewards_1" style="font-size: 66.06cpx;text-align: center;">奖励</view>
+    <view class="rewards_2" style="font-size: 64.71rpx;text-align: center;">ASL1:10个</view>
+    <view class="shares_friend">分享好友</view>
+
+    <view class="shares">
+      <van-button type="primary" size="normal"
+      custom-style="opacity:0;"
+      open-type="share">普通按钮
+      </van-button>
+      </view>
+  </van-popup>
+</view>
+</view>
+
+<!--popups end-->
+
+<sing-pop class="sing-pop" c-if="{{sinPopFlag}}"  c-bind:onshowPop="showPop"></sing-pop>
+
+<!-- 全局弹框提醒 -->
+
+<all-tip></all-tip>
+
+  </view>
+</template>
+
+<script>
+import Notify from '../../vant/notify/notify'
+
+const imgArray=[
+  {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/apb@2x.png',
+   text:'爱拼吧'
+},
+
+ {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/ajk@2x.png',
+   text:'爱健康'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/aml@2x.png',
+   text:'爱美丽'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/abb@2x.png',
+   text:'爱宝贝'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/ash@2x.png',
+   text:'爱生活'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/thq@2x.png',
+   text:'特惠区'
+},
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/index/mzzq@2x.png',
+   text:'盟主专区'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/yjfx@2x.png',
+   text:'一键分享'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/jfzq@2x.png',
+   text:'积分专区'
+},
+
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/qd@2x.png',
+   text:'今日签到'
+}
+
+]
+import cml from 'chameleon-api';
+import store from '../../store'
+import Dialog from '../../vant/dialog/dialog'
+import popup from '../../vant/popup/index'
+import {getActivityIndex,getIndexBanner,getIndexgoods,
+getIndexRecommendgoods,getIndexHotgoods,getGoodCate,
+getBaseUserInfo,getTel,sign,getclassificationgoods,SearchRecords,deleteRecords,getUnreadNews} from '../../api/index'
+import { dealStoreTitleName ,objChangeArray, dealTel,changeSign,cachTimestampNow} from '../../untils/processData'
+import {getGroupIndex} from '../../api/grouping.js' //引入拼团模块接口
+import {momentTime} from '../../untils/moment.js' //引入拼团模块接口
+
+const LOADMORE_COUNT = 4
+class Home implements HomeInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值',
+    },
+    newsuser:{
+      type: String,
+      default:'',
+    },
+    indexLoading:{
+      type: Boolean ,
+      default:true,
+    }
+
+
+  }
+
+  data = {
+    marginTop:'',
+    textTop:'',
+    recordtitle:'清空历史记录',
+    newUser:false,
+    imageSrcs:require('../../assets/images/sp2.png')  ,
+    listArray:[],
+    scrollDirection:'horizontal',
+    whilist:{},
+    value:'',
+    img:imgArray,
+    bottomOffset: 20,
+    imageStore:'https://w.aishenglian.com/static/icon/ver2-icon/index/banner@2x.png',
+    imageStoreto:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/bj@3x.png',
+    imageclos:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/gb@2x.png',
+    posImg:require('../../assets/images/time.png'),
+  broadcast:require('../../assets/images/border-cast.png'),
+    bannerList:[],
+    goodsList:[],
+    recommendList:[],
+    activityList:[],
+    page:1,
+    categoriesList:[],
+    msgList:[],
+    animate:false,
+    userLevel:false,
+    groupList:[],
+    groupShare: require('../../assets/group-images/group-share.png'),
+    imageGroup:require('../../assets/group-images/pb.png'),
+    groupFlag:[],
+    sinPopFlag:false,//签到弹框显隐
+    newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png'
+   
+  }
+
+  computed = {
+    indexAnmationFlag () {
+      return store.state.indexAnmationFlag
+    }
+
+
+  }
+
+  watch = {
+  }
+
+  methods = {
+    //新用户登录去消息页面
+    onClose() {
+        this.newUser=false;
+      
+      },
+    //该用户是否有未读消息
+    getUnread(){
+      getUnreadNews({}).then(res=>{
+        if(res.unRead==1){
+          this.newsimg='https://w.aishenglian.com/static/icon/ver2-icon/index/yxx@2x.png'
+        }
+
+      }).catch(err=>{})
+    },
+     onBottom(e) {
+      cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getRecommendData()
+      }, 800)
+    },
+ 
+    //获取轮播数据
+    getBannerData(){
+      getIndexBanner({}).then(res=>{
+          res.data.forEach((val)=>{
+            val.icon='http://'+val.icon
+            this.bannerList.push(val)
+          });
+    
+
+      }).catch(err=>{
+       
+
+      })
+
+    },
+  // 轮播图跳转指定类型
+    carouselJump(e){
+      console.log(e,55566)
+      const item=e.currentTarget.dataset.item
+      if(item.type===1){
+        //执行跳转商品详情
+          cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:item.key1}
+  })
+      }else if(item.type===2){
+         this.goClassify(item.key3,item.key2)
+      }else{
+
+      }
+
+
+
+    },
+    //获取首页专区产品数据
+  getIndexGoodsData(){
+      getActivityIndex().then(res=>{
+        if(res.code){
+          res.data.forEach(element => {
+            element.goodsData.forEach(val => {
+              val.thumb='http://'+val.thumb
+              val.name=dealStoreTitleName(val.name,10)
+            });
+            element.icon='http://'+element.icon
+          });
+          this.whilist=res.data
+         
+        }
+
+      }).catch(err=>{})
+  },
+  //获取全部商品
+  getRecommendData(data={page:this.page}){
+    getIndexRecommendgoods(data).then(res=>{
+      if(res.code){
+       this.recommendList= this.recommendList.concat(res.data.data.map(d=>{
+          d.thumb='http://'+d.thumb
+          d.name=dealStoreTitleName(d.name,10)
+          return d
+        }))
+
+
+      }
+
+    }).catch(err=>{
+
+    })
+
+
+  },
+
+  getActiviGoodsData(){
+    getIndexgoods({isActivity:1,isActive:0,isRef:0,isScore:0,pageNum:1}).then(res=>{
+      if(res.code==1){
+        res.data.forEach(val => {
+          val.banner='http://'+val.banner
+           this.activityList.push(val)
+        });
+      }
+    }).catch(err=>{
+
+    })
+
+  },
+  goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+  ceshia(){
+  cml.navigateTo({
+  path: '/pages/share-registration/share-registration',
+  query:{uid:'15189777573'}
+  })
+  },
+//去分类
+  goClassify(id,pid){
+
+    
+   
+    // let pid=e.currentTarget.dataset.pid
+    // let name=e.currentTarget.dataset.name
+    let sort=10
+  cml.navigateTo({
+  path: '/pages/classify/classify',
+  query:{pid:pid,name:id,sort:sort}
+  })
+},
+//获取个别一级类目
+getFirstItem(){
+  getGoodCate({}).then(res=>{
+    if(res.code){
+      this.categoriesList=objChangeArray(res.data).map(d=>{
+        d.icon=store.state.domainUrl+ d.icon
+        return d
+      })
+    }
+  })
+
+},
+//去专区中间函数
+goPrefecture(e){
+  let name=e.currentTarget.dataset.name
+  this.goSpecifiedContent(name)
+},
+goSpecifiedContent(name){
+  switch(name) {
+     case '爱健康':
+       this.goRegionClassify(name)
+        break;
+     case '爱美丽':
+        this.goRegionClassify(name)
+        break;
+
+      case '爱宝贝':
+         this.goRegionClassify(name)
+        break;
+      case '爱生活':
+          this.goRegionClassify(name)
+        break;
+         case '盟主专区':
+           this.goRegionClassify(name)
+        break;
+          case '爱拼吧':
+              cml.navigateTo({
+  path: '/pages/homepage/homepage'
+
+  })
+        
+        break;
+         case '积分专区':
+          this.goRebateCredits(name)
+        break;
+         case '拼吧特惠区':
+          this.goRegionClassify(name)
+        break;
+         case '一键分享':
+        this.goShare()
+        break;
+        case '今日签到':
+        this.sign(name)
+        break;
+        case '已签到':
+        this.sign(name)
+        break;
+
+     default:
+
+}
+
+},
+//去分类
+goRegionClassify(name){
+  // console.log(name)
+  // let pid=this.categoriesList.find(d=>d.name===name).id
+  let sort='' 
+   cml.navigateTo({
+  path: '/pages/classify/classify',
+  // query:{pid:pid,name:name,sort:sort}
+  query:{name:name,sort:sort} 
+  })
+},
+//去消息中心
+goNews(){
+  cml.navigateTo({
+    path: '/pages/news-ver2/news-ver2',
+  })
+},
+//去盟主专区
+goStuday(){
+    cml.navigateTo({
+      path: '/pages/rebate-credits/rebate-credits',
+      query:{flag:4}
+    })
+
+},
+
+//删除单个搜索记录
+deleterecord(val){
+  deleteRecords({id:val,delAll:0}).then(res=>{
+      if(res.code==1){
+        this.tip('删除成功')
+        this.getSearchRecords()
+      }
+    }).catch(err=>{
+
+    })
+},
+
+//去积分返利专区 0 表示积分 1表示返利
+goRebateCredits(name){
+  if(name==='爱返利'){
+     cml.navigateTo({
+  path: '/pages/rebate-credits/rebate-credits',
+  query:{flag:1}
+  })
+
+  }else{
+    cml.navigateTo({
+      path: '/pages/rebate-credits/rebate-credits',
+      query:{flag:0}
+    })
+  }
+},
+
+getUserInfo(){
+  if(store.state.isCancelLogin){
+  
+    // this.dialog()
+  }else{
+ 
+    this.userLevel=true
+  // this.goShopOwner()
+  }
+},
+dialog(){
+  Dialog.confirm({
+    title: '提示',
+    context:this,
+    message:"未登录"
+    }).then(() => {
+      cml.redirectTo({
+      path: '/pages/login/login'
+    }) 
+    
+    }).catch(() => { 
+  });
+  },
+
+
+showMarquee() {
+   this.animate=true
+   setTimeout(()=>{
+     this.msgList.push(this.msgList[0])
+     this.msgList.shift()
+     this.animate=false
+    //  this.msgList=this.msgList
+   }, 500);
+},
+//首页公告
+getTalkData(){
+  getTel({}).then(res=>{
+    // console.log('公告',res)
+    // if(res.code){
+    //   this.msgList=dealTel(res.data)
+    //   console.log( this.msgList,3333)
+    // }
+    this.msgList=res.data
+
+  })
+
+},
+   autoUpdate(){
+     let _this = this
+     // 获取小程序更新机制的兼容，由于更新的功能基础库要1.9.90以上版本才支持，所以此处要做低版本的兼容处理
+     if(wx.canIUse('getUpdateManager')){
+       // wx.getUpdateManager接口，可以获知是否有新版本的小程序、新版本是否下载好以及应用新版本的能力，会返回一个UpdateManager实例
+       const updateManager = wx.getUpdateManager()
+       // 检查小程序是否有新版本发布，onCheckForUpdate：当小程序向后台请求完新版本信息，会通知这个版本告知检查结果
+       updateManager.onCheckForUpdate(function(res){
+       
+         // 请求完新版本信息的回调
+         if(res.hasUpdate){
+           // 检测到新版本，需要更新，给出提示
+           wx.showModal({
+             title: '更新提示',
+             content: '检测到新版本，是否下载新版本并重启小程序',
+             success(res){
+             
+               if(res.confirm){
+                 // 用户确定更新小程序，小程序下载和更新静默进行
+                 _this.downLoadAndUpdate(updateManager)
+               }else if(res.cancel){
+                 // 若用户点击了取消按钮，二次弹窗，强制更新，如果用户选择取消后不需要进行任何操作，则以下内容可忽略
+                 wx.showModal({
+                   title: '提示',
+                   content: '本次版本更新涉及到新功能的添加，旧版本将无法正常使用',
+                   showCancel: false, // 隐藏取消按钮
+                   confirmText: '确认更新', // 只保留更新按钮
+                   success(res){
+                  
+                     if(res.confirm){
+                       // 下载新版本，重启应用
+                       _this.downLoadAndUpdate(updateManager)
+                     }
+                   }
+                 })
+               }
+             }
+           })
+         } 
+       })
+     } else {
+       // 在最新版本客户端上体验小程序
+       wx.showModal({
+         title: '提示',
+         content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试',
+       })
+     }
+   },
+   // 下载小程序最新版本并重启
+   downLoadAndUpdate(updateManager){
+     wx.showLoading()
+     // 静默下载更新小程序新版本，onUpdateReady：当新版本下载完成回调
+     updateManager.onUpdateReady(function(){
+       wx.hideLoading()
+       // applyUpdate：强制当前小程序应用上新版本并重启
+       updateManager.applyUpdate()
+     })
+     // onUpdateFailed：当新版本下载失败回调
+     updateManager.onUpdateFailed(function(){
+       // 下载新版本失败
+       wx.showModal({
+         title: '已有新版本',
+         content: '新版本已经上线了，请删除当前小程序，重新搜索打开',
+       })
+     })
+   },
+
+//去店主专区
+goShopOwner(){
+   cml.navigateTo({
+  path: '/pages/rebate-credits/rebate-credits',
+  query:{flag:3}
+  })
+
+
+},
+recordShow(){
+  
+    cml.navigateTo({
+  path: '/pages/search-center/search-center'
+  })
+
+},
+
+goShare(){
+  if(store.state.isCancelLogin){
+    this.dialog()
+  }else{
+    this.userLevel=true
+  // this.goShopOwner()
+  }
+},
+//签到
+sign(name){
+
+  if(name==='今日签到'){
+    //获取用户是否签到
+    this.getBaseInfoData()
+
+  }else{
+    this.tip('你已经签到过了')
+
+  
+
+
+     
+  }
+
+},
+//控制签到弹框的显隐
+showPop(){
+  this.sinPopFlag=false
+
+},
+
+ //获取基础用户信息
+  getBaseInfoData(){
+  let uname
+  cml.getStorage('uname').then((value)=>{
+  uname=value
+  sign({uname:uname}).then(res=>{
+    // console.log(res)
+      if(res.code==1){
+        // console.log(res)
+        this.setSign('已签到')
+        Notify({ type: 'success', message:`签到成功,获取爱生链币${res.fee}个`,context:this,safeAreaInsetTop:true });
+          this.sinPopFlag=true
+         store.commit('changeSingNum',res.days)
+         if(res.reward){
+           this.tip(`奖励asl${res.reward}个`)
+         }
+
+      }
+    }).catch(err=>{
+      // console.log(res)
+
+    })
+})
+  },
+
+  // 设置签到
+  setSign(str){
+    let num=this.img.length-1
+    this.img.map((d,key)=>{
+      if(key===num){
+      d.text=str
+      cml.setStorage('isSign',str)
+      }
+      return d
+
+    })
+
+  },
+   tip(msg){
+      cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+
+
+   },
+   //设置签到名称
+   setSignName(){
+      this.getUserIdsign()
+
+   },
+
+  //获取用户的签到状态并设置
+  getUserIdsign(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    getBaseUserInfo({uname:uname}).then(res=>{
+      // 判断今天有没有签到
+      if(res.data[0].sign==0){
+        this.signTitle='今日签到'
+      }else{
+        this.setSign('已签到')
+      }
+    }).catch(err=>{
+      // console.log('没获取到',res)
+    })
+     })
+  },
+
+   //判断时间是否过期
+   isTimeOut(){
+     changeSign()
+   },
+
+
+   //  拼团方法 start
+  getGroupData(){
+    getGroupIndex({}).then(res=>{
+    if(res.code){
+      this.groupList=res.data.map(d=>{
+      d.name=dealStoreTitleName(d.name,16)
+      d.specTime=this.setTime(d.stime)
+      d.timeData={}
+      if(d.status===1){
+        this.groupFlag.push(1)
+      }
+     
+      return d
+      })
+    }
+
+    }).catch(err=>{
+ 
+     
+
+    })
+
+  },
+
+  randomId(){
+     return (~~(Math.random() * (1 << 30))).toString(36);
+
+
+  },
+
+  goGroupGoodsdetails(e){
+  let id=e.currentTarget.dataset.id
+  cml.navigateTo({
+  path: '/pages/goroup-goods-details/goroup-goods-details',
+  query:{id:id}
+  })
+  },
+
+
+  setTime(tm){
+
+    if(parseInt(tm.split(":")[0])===0){
+      tm='24:00:00'
+    }
+    let num
+    const  newDate = new Date();
+    const startTime= momentTime(newDate)+`${tm}`
+  //获取整点开奖的时间戳
+    let timestamp1= new Date(startTime).getTime()
+
+    let timestamp2= new Date().getTime()
+    num=timestamp1-timestamp2
+   
+    return num
+  },
+
+  onChangeCount(e){
+    let id=e.currentTarget.dataset.id
+    this.groupList.map(d=>{
+      if(d.id===id){
+          d.timeData=e.detail
+      }
+      // d.specId=this.randomId()
+      return d
+   
+    })
+
+  },
+  goGroupIndex(){
+     cml.navigateTo({
+  path: '/pages/homepage/homepage'
+
+  })
+
+  },
+
+
+
+
+
+
+
+  // 拼团方法 end
+
+
+//初始化调用函数
+  init(){
+    if(this.newsuser==='1'){
+      this.newUser=true
+    }
+  
+    this.autoUpdate()
+    this.isTimeOut()//判断签到否过期
+    this.setSignName()//设置签到名称
+    this.getTalkData()//获取通告
+    // this.getIndexGoodsData()
+    this.getBannerData()
+    // this.getRecommendData()
+    // this.getActiviGoodsData()
+    this.getFirstItem()
+    this.getGroupData()
+    this.getUnread()//是否有未读消息
+    setTimeout(()=>{
+      this.getUserInfo()
+    },"2000");
+
+  },
+  //获取胶囊按钮数据
+  getCapluse(){
+     const res=wx.getMenuButtonBoundingClientRect()
+      this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
+      this.textTop=res.top + res.height/2-8
+  
+  }
+
+
+  
+
+
+
+  }
+
+  beforeCreate() {
+
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getCapluse()
+
+  this.init()
+
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Home();
+</script>
+
+<style scoped>
+ 
+
+.spec-grid{
+  display: flex;
+  flex-direction:column;
+  justify-content: center;
+  align-items:center;
+}
+
+
+.spec-btn{
+padding:0 30cpx!important;
+}
+
+
+.container-wrap{
+  width: 750cpx;
+  background-color: #fff;
+}
+
+
+
+.popups .img1{
+  width: 498.2cpx;
+  height:640rpx;
+  margin-top: 90rpx;
+}
+.popups .img2{
+  width: 60.4cpx;
+  height:60.4rpx;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.popups .popupas_text{
+    position: absolute;
+    top: 29%;
+    left: 0;
+    right: 0;
+    color: #fff;
+
+}
+.popups .rewards_1{
+    position: absolute;
+    top: 46%;
+    left: 0;
+    right: 0;
+    color: #fff;
+}
+.popups .rewards_2{
+    position: absolute;
+    top: 58%;
+    left: 0;
+    right: 0;
+    color: #fff;
+}
+.popups .shares_friend{
+    position: absolute;
+    top: 84%;
+    left: 0;
+    right: 0;
+    color: #CE1C1B;
+    background-color: #FFEC69;
+    font-size: 27.24cpx;
+    width: 60%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10cpx 0;
+    border-radius: 30cpx;
+}
+.popups{
+  position: relative;
+}
+.shares{
+  position: absolute;
+  top: 80%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
+.nav{
+width: 750cpx;
+height: 680cpx;
+opacity: 0.88;
+background: #fff;
+display: flex;
+flex-direction:column;
+justify-content: start;
+align-items: center;
+border-radius: 0 0 50cpx 50cpx;
+/* position: relative; */
+}
+
+.serach{
+  width: 750cpx;
+  display: flex;
+  flex-direction:row;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+
+}
+.serach image{
+width: 40.3cpx;
+height: 44.3cpx;
+}
+.record{
+  position: absolute;
+  top:80cpx;
+  z-index: 9;
+  width: 710cpx;
+  left:0;
+  right:0;
+  margin:0 auto;
+  padding: var(--search-padding, 1px 12px);
+}
+.record_a{
+background-color: rgb(247,248,250);
+padding: 20cpx;
+border-radius: 0 0 20cpx 20cpx;
+}
+.out-style{
+  width: 660cpx;
+  background: transparent!important;
+}
+.record_list{
+  margin-top: 10cpx;
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+}
+.record_t{
+  font-size: 25cpx;
+  color: rgb(150,151,153);
+}
+.record_s{
+  font-size: 20cpx;
+  color: rgb(150,151,153);  
+}
+.record_b{
+  font-size: 25cpx;
+  color: rgb(150,151,153);
+  text-align: center;
+  margin-top: 10cpx;
+}
+.spec-input{
+  height: 60cpx;
+}
+
+.container{
+  height: 340cpx;
+  position: relative;
+  width: 750cpx;
+  z-index: 2;
+
+}
+
+.cell{
+  display: inline-block;
+  background: #eee;
+}
+.carousel-item {
+  height: 315cpx;
+  width: 710cpx;
+  border-radius: 20cpx;
+
+}
+.item-wrap{
+   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 315cpx;
+
+}
+
+.grid{
+  width: 710cpx;
+  background: #fff;
+  border-radius: 20cpx;
+  margin:0 auto;
+
+}
+
+.cml-van-grid-item{
+  display: block!important;
+}
+
+.icon-text{
+ font-size: 26cpx;
+
+}
+
+.acti-text{
+    padding:0 20cpx;
+
+}
+
+.spec-acti-text{
+    margin-top:10cpx;
+   letter-spacing: 2cpx;
+   font-size: 28cpx;
+
+}
+
+
+
+
+@media screen and (max-width: 320px) {
+  .icon-text{
+ font-size: 24cpx;
+}
+
+}
+
+.cotent{
+  width: 750cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #eee;
+}
+
+.notice-tip{
+  width: 710cpx;
+  margin-top:20cpx;
+  /* animation:shakeTopx 5s infinite; */
+  animation:tada 5s infinite;
+}
+
+  @keyframes shakeTopx {
+            0%,
+            100% {
+            -webkit-transform: rotate(0deg);
+                    transform: rotate(0deg);
+            -webkit-transform-origin: 50% 0;
+                    transform-origin: 50% 0;
+            }
+            5% {
+            -webkit-transform: rotate(2deg);
+                    transform: rotate(2deg);
+            }
+            10%,
+            20%,
+            30% {
+            -webkit-transform: rotate(-4deg);
+                    transform: rotate(-4deg);
+            }
+            15%,
+            25%,
+            35% {
+            -webkit-transform: rotate(4deg);
+                    transform: rotate(4deg);
+            }
+            40% {
+            -webkit-transform: rotate(-2deg);
+                    transform: rotate(-2deg);
+            }
+            45% {
+            -webkit-transform: rotate(2deg);
+                    transform: rotate(2deg);
+            }
+            50% {
+            -webkit-transform: rotate(0deg);
+                    transform: rotate(0deg);
+            }
+        }
+
+@keyframes tada {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  10%,
+  20% {
+    -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+  }
+
+  30%,
+  50%,
+  70%,
+  90% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+  }
+
+  40%,
+  60%,
+  80% {
+    -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+.notice-store{
+  width: 100%;
+  height: 200cpx;
+}
+
+.series{
+  width: 710cpx;
+  margin-top:20cpx;
+  position: relative;
+  background: #fff;
+  border-radius: 20cpx;
+}
+
+
+.guide{
+  width: 710cpx;
+  height: 242cpx;
+  border-radius: 20cpx;
+  position: relative;
+  background: #fff;
+}
+
+.btn-spec{
+  position: absolute;
+  bottom:30cpx;
+  left: 30cpx;
+}
+
+.all-store{
+  width: 710cpx;
+  margin-top:20cpx;
+  position: relative;
+
+
+}
+
+.title{
+  width: 100%;
+  height:50cpx;
+  margin-top:20cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: #ff0000;
+
+}
+
+.text-store{
+  font-size: 48cpx!important;
+  font-weight: bold;
+
+}
+.title text.text-store{
+  font-size: 48cpx!important;
+  font-weight: bold;
+
+}
+
+.all-goods{
+   font-size: 48cpx!important;
+  font-weight: bold;
+
+}
+
+
+.container-scroll{
+  width: 710cpx;
+  position: absolute;
+  top:10cpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.activie-panel{
+  position: relative;
+
+}
+.pos-img{
+  position: absolute;
+  left:40cpx;
+  z-index: 9;
+}
+
+.pos-count{
+  position: absolute;
+  left:40cpx;
+  min-height: 60cpx;
+  z-index: 9;
+  width: 250cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  background: #fff;
+  padding-left: 20cpx;
+  border-radius: 0 0 0 30cpx;
+
+
+}
+
+.count-name{
+   font-size: 24cpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+}
+
+.item-count{
+  margin-left: 15cpx;
+  display:flex;
+  min-width: 150cpx;
+  min-height: 60cpx;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  background: #fff;
+  padding-right: 20cpx;
+  border-radius: 0 0 30cpx 0;
+}
+
+.count-time{
+  font-size: 24cpx;
+  color: #ff1744;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+}
+
+.panel {
+  display: flex;
+  width: 355cpx;
+  min-height: 500cpx;
+  margin-bottom: 35cpx;
+  flex-direction: row;
+  justify-content:start;
+  align-items: stretch;
+}
+
+.list{
+  background: #fff;
+  width:100%;
+  border-radius: 10cpx;
+}
+
+.panel view:nth-child(1){
+  margin-right:2%;
+
+}
+
+.spec-sp2{
+   border-radius:10cpx 10cpx 0 0;
+}
+
+.list-img{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.list-name{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  font-size: 28cpx;
+  font-weight: bold;
+}
+
+.list-price{
+  width: 100%;
+  display: flex;
+  justify-content:space-between;
+  flex-direction: row;
+  align-items: center;
+  font-size:28cpx;
+
+}
+
+.original-price{
+  text-decoration:line-through;
+  color:#bfbfbf;
+
+
+}
+
+.now-price{
+  color:#ff0000;
+  /* font-weight: bold; */
+}
+
+.asl-count{
+color: #e60012;
+font-weight: bold;
+font-size:24cpx;
+}
+
+.acti-price{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 10cpx;
+
+}
+
+.group-desc-price{
+   display: flex;
+  justify-content:space-between;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 10cpx;
+  width:100%;
+}
+
+.acti-market{
+  margin-top:5cpx;
+  margin-right: 80cpx;
+}
+
+.activity-area{
+  width: 710cpx;
+  background: #fff;
+  margin-top:20cpx;
+  border-radius: 20cpx;
+}
+
+
+.marquee_top {
+     transition: all 0.5s;
+     margin-top: -60cpx;
+     height: 60cpx;
+     overflow: hidden;
+
+  }
+
+  .broadcast{
+    margin-top:20cpx;
+    width: 710cpx;
+    height: 60cpx;
+    border-radius: 20cpx;
+    background: #fff;
+    position: relative;
+    margin-bottom:5cpx;
+  }
+
+.spec-notice{
+  width:750cpx;
+  /* padding:0 10cpx; */
+  overflow:hidden;
+}
+
+.share-btn{
+  z-index: 999;
+  position: absolute;
+  left:262cpx;
+  top:210cpx;
+}
+
+
+
+/* 广播 */
+
+.swiper_container{
+  height: 60cpx;
+  width:710cpx;
+
+}
+
+.swiper_item{
+  margin-left:80cpx;
+  font-size: 25cpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+}
+
+
+.swiper-wrap{
+  width:100%;
+  height: 60cpx;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+  /* background: red; */
+
+}
+
+.spec-broadcast{
+  left:10cpx;
+  position: absolute;
+  top:50%;
+  transform: translateY(-50%);
+}
+
+/* 添加的 */
+.panels{
+  width: 200cpx;
+min-height:320cpx;
+display: inline-block;
+margin-right: 10cpx;
+background: #fff;
+padding:10cpx;
+margin-bottom:20cpx;
+border-radius: 20cpx;
+}
+
+.goods-wrap{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  
+}
+
+.container {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+  margin-top:15cpx;
+}
+
+.price-right text{
+  color:#b0bec5;
+  text-decoration:line-through;
+  font-size: 22cpx;
+
+}
+.price-left{
+  color:#ff2626;
+}
+
+
+
+.price-left text{
+  font-size: 28cpx;
+}
+
+
+.price{
+  width: 100%;
+  display: flex;
+  justify-content:center;
+  align-items:flex-start;
+  flex-direction: column;
+}
+
+.titles{
+  width: 100%;
+  text-align: center;
+}
+
+.titles .title-text{
+  font-size: 22cpx;
+  letter-spacing: 2cpx;
+  color:#b0bec5;
+}
+/* 拼吧样式 */
+.group-desc{
+  width: 100%;
+  display: flex;
+  padding:0 15cpx;
+  justify-content:center;
+  align-items:flex-start;
+  flex-direction: column;
+}
+.group-share-img{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  width:64cpx;
+  height: 64cpx;
+  border-radius: 50%;
+}
+
+.group-share{
+  width: 710cpx;
+  position: absolute;
+  right: 20cpx;
+  bottom:100cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  
+}
+
+.group-name{
+  font-size: 28cpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2cpx;
+
+}
+
+.spec-pb-img{
+   animation: switch 1s ease-out infinite;
+
+}
+
+@keyframes switch {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.6);
+    }
+}
+
+
+.index-loading{
+  z-index: 999;
+  position: fixed;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+
+}
+
+
+.content-all{
+  opacity: 0;
+  transition: all 0.5s;
+}
+
+.content-all1{
+  opacity: 1;
+}
+
+.fixed-nav{
+  width: 750cpx;
+  display: flex;
+  background: #fff;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: row;
+  position: fixed;
+  z-index: 9999;
+  letter-spacing: 2cpx;
+  font-size: 34cpx;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-search": "/vant/search/index",
+        "van-grid": "/vant/grid/index",
+        "van-grid-item": "/vant/grid-item/index",
+        "van-button": "/vant/button/index",
+        "scrolX": "../scrolX/scrolX",
+         "van-icon": "/vant/icon/index",
+         "i-notice-bar": "/iview/notice-bar/index",
+         "van-notify": "/vant/notify/index",
+         "van-dialog": "/vant/dialog/index",
+         "van-popup": "/vant/popup/index",
+         "van-count-down": "/vant/count-down/index",
+          "van-transition": "/vant/transition/index",
+           "van-loading": "/vant/loading/index",
+           "sing-pop": "../sing-pop/sing-pop",
+           "homever2":"/components/home-ver2/home-ver2",
+            "all-tip": "../all-tip/all-tip",
+            "van-sticky": "/vant/sticky/index"
+
+
+       
+          
+  
+    }
+  }
+}
+</script>

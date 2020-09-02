@@ -1,0 +1,1382 @@
+<template>
+  <view class="container">
+  <view class="head">
+  <image src="{{bgImg}}" style="width:750cpx;height:400cpx;" ></image>
+  <view class="head-wrap" style="top:{{marginTop}}px;">
+  <view class="person">
+  <view class="img-wrap" bind:tap="uploads">
+  <image src="{{avatar}}" style="width:150cpx;height:150cpx;border-radius:50%;"></image>
+  </view>
+  <view class="vip">
+  <view class="vip-title">
+  <view><text>{{username}}</text></view>
+   <view c-if="{{isCancelLogin}}"><van-button size="small" type="info"
+    bind:click="login"
+    round
+    color="linear-gradient(to right, #f4c4f3, #fc67fa);">登录</van-button></view>
+  <view><van-button round type="info"
+  c-if="{{false}}"
+  icon="{{icon1}}"
+  custom-class="spec-btn"
+   size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
+   {{usersinfo.level}}</van-button>
+   </view>
+    <view c-if="{{usersinfo.isRegiment}}" class="tuzhang"><van-button round type="info"
+  custom-class="spec-btn"
+   size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
+   团长</van-button>
+   </view>
+  </view>
+  <!-- vip-title end-->
+  <view class="vip-member">
+  <view class="level-2">{{usersinfo.level}}</view>
+  <view c-if="{{standard}}" >
+   <van-button color="linear-gradient(to right, #f4c4f3, #fc67fa);" 
+   custom-style="color:#fff;"
+   custom-class="spec-btn"
+  round type="info" size="mini" >{{upToStandard}}</van-button>
+  </view>
+  <view  style="margin-left:30cpx;"  c-if="{{false}}">
+  <van-button color="#ffffff" 
+   custom-style="color:#6a6a6a;"
+   custom-class="spec-btn"
+    icon="{{icon2}}"
+    bind:click="sign"
+  round type="info" size="mini" >{{signTitle}}</van-button></view>
+  </view>
+  <!-- vip-member end-->
+
+
+ 
+
+
+
+  </view>
+  <!--vip end-->
+
+    <view class="vip-sign"  c-bind:tap="sign">
+    <view class="vip-sign-in">
+    <image src="{{vipSign}}" style="width:24cpx;height:24cpx;"></image>
+  <text style="color:#fff;font-size:26cpx;margin-left:10cpx;">{{signTitle}}</text></view>
+  </view>
+  </view>
+  <!--person end-->
+  </view>
+  
+  </view>
+  <!-- head end-->
+<view class="head-section">
+<block
+          c-for="{{imgSection}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="text"
+>
+
+<view>
+<view class="section-icon"  c-bind:tap="goSection" data-name="{{item.text}}">
+ <image src="{{item.imageSrc}}" style="width:55cpx;height:55cpx;" ></image>
+</view>
+<view class="section"><text class="icon-text">{{item.text}}</text></view>
+</view>
+
+</block>
+
+</view>
+ <image src="{{vipImg}}" style="width:710cpx;height:125cpx;"  class="my-vip"></image>
+  <view class="set-person">
+  <view class="order-management">
+   <view >  
+  <i-cell-group >
+  <i-cell title="我的订单" is-link value="查看全部" 
+  bind:click="goMyOrder" data-type="{{0}}" i-class="order-group" ></i-cell>
+  </i-cell-group>
+   </view>
+   <view class="grid">
+    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}">
+    <block  c-for="{{img}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="text"
+         >
+  <van-grid-item  use-slot   class='wl-order' >
+   <view class="wl-dot" c-if="{{(item.type===1||item.type===2) && item.num}}">{{item.num}}</view>
+  <view  c-bind:tap="goMyOrder" data-type="{{item.type}}">
+  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
+  <view class="grid-child"><text class="icon-text spec-icon-text">{{item.text}}</text></view>
+   </view>
+  </van-grid-item>
+ 
+  </block>
+</van-grid>
+    </view>
+
+  </view> <!-- order-management end-->
+
+  <!-- 物流信息轮播-->
+
+  <view class="wl-info" c-if="{{OrderCarousel.expData.length}}">
+
+   <carousel class="wl-container" indicator-dots="{{true}}"  current="{{0}}" 
+   circular="{{true}}" autoplay="{{true}}" indicator-color="#ff410f" 
+   interval="{{3000}}"
+   indicator-active-color="#80848f">
+   <block   c-for="{{OrderCarousel.expData}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key='item'
+          >
+          
+      <carousel-item>
+        <view class="carousel-item" >
+        <view class="wl-img">
+          <image src="{{item.thumb}}" style="width:100cpx;height:100cpx;border-radius:10cpx" ></image>
+        </view>
+        <view class="wl-text">
+        <view class="wl-text-top">
+         <image src="{{wlImg}}" style="width:64cpx;height:64cpx;" ></image>
+         <text class="wl-status" style="margin-left:10cpx;">等待收货</text>
+        </view>
+        <view class="wl-text-bot">
+        <text class="wl-status">{{item.expInfo.status}}</text>
+        </view>
+        </view>
+        
+        </view>
+      </carousel-item>
+      </block>
+     
+    
+    </carousel>
+  
+  
+  
+  </view>
+  <!-- 物流信息轮播 end -->
+  <view class="personal-funds">
+  <i-cell-group >
+    <i-cell title="我的功能"   i-class="order-group"></i-cell>
+  </i-cell-group>
+   <view class="grid">
+    <van-grid gutter="{{ 0 }}" border="{{false}}" center column-num="{{4}}">
+    <block  c-for="{{ imgFunds}}"
+          c-for-index="i"
+          c-for-item="item"
+           c-key="text"
+         >
+   <van-grid-item  use-slot bind:click="goFunds" data-name="{{item.text}}" >
+  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" class="{{item.text===1 || item.text===2 || item.text===3?'pb-flag':'pb-flag1'}}"></image>
+  <view><text class="icon-text" style="{{item.text===1||item.text===2 || item.text===3?'opacity:0;':'opacity:1'}}">{{item.text}}</text></view>
+  </van-grid-item>
+  </block>
+</van-grid>
+    </view>
+  </view><!-- personal-funds end-->
+  <view class="personal-information">
+   <i-cell-group >
+    <i-cell title="更多"   i-class="order-group"></i-cell>
+  </i-cell-group>
+   <view class="grid">
+    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" square>
+    <block  c-for="{{ imgInfo }}"
+          c-for-index="i"
+          c-for-item="item"
+           c-key="text"
+         >
+  <van-grid-item  use-slot bind:click="goPersonInfo" data-text="{{item.text}}">
+  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
+<view><text class="icon-text">{{item.text}}</text></view>
+  </van-grid-item>
+  </block>
+</van-grid>
+</view>
+  </view><!-- personal-information end-->
+
+  
+  </view>
+   <!-- set-person end-->
+<view class="cml-btn">
+ <van-button 
+ type="primary"
+ block
+ bind:click="quit"
+ custom-class="qutie-btn"
+ block color="linear-gradient(269deg, #FE573F, #E61A09);">退出登录</van-button>
+</view>
+
+<i-toast id="toast" />
+
+<van-notify id="van-notify" />
+
+<van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+
+<sing-pop class="sing-pop" c-if="{{sinPopFlag}}"  c-bind:onshowPop="showPop"></sing-pop>
+
+
+
+  </view>
+</template>
+
+<script>
+
+// const { $Toast } = require('../../iview/base/index');
+import{ $Toast } from '../../iview/base/index';
+import Notify from '../../vant/notify/notify';
+import { changeSign,cachTimestampNow } from '../../untils/processData'
+import { getBaseUserInfo,uploadAvatar} from '../../api/index'
+import {getFootmarkInfo} from '../../api/grouping' //获取订单收货轮播信息
+import { dealStoreTitleName } from '../../untils/processData'
+import Dialog from '../../vant/dialog/dialog'
+const imgArrayOrder=[
+  {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/qb@2x.png',
+   text:'全部',
+   type:0
+},
+ {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfk@2x.png',
+   text:'待付款',
+   type:3
+
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfh@2x.png',
+   text:'待发货',
+   type:1  ,
+   num:''
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dsh@2x.png',
+   text:'待收货',
+   type:2  ,
+   num:''
+}
+
+]
+
+const imgFunds=[
+  {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/zz@2x.png',
+   text:'转账'  
+},
+ {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/tx@2x.png',
+   text:'提现'  
+},
+  {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/grsc@2x.png',
+   text:'个人市场'  
+},
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/fxsy@2x.png',
+   text:'分享收益'  
+},
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/asl1@2x.png',
+   text:'ASL1明细'  
+},
+ {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/asl2@2x.png',
+   text:'ASL2明细'  
+},
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/asl3@2x.png',
+   text:'ASL3明细'  
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/asl5@2x.png',
+   text:'ASL5明细'  
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/jfmx@2x.png',
+   text:'积分明细'  
+},
+
+// {
+//    imageSrc: require('../../assets/group-images/icon/ptdd.png'),
+//    text:'拼团订单'  
+// },
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/ptqb@2x.png',
+   text:'拼团钱包'  
+},
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dzgl@2x.png',
+   text:'地址管理'  
+},
+
+{
+   imageSrc: require('../../assets/images/linkIcon/JFMX.png'),
+   text:1  
+}
+
+
+// {
+//    imageSrc: require('../../assets/images/linkIcon/JFMX.png'),
+//    text:3
+// }
+
+]
+
+ const imgInfo=[
+ {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/grxx@2x.png',
+   text:'个人信息'  
+},
+ {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/smrz@2x.png',
+   text:'实名认证'  
+},
+ {
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/xgsjh@2x.png',
+   text:'修改手机号'  
+},
+{
+   imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/my/xgmm@2x.png',
+   text:'修改密码'  
+},
+
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/zfmm@2x.png',
+   text:'支付密码'  
+},
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
+   text:'商学院'  
+},
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/yssm@2x.png',
+   text:'隐私声明'  
+},
+
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/yhxy@2x.png',
+   text:'用户协议'  
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/gywm@2x.png',
+   text:'关于我们'  
+},
+{},
+{},
+{}
+ ]
+
+ const imgMore=[
+
+
+ ]
+
+
+ const imgSection=[
+   {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/gz@2x.png',
+   text:'商品关注'  
+},
+
+  {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/lljl@2x.png',
+   text:'浏览记录'  
+},
+
+  {
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/ptdd@2x.png',
+   text:'拼团订单'  
+}
+ ]
+import cml from 'chameleon-api';
+import store from '../../store'
+import { quitWX,sign} from '../../api/index'
+class PersonalCenter implements PersonalCenterInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    img:imgArrayOrder,
+    imgFunds:imgFunds,
+    imgInfo:imgInfo,
+    imgSection:imgSection,
+    userObj:{},
+    avatar:'',
+    vipSign:require('../../assets/images/qd@2x.png'),
+    bgImg:'https://w.aishenglian.com/static/icon/ver2-icon/mine/bj@2x.png',
+    vipImg:'https://w.aishenglian.com/static/icon/ver2-icon/asl-vip/ASL@2x.png',
+    icon1:require('../../assets/images/vip.png'),
+    icon2:require('../../assets/images/qd.png'),
+    upToStandard:'',
+    standard:false,
+    signTitle:'今日签到',
+    usersinfo:[],
+    token:'',
+    username:'',
+    OrderCarousel:{},//物流信息
+    wlImg:require('../../assets/images/wl.png'),
+    sinPopFlag:false,//签到弹框显隐
+    a:'',
+    b:'',
+    isCertification:0,//是否实名验证
+    marginTop:''
+  }
+
+  computed =store.mapState([
+    'isCancelLogin'
+  ])
+
+  watch = {
+  }
+
+  methods = {
+
+    //上传头像
+    uploads(){
+      var that  = this
+      console.log("执行")
+      cml.getStorage('token').then((value)=>{
+      let tokens=value
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success (res) {
+          // tempFilePath可以作为img标签的src属性显示图片
+          const tempFilePaths = res.tempFilePaths
+          console.log("这里",tempFilePaths)
+          console.log('返回路径',tempFilePaths[0])
+          let uname
+          cml.getStorage('uname').then((value)=>{
+          uname=value
+          wx.uploadFile({
+            url:'https://w.aishenglian.com/app/upload/avatar', 
+            filePath:tempFilePaths[0],
+            name: "file",
+            method: "POST",
+            header: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': 'bearer '+tokens
+            },
+            formData: {
+              uname:uname,
+            },
+            success(res){
+              console.log("上传结果")
+              console.log(res)
+              var json = JSON.parse(res.data);
+              if(json.code==1){
+                cml.showToast({
+                  message: "上传成功",
+                  duration: 1000
+                })
+              }
+              that.avatar='https://'+json.avatar
+            }
+          })
+
+          })
+        }
+      })
+})
+
+    },
+    goMore(e){
+      let name=e.currentTarget.dataset.name
+      this.chooseAim(name)
+    },
+    xuexi(){
+      if(this.usersinfo.levelInfo===1){
+        cml.showToast({
+          message: "该区域为店主及以上专享",
+          duration: 1500
+        })
+      }else{
+            cml.navigateTo({
+            path: '/pages/studay/studay'
+      })
+      }
+    },
+    chooseAim(name){
+      switch(name) {
+     case "隐私申明":
+       this.goAgreements(name)
+        break;
+     case "用户协议":
+       this.goAgreements(name)
+        break;
+         case "学习中心":
+          this.xuexi()
+        break;
+         case "关于我们":
+            cml.navigateTo({
+  path: '/pages/about-us/about-us'
+      })
+        break;
+     default:  
+} 
+      
+    },
+
+
+    goSection(e){
+         let name=e.currentTarget.dataset.name
+        switch(name) {
+     case "商品关注":
+          cml.navigateTo({
+  path: '/pages/collection_list/collection_list'
+      })
+        break;
+     case "浏览记录":
+        cml.navigateTo({
+  path: '/pages/my-footprint/my-footprint'
+      })
+    
+        break;
+         case "拼团订单":
+            cml.navigateTo({
+  path: '/pages/group-order/group-order'
+      })
+
+
+        break;
+       
+     default:  
+
+    }
+
+    },
+
+
+
+    //1是隐私声明 0是用户协议
+    goAgreements(name){
+      if(name==="隐私声明"){
+         cml.navigateTo({
+  path: '/pages/agreements/agreements',
+  query:{flag:1}
+      })
+
+    }else{
+        cml.navigateTo({
+  path: '/pages/agreements/agreements',
+  query:{flag:0}
+      })
+    }
+  },
+  //去我的订单 1-待发货 2-待收货 -1 -待付款 0-全部
+  goMyOrder(e){
+   
+    let type=e.currentTarget.dataset.type
+    cml.navigateTo({
+  path: '/pages/my-order/my-order',
+  query:{type:type}
+      })
+  
+  },
+  //去个人信息页
+  goPersonInfo(e){
+      let name=e.currentTarget.dataset.text
+      this.chooseInfo(name)
+
+  },
+  chooseInfo(name){
+      switch(name) {
+     case "个人信息":
+       cml.navigateTo({
+  path: '/pages/persona-details/persona-details'
+      })
+        break;
+     case "修改手机号":
+   cml.navigateTo({
+  path: '/pages/change-phone/change-phone'
+      })
+        break;
+         case "修改密码":
+            cml.navigateTo({
+  path: '/pages/change-password/change-password'
+      })
+        break;
+         case "地址管理":
+            cml.navigateTo({
+  path: '/pages/address/address'
+      })
+        break;
+
+         case "支付密码":
+            cml.navigateTo({
+  path: '/pages/change-pay/change-pay'
+      })
+        break;
+        case "实名认证":
+            cml.navigateTo({path: '/pages/verified-page/verified-page'})
+        break;
+        case "商学院":
+          this.xuexi()
+          break;
+           case "隐私声明":
+          this.goAgreements(name)
+        break;
+        case "用户协议":
+          this.goAgreements(name)
+        break;
+         case "关于我们":
+            cml.navigateTo({
+  path: '/pages/about-us/about-us'
+      })
+        break;
+     default:  
+} 
+
+  },
+
+  goFunds(e){
+     let name=e.currentTarget.dataset.name
+      this.chooseFunds(name)
+  },
+  chooseFunds(name){
+     switch(name) {
+     case "ASL1明细":
+       this.goAslDetails(name)
+      
+        break;
+     case "ASL2明细":
+         this.goAslDetails(name)
+  
+        break;
+         case "ASL3明细":
+             this.goAslDetails(name)
+        break;
+          case "ASL5明细":
+             this.goAslDetails(name)
+        break;
+
+         case "积分明细":
+            cml.navigateTo({
+  path: '/pages/points/points'
+      })
+        break;
+
+         case "分享收益":
+            cml.navigateTo({
+  path: '/pages/share-coin/share-coin'
+      })
+        break;
+         case "提现":
+            cml.navigateTo({
+  path: '/pages/put-coin/put-coin'
+      })
+        break;
+        case "转账":
+            cml.navigateTo({
+  path: '/pages/eft-bank/eft-bank'
+      })
+        break;
+
+         case "个人市场":
+            cml.navigateTo({
+  path: '/pages/indv-market/indv-market'
+      })
+        break;
+          case "拼团钱包":
+        cml.navigateTo({
+        path: '/pages/walle-Purse/walle-Purse'
+      })
+        break;
+         case "地址管理":
+        cml.navigateTo({
+  path: '/pages/address/address'
+      })
+      
+        break;
+
+
+     default:  
+} 
+
+
+  },
+  goAslDetails(name){
+     cml.navigateTo({
+  path: '/pages/ASL/ASL',
+  query:{title:name}
+      })
+  },
+    getInfo(){
+
+      cml.getStorage('userInfo').then((value)=>{
+        console.log(value,'用户信息')
+    // 处理获取到的键值
+
+    // this.isStandard(value.userinfo)
+    this.userObj=value.userinfo
+    
+    if(value.userinfo.avatar.substr(0,5)==='https'){
+       this.avatar=value.userinfo.avatar
+       
+    }else{
+       this.avatar=store.state.domainUrl+value.userinfo.avatar
+
+    }
+    
+   
+})
+
+    },
+    //退出登录
+    quit(){
+      let self=this
+      cml.confirm({
+    message:'你确定退出?',
+    confirmTitle:"确定",
+    cancelTitle: "取消"
+}).then(function(value){
+    
+    if(value==='确定'){
+      self.quitWxapp()
+
+    }
+})
+
+    },
+    quitWxapp(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+
+      quitWX({uname:uname}).then(res=>{
+        if(res.code){
+          console.log(res)
+          cml.showToast({
+            message: "退出成功",
+            duration: 1000
+          })
+         // 退出更改状态为未登录
+        store.commit('changeCancelLogin',true)
+        cml.removeStorage('uname')
+        cml.removeStorage('infodata')
+        cml.removeStorage('token')
+        cml.removeStorage('passWord')
+        setTimeout(() => {
+          cml.redirectTo({
+            path: '/pages/account-login/account-login'
+          })
+        }, 800)
+          }else{
+            this.tip('退出失败，请登录！')
+          }
+        }).catch(err=>{})
+      })
+
+    },
+    //退出清楚账号
+    //签到得金币
+    signTo(){
+      this.getGoldData()
+    },
+    //配置金币
+    setGold(count){
+       $Toast({
+            content: '获得金币'+count,
+            image:require('../../assets/images/gold.png'),
+        })
+
+    },
+    //获取金币数据
+    getGoldData(){
+      sign({}).then(res=>{
+        if(res.code){
+          this.setGold(res.data)
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+      }).catch(err=>{})
+
+    },
+    //判断用户消费是否达标
+  isStandard(a,b){
+    if(a>=4){
+      this.standard=true
+      if(b==1){
+        this.upToStandard="本月消费已达标"
+      }else{
+        this.upToStandard="本月消费未达标"
+      }
+    }
+  },
+
+  //获取基础用户信息
+  getBaseInfoData(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    this.username=value
+    getBaseUserInfo({uname:uname}).then(res=>{
+      if(!store.state.isCancelLogin){
+        if(res.code==403){
+          cml.redirectTo({
+            path: '/pages/login/login'
+          })
+          cml.showToast({
+            message: "登录失效",
+            duration: 2000
+          })
+        }
+      }
+      this.usersinfo=res.data[0]
+      this.avatar='https://'+this.usersinfo.avatar
+      //是否实名验证
+      //       const data=res.data[0]
+      //       this.isCertification=data.authentication
+      // this.isCertification && (this.setCertificationUi())
+
+      //暂不验证
+    
+    
+      // 判断今天有没有签到
+      if(this.usersinfo.sign==0){
+        this.signTitle='今日签到'
+      }else{
+        this.setSign('已签到')
+      }
+      this.isStandard(this.usersinfo.levelInfo,this.usersinfo.standad)
+
+    }).catch(err=>{
+      // console.log('没获取到',res)
+    })
+     })
+  },
+
+//设置是否实名验证Ui
+  setCertificationUi(){
+   this.imgInfo=this.imgInfo.filter(d=>{
+          return d.text!=='实名认证' && d.text
+     })
+  },
+
+
+
+
+
+
+  
+  //控制签到弹框的显隐
+showPop(){
+  this.sinPopFlag=false
+
+},
+
+  //设置用户签到模块功能
+  sign(){
+     if(this.signTitle==='今日签到'){
+    //获取用户是否签到
+    this.getBaseUserData()
+
+  }else{
+    this.tip('你已经签到过了')
+
+    console.log('1223')
+
+  }
+
+
+  },
+   tip(msg){
+      cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+
+
+   },
+   //签到
+ getBaseUserData(){
+  let uname
+  cml.getStorage('uname').then((value)=>{
+  uname=value
+  sign({uname:uname}).then(res=>{
+    console.log(res)
+      if(res.code==1){  
+        this.setSign('已签到')
+        Notify({ type: 'success', message:`签到成功,获取爱生链币${res.fee}个`,context:this,safeAreaInsetTop:true });
+         this.sinPopFlag=true
+        store.commit('changeSingNum',res.days)
+         if(res.reward){
+           this.tip(`奖励asl${res.reward}个`)
+         }
+      }else if(res.code==403){
+        this.tip('身份校验失败，请重新登录')
+        setTimeout(() => {
+          cml.navigateTo({
+            path: '/pages/login/login',
+          }) 
+        }, 1000)
+      }
+    }).catch(err=>{
+      // console.log(res)
+
+    })
+})
+  },
+
+    // 设置签到
+  setSign(str){
+    this.signTitle=str
+      // cml.setStorage('isSign',str)
+  
+
+  },
+
+ 
+
+
+   //判断时间是否过期
+   isTimeOut(){
+     changeSign()
+   },
+   //用户登录
+   login(){
+      cml.redirectTo({
+  path: '/pages/login/login'
+}) 
+   },
+   dialog(){
+      Dialog.confirm({
+      title: '提示',
+      context:this,
+      message: '你需要登录才能正常使用,去登录？'
+    }).then(() => {
+      cml.redirectTo({
+      path: '/pages/login/login'
+    }) 
+    
+    }).catch(() => { 
+
+
+    });
+   },
+
+   check(){
+      if(store.state.isCancelLogin){
+        this.dialog() 
+     }
+
+        
+   },
+
+   getOrderCarousel(){
+     getFootmarkInfo({}).then(res=>{
+      
+       if(res.code===1){
+         const data=res.data
+        data.expData.map(d=>{
+              d.thumb='https://'+d.thumb
+              d.expInfo.status=dealStoreTitleName(d.expInfo.status)
+              return d
+            })
+        this.OrderCarousel=data
+       this.img =this.img.map(d=>{
+          if(d.type===1){
+            //设置待发货角标
+          d.num=data.toBeDelivered
+          }else if(d.type===2){
+              //设置待收货角标
+               d.num=data.toBeReceived
+          }else{
+
+          }
+          return d
+        })
+      
+        
+
+
+
+       }
+     })
+
+   },
+
+     getCapluse(){
+     const res=wx.getMenuButtonBoundingClientRect()
+      this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
+    
+  }
+
+
+
+
+
+
+
+
+}
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getCapluse()
+    // 获取订单轮播信息
+    this.getOrderCarousel()
+    this.getBaseInfoData()
+    // this.getInfo()
+    this.isTimeOut()//判断是签到否过期
+    // this.setSignName()//设置签到名称
+    this.check()
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PersonalCenter();
+</script>
+
+<style scoped>
+.container{
+  width: 750cpx;
+  background: #eee;
+  min-height: 100vh;
+  
+}
+
+
+
+.head{
+width: 750cpx;
+height: 400cpx;
+position: relative;
+
+
+}
+
+.img-wrap{
+  width: 150cpx;
+  height: 150cpx;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.person{
+  width: 750cpx;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction: row;
+  position: relative;
+}
+
+.vip{
+  min-width: 500cpx;
+  display: flex;
+  margin-left:30cpx;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items: flex-start;
+
+}
+
+.vip-title{
+  width: 100%;
+  color:#fff;
+  /* align-self: flex-start; */
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+}
+
+.spec-btn{
+padding:0 20cpx!important;
+}
+
+
+
+.vip-member{
+    width: 500cpx;
+    margin-top:15cpx;
+   display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+
+.set-person{
+  margin-top:10cpx;
+  width: 750cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
+
+.order-management,.personal-funds,.personal-information,.personal-more{
+  width:710cpx;
+  border-radius: 20cpx;
+  margin-top:20cpx;
+}
+
+.head-section{
+  padding:10cpx 0;
+  min-height: 120cpx;
+  background: #fff;
+  width: 710cpx;
+  border-radius: 20cpx;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  top:340cpx;
+  z-index: 9;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  
+}
+
+.section-icon{
+   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+
+
+.section{
+    display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+
+
+.wl-info{
+  width:710cpx;
+  margin-top:20cpx;
+  height:170cpx;
+  background: #fff;
+ 
+}
+
+.wl-order{
+  position: relative;
+
+}
+
+.wl-dot{
+  position: absolute;
+  right: 28cpx;
+ min-width: 40cpx;
+ min-height: 40cpx;
+  border-radius: 50%;
+ top:4cpx;
+ border:2cpx solid #ff1744;
+ color: #ff1744;
+ font-size: 20cpx;
+ display: flex;
+ flex-direction: row;
+ justify-content: center;
+ align-items: center;
+
+}
+
+.wl-text{
+  margin-left:50cpx;
+
+}
+
+.wl-status{
+   font-size: 28cpx;
+  letter-spacing: 2cpx;
+  color: #bbbec4;
+
+}
+
+
+.wl-container{
+  width: 100%;
+  height: 150cpx;
+
+  
+}
+
+.carousel-item{
+  width: 100%;
+  height: 150cpx;
+  padding:20cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+ 
+}
+
+.wl-text-top{
+    display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+
+}
+
+.order-management{
+  /* height: 270cpx; */
+}
+
+.order-group{
+  height: 30cpx;
+  border-bottom:2cpx solid #eee;
+}
+
+.cml-van-grid-item{
+  display: block!important;
+}
+
+
+.icon-text{
+ /* text-align: center; */
+ font-size: 25cpx;
+}
+.grid-child{
+  width: 50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+}
+
+.gomore{
+  display: flex;
+  flex-direction: column;
+  justify-content:center;
+  align-items: center;
+}
+
+
+
+
+.grid{
+  width: 710cpx;
+  
+}
+.cml-btn{
+  width: 580cpx;
+  height: 250cpx;
+  margin:0 auto;
+  margin-top:20cpx;
+}
+
+.head-wrap{
+  position: absolute;
+  width: 750cpx;
+  height: 300cpx;
+  display: flex;
+justify-content: center;
+flex-direction: row;
+align-items: flex-start;
+}
+
+.pb-flag{
+  opacity: 0;
+}
+
+.pb-flag1{
+  opacity: 1;
+}
+
+.tuzhang{
+ margin-left:20cpx;
+}
+
+.qutie-btn{
+  border-radius: 5px !important;
+
+}
+
+.my-vip{
+  margin:0 auto;
+  margin-top:80cpx;
+}
+.level-2{
+width: 106cpx;
+height: 32cpx;
+background: linear-gradient(89deg, #FF8A01, #FFBE16);
+border-radius: 16cpx;
+color: #fff;
+font-size: 18cpx;
+text-align: center;
+line-height: 32cpx;
+margin-right:20cpx;
+}
+
+.vip-sign{
+width: 158cpx;
+height: 57cpx;
+background: #292929;
+opacity: 0.6;
+border-radius: 29cpx 0cpx 0cpx 29cpx;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+position: absolute;
+top:50%;
+right: 0;
+}
+
+.vip-sign-in{
+  position: relative;
+  display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+z-index: 9;
+}
+
+
+  
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-button": "/vant/button/index",
+        "i-cell-group": "/iview/cell-group/index",
+        "i-cell": "/iview/cell/index",
+        "van-grid": "/vant/grid/index",
+        "van-grid-item": "/vant/grid-item/index",
+        "i-toast": "/iview/toast/index",
+         "van-notify": "/vant/notify/index",
+        "van-dialog": "/vant/dialog/index",
+        "sing-pop": "../sing-pop/sing-pop"
+
+    }
+  }
+}
+</script>

@@ -1,0 +1,321 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+    <view class="nav">
+    <view class="purse-title">
+    <view class="icon" ><van-icon name="arrow-left" size="24px" bind:click="goBack" color="#fff"/>
+   </view>
+
+   <view class="purse-qb-center"><text style="color:#fff;font-size:36cpx;">拼团钱包</text></view>
+    
+    </view>
+    <view class="purse-wrap">
+    <view class="purse" >
+    <view class="right">
+    <image src="{{ userInfoObj.avatar }}" style="width:100cpx;height:100cpx;border-radius:50%;background:#e9eaec;"></image>
+    </view>
+    </view>
+    <!-- purse end-->
+    <view class="purse-bi">
+    <view class="currency" c-bind:tap="goRecord(1)">
+    <text>拼吧币</text>
+    <text>{{userInfoObj.groupFee}}</text>
+    </view>
+    <view class="currency" c-bind:tap="goRecord(2)">
+    <text>低消币</text>
+    <text>{{userInfoObj.lowFee}}</text>
+    </view>
+    </view>
+    <!-- purse-bi end-->
+    </view>
+    <!-- purse-wrap end-->
+    </view>
+    <!--nav end-->
+  <view class="cell-wrap">
+  <block  c-for="{{cellList}}"
+          c-for-item="item"
+          c-key="text">
+<view class="cell" c-bind:click="goOther" data-text="{{item.text}}" c-if="{{item.flag}}">
+<view class="left">
+<image src="{{item.icon}}" style="width:64cpx;height:64cpx;"></image>
+<text style="margin-left:10cpx;" >{{item.text}}</text>
+</view>
+<view class="right">
+<van-icon name="arrow" size="24px"  color="#dddee1"/>
+</view>
+</view>
+</block>
+</view>
+</view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getWalletInfo} from '../../api/grouping.js' //引入拼团模块接口
+import store from '../../store'
+
+const objList=[
+  {
+  text:'充值',
+  icon:require('../../assets/group-images/icon/cz.png'),
+  flag:false
+  },
+  {
+  text:'兑换',
+  icon:require('../../assets/group-images/icon/dh.png'),
+  flag:true
+  },
+
+   {
+  text:'提现',
+  icon:require('../../assets/group-images/icon/tx.png'),
+  flag:false
+  },
+  {
+  text:'收支明细',
+  icon:require('../../assets/group-images/icon/szmx.png'),
+  flag:false
+  }
+]
+class WallePurse implements WallePurseInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    viewPortHeight:'',
+    cellIcon1:require('../../assets/group-images/icon/cz.png'),
+    cellIcon2:require('../../assets/group-images/icon/dh.png'),
+    cellIcon3:require('../../assets/group-images/icon/tx.png'),
+    cellIcon4:require('../../assets/group-images/icon/szmx.png'),
+    userInfoObj:{},
+    cellList:objList
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+      goBack(){
+    cml.navigateBack(-1);
+  },
+    getData(){
+       cml.getStorage('uname').then((value)=>{
+         if(value){
+           getWalletInfo({uname:value}).then(res=>{
+             if(res.code){
+               this.userInfoObj=res.data[0]
+               this.userInfoObj.avatar=store.state.domainUrl+ this.userInfoObj.avatar
+             }
+           }).catch(err=>{})
+         }
+
+
+
+  })
+
+  },
+  goOther(e){
+      let name=e.currentTarget.dataset.text
+      this.choosePlace(name)
+  },
+
+  choosePlace(name){
+    switch(name) {
+     case '充值':
+         cml.navigateTo({
+  path: '/pages/top-up/top-up'
+  })
+        break;
+     case '兑换':
+        cml.navigateTo({
+  path: '/pages/group-exchange/group-exchange'
+  })
+        break;
+      case '提现':
+             cml.navigateTo({
+    path: '/pages/group-withdrawal/group-withdrawal'
+  })
+        break;
+
+        case '收支明细':
+             cml.navigateTo({
+      path: '/pages/group-income/group-income'
+  })
+
+
+     
+        break;
+     default:
+      
+}
+
+
+  },
+
+   goRecord(num){
+      cml.navigateTo({
+  path: '/pages/recharge/recharge',
+  query:{num:num}
+
+  })
+
+    },
+
+
+
+  init(){
+    this.getData()
+
+  },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+  this.init()
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new WallePurse();
+</script>
+
+<style >
+.nav{
+width: 750cpx;
+height: 480cpx;
+background: #e43a15;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to left, #e65245, #e43a15);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to left, #e65245, #e43a15); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+display: flex;
+flex-direction:column;
+justify-content: start;
+align-items: center;
+border-radius: 0 0 80cpx 80cpx;
+position: relative;
+}
+.purse-title{
+  position: relative;
+  margin-top:80cpx;
+  width:750cpx;
+  min-height: 100cpx;
+display: flex;
+flex-direction:row;
+justify-content:flex-start;
+align-items: center;
+
+}
+.icon{
+display: flex;
+flex-direction:row;
+justify-content:flex-start;
+align-items: center;
+flex-grow: 0.5
+
+}
+
+.purse-wrap{
+  width:710cpx;
+  /* margin:0 auto; */
+  position: absolute;
+  min-height: 350cpx;
+  background: #fff;
+  border-radius: 10cpx;
+  top:280cpx;
+ border: 2cpx solid rgba(227, 227, 227, 1);
+ box-shadow: 0 1.5cpx 20cpx rgba(0, 0, 0, 0.24), 0 1.5cpx 22cpx rgba(0, 0, 0, 0.12);
+}
+
+.purse{
+margin-top:25px;
+display: flex;
+padding:0 15cpx;
+flex-direction:row;
+justify-content:center;
+align-items: center;
+}
+
+.purse-bi{
+  margin-top:50px;
+display: flex;
+padding:0 15cpx;
+flex-direction:row;
+justify-content:space-around;
+align-items: center;
+}
+
+.currency{
+  display: flex;
+flex-direction:column;
+justify-content:center;
+align-items: center;
+transition: all 0.5s;
+
+}
+.currency:hover{
+  background-color: #f8f8f9;
+}
+.cell{
+display: flex;
+flex-direction:row;
+justify-content:space-between;
+align-items: center;
+border-bottom: 2cpx solid #eee;
+transition: all 0.5s;
+padding-bottom:8cpx;
+
+}
+
+.cell:hover{
+  background: #eee;
+}
+
+.cell-wrap{
+  width: 750cpx;
+  margin-top:180cpx;
+  padding:0 20cpx;
+}
+
+.purse-qb-center{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%)
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+    "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

@@ -1,0 +1,310 @@
+<template>
+  <view>
+  <view class='nav' style="margin-top:{{ marginTop}}px;" >
+  <van-icon name="arrow-left"  size="{{capsuleHeight/2}}px" bind:click="goBack"/>
+  <input focus="{{isfocus}}"  c-model="{{message}}" 
+  c-bind:focus="recordsData"
+  c-bind:blur="blurInput"
+  c-bind:confirm="submit"
+  cstyle="border-radius:50cpx;height:{{capsuleHeight/2}}px;width:430cpx;
+  margin-left:20cpx;border:none;background:#e9eaec;letter-spacing:2cpx;font-size:28cpx;opacity:0.66;"></input>
+  <view class="clear-wrap"  c-bind:tap="clear">
+  <view class="clear" c-if="{{clearFlag}}">
+  <van-icon name="cross"  size="10px" color="#ffffff" />
+  </view>
+  </view>
+  </view>
+  <!-- nav end-->
+<view class="search-history">
+<view class="search-title">
+<text class="serach-text">搜索历史</text>
+<van-icon name="delete"  size="20px" bind:click="delte"/>
+</view>
+<view class="serach-item-wrap">
+<block   c-for="{{listData}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+        >
+
+<view class="item" data-text="{{item.keys}}" c-bind:tap="goSearch">{{item.keys}}</view>
+
+</block>
+
+
+</view>
+
+</view>
+<!-- search-history-->
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api'
+
+import { dealStoreTitleName } from '../../untils/processData'
+
+import {SearchRecords,deleteRecords} from '../../api/index'
+class SearchCenter implements SearchCenterInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+      marginTop:0,
+      isfocus:true,
+      message:'',
+      capsuleHeight:0,
+      listData:[],
+      clearFlag:false
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+     message(){
+       if(this.message){
+        this.clearFlag=true
+       }else{
+          this.clearFlag=false
+       }
+    
+     
+    }
+  }
+
+  methods = {
+    recordsData(e){
+      this.getData()
+    
+    },
+
+    getData(){
+     SearchRecords({}).then(res=>{
+       if(res.code){
+         this.listData=res.data.map(d=>{
+            d.keys=dealStoreTitleName(d.keys,18)
+           
+           
+           return d
+
+         })
+       }
+     }).catch(err=>{})
+
+      
+
+    },
+  submit(){
+     cml.navigateTo({
+          path: '/pages/serach/serach',
+          query:{searchValues:this.message}
+        })
+},
+
+    goBack(){
+      cml.navigateBack(-1);
+    },
+
+    delte(){
+
+       deleteRecords({delAll:1}).then(res=>{
+        if(!res.code){
+          this.tip(res.msg)
+        }else{
+          this.getData()
+        }         
+
+
+       }).catch(err=>{})
+
+    },
+
+      tip(msg){
+      cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+   },
+
+   clear(e){
+     this.message=''
+
+   },
+
+   blurInput(e){
+    //  this.clearFlag=false
+   },
+   goSearch(e){
+     let text=e.target.dataset.text
+      cml.navigateTo({
+          path: '/pages/serach/serach',
+          query:{searchValues:text}
+        })
+   }
+
+
+
+
+  
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    
+    const res=wx.getMenuButtonBoundingClientRect()
+    this.marginTop=res.top // 让搜索框位于离胶囊按钮的中间
+    this.capsuleHeight=res.height*2
+    // this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new SearchCenter();
+</script>
+
+<style scoped>
+.nav{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100cpx;
+  position: relative;
+  padding-left:15cpx;
+
+  
+ 
+}
+
+
+.search-title{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  
+
+}
+
+.search-history{
+    padding-left: 20cpx;
+
+}
+
+.serach-text{
+  letter-spacing: 5cpx;
+  font-size: 36cpx;
+  font-weight: 600;
+  margin-right: 15cpx;
+}
+
+.serach-item-wrap{
+   display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  /* width: 600cpx; */
+  margin-top:20cpx;
+  
+}
+
+.item{
+  min-width: 110cpx;
+  padding:15cpx;
+  border-radius:40cpx;
+  background: #bbbec4;
+   display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+  margin-right:30cpx;
+  margin-bottom:20cpx;
+  letter-spacing: 2cpx;
+}
+  
+
+.clear{
+  width: 40cpx;
+  height: 40cpx;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: #1c2438;
+ 
+}
+
+.clear-wrap{
+  width:100cpx;
+  height: 75cpx;
+  background:transparent;
+  /* background: red; */
+  z-index: 88;
+  position: absolute;
+  left: 420cpx;
+  top:-8cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+  
+}
+
+
+@media screen and (max-width: 320px) {
+.clear-wrap{
+  width:100cpx;
+  height: 75cpx;
+  background:transparent;
+  /* background: red; */
+  z-index: 88;
+  position: absolute;
+  left: 420cpx;
+  top:-4cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+  
+}
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-icon": "/vant/icon/index"
+
+
+    }
+  }
+}
+</script>

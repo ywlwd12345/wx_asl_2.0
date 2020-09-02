@@ -1,0 +1,293 @@
+<template>
+  <view>
+  <nav-ver2  title="{{'实名认证'}}"></nav-ver2>
+  <view class="tip">
+  <view class="tip-icon"><image src="{{tipImg}}" style="width:35cpx;height:35cpx"></image></view>
+  <text style="margin-left:10cpx;font-size:28cpx;">请填写与您身份证一致的信息，否则不会通过审核。</text>
+  </view>
+  <view class="content">
+  <van-cell-group>
+  <view class="inp-tip">真实姓名</view>
+  <van-field
+    border="{{ true }}"
+    bind:change="realName"
+  />
+  <view class="inp-tip">身份证号</view>
+  <van-field
+    border="{{ false }}"
+    bind:change="idCard"
+  />
+</van-cell-group>
+  </view>
+
+<view class="check-tip" c-if="{{isCheck}}">
+姓名&身份证号填写错误，请重新填写！
+</view>
+
+  <view class="btn">
+  <van-button type="primary"  round color="rgba(233,33,15,1);" block custom-class="btn-style" disabled="{{flag}}" bind:click="submit">实名认证</van-button>
+  </view>
+
+
+  <van-overlay show="{{ show }}" bind:click="onClickHide"  z-index="999">
+
+  <view class="sucess-tip">
+
+  <view class="success-icon"> <image src="{{gouImg}}" style="width:128cpx;height:128cpx"></image></view>
+  <view class="success-text" >实名认证成功</view>
+  <view class="success-text1" >请耐心等候审核！</view>
+  </view>
+
+
+
+  </van-overlay>
+
+
+
+   
+  </view>
+</template>
+
+<script>
+import { getBaseUserInfo} from '../../api/index'
+import { authentication } from '../../api/grouping'
+import { tip} from '../../untils/processData'
+import cml from 'chameleon-api';
+class VerifiedPage implements VerifiedPageInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    show:false,
+    isCertification:0,
+    flag:true,
+    isCheck:false,
+    gouImg:require('../../assets/images/gou.png'),
+    fromData:{
+      realName:'',
+      idCard:''
+    },
+    tipImg:'https://w.aishenglian.com/static/icon/ver2-icon/mine/yssm@2x.png'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    onClickHide(){
+      this.show=false
+
+    },
+      //获取基础用户信息
+  getBaseInfoData(){
+    cml.getStorage('uname').then((value)=>{
+      if(value){
+         getBaseUserInfo({uname:value}).then(res=>{
+         
+           const data=res.data[0]
+            this.isCertification=data.authentication
+            // data.authentication 1、0  //0 未实名认证1、已实名认证 
+           if(data.authentication){
+             tip('你已验证过了,无需再验证',3000)
+             this.flag=true
+           }else{
+             this.flag=false
+
+           
+           }
+    
+    })
+
+      }
+    
+   
+     })
+  },
+
+//真实姓名
+  realName(e){
+this.fromData.realName=e.detail
+  },
+//身份证号
+  idCard(e){
+    this.fromData.idCard=e.detail
+  },
+//校验
+  check( ){
+    if(!this.fromData.idCard || !this.fromData.realName){
+      this.isCheck=true
+      return false
+    }else{
+      this.isCheck=false
+      return true
+    }
+    
+
+  },
+
+  submit(){
+    if(this.check()){
+      authentication(this.fromData).then(res=>{
+        if(res.code){
+          this.show=true
+        }else{
+          tip(res.msg,3000)
+        }
+      }).catch( err=>{})
+
+
+
+    }
+  }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getBaseInfoData()
+   
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new VerifiedPage();
+</script>
+
+<style scoped>
+
+.tip{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top:26cpx;
+}
+
+.tip > text{
+  font-size:24cpx;
+  color:rgba(102,102,102,1);
+
+}
+
+.content{
+  width:750cpx;
+  margin-top:26cpx;
+width:750cpx;
+height:300cpx;
+background:rgba(255,255,255,1);
+border-radius:20cpx;
+padding:0 30cpx;
+box-sizing: border-box;
+
+
+}
+
+.inp-tip{
+font-size:20cpx;
+font-weight:400;
+color:rgba(153,153,153,1);
+margin-top:30cpx;
+}
+
+
+.btn{
+  margin-top:120cpx;
+  width:750cpx;
+  padding: 0 84cpx;
+}
+  
+
+.btn-style{
+  box-shadow:0px 0px 25px 0px rgba(205,26,10,0.3)!important;
+}
+
+
+.check-tip{
+margin-top:31cpx;
+margin-left:30cpx;
+font-size:30cpx;
+font-weight:700;
+color:rgba(233,33,15,1);
+}
+
+
+.sucess-tip{
+width:432cpx;
+height: 453cpx;
+background:rgba(255,255,255,1);
+box-shadow:0px 0px 24px 0px rgba(5,5,5,0.1);
+border-radius:10cpx;
+position: absolute;
+left: 50%;
+top:50%;
+transform: translate(-50%,-50%);
+display: flex;
+justify-content: space-around;
+align-items: center;
+flex-direction:column;
+}
+
+
+.success-icon{
+width:160cpx;
+height:160cpx;
+background:#E43728;
+box-shadow:0px 3px 8px 0px rgba(228,55,40,0.6);
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction:row;
+}
+
+.success-text{
+
+text-align: center;
+  width: 100%;
+font-size:37cpx;
+font-weight:500;
+color:rgba(34,34,34,1);
+}
+
+.success-text1{
+  text-align: center;
+font-size:27cpx;
+font-weight:400;
+color:rgba(170,170,170,1);
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav-ver2":"/components/nav-ver2/nav-ver2",
+        "van-field": "/vant/field/index",
+        "van-button": "/vant/button/index",
+         "van-overlay": "vant/overlay/index"
+    }
+  }
+}
+</script>

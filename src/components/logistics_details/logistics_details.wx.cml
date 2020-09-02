@@ -1,0 +1,401 @@
+<template>
+   <view class="container">
+
+  <nav title="{{title}}"></nav>
+
+    <view class="logistics-info">
+    <i-card   full="{{true}}"  i-class="cancel-border">
+    <view slot="content" class="logistics-wrap">
+    <view class="company"><text style="font-size: 26cpx;">快递公司：{{expName}}</text></view>
+    <view class="logistics-number">
+      <text style="font-size: 26cpx;">快递单号：{{expNum}}</text>
+    </view>
+    <view ><text  style="font-size: 26cpx;">状态：{{msg}}</text></view>
+    </view>
+</i-card>
+    </view>
+
+  <view class="transport">
+    <van-collapse value="{{ activeNames }}" bind:change="onChangeInfo">
+      <van-collapse-item title="物流信息" name="1">
+        <view 
+          c-for="{{transInfo}}"
+                  c-for-index="i"
+                  c-for-item="item"
+                  data-idx="{{i}}"
+        >
+          <view class="trans-panel">
+            <view class="icon" style="margin-right:50cpx;"><van-icon name="stop"  size="20px" 
+            color="{{i===0?'#bdbdbd':'#2196f3'}}" /></view>
+            <view class="time-info">
+              <view><text  class="spec-order-text spec-size">时间:{{item.time}}</text></view>
+              <view><text  class="spec-order-text spec-size">信息:{{item.status}}</text></view>
+            </view>
+          </view>
+        </view>
+      </van-collapse-item>
+    </van-collapse>
+  </view>
+ <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getOrderData,getOrderNumber, transportInfo,returnsGoodsToOid,modifyState} from '../../api/index'
+import {addressUrlIcon} from '../../untils/icon.js'
+import store from '../../store'
+
+class Logistics_details implements Logistics_detailsInterface {
+ props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     expNum: {
+      type:Number,
+      default: 0
+    }
+
+  }
+
+  data = {
+    addressUrlIcon:addressUrlIcon,
+    expName:'',
+    title:"物流详情",
+    otherLoading:false,
+    status:'',
+    activeNames: ['1'],
+    logistics:'',
+    msg:'',
+    transInfo:{},
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    //物流信息操作
+    onChangeInfo(e){
+       this.activeNames=e.detail
+
+    },
+
+    onClickLeft(){
+      cml.navigateBack(-1);
+     
+    },
+    //获取物流信息
+    getOsn(no){
+      transportInfo({expNum:this.expNum}).then(res=>{
+        if(res.code==1){
+            console.log('获取物流信息',res)
+            this.expName=res.data[0].expName
+            this.transInfo=res.data[0].expInfo
+            if(res.data[0].deliveryStatus==0){
+              this.msg="已揽件"
+            }else if(res.data[0].deliveryStatus==1){
+              this.msg="运输中"
+            }else if(res.data[0].deliveryStatus==2){
+              this.msg="正在派件"
+            }else if(res.data[0].deliveryStatus==3){
+              this.msg="已签收"
+            }
+        }else{
+          this.tip(res.msg)
+        }
+
+      })
+  },
+    getStatus(status){
+        switch(status) {
+     case '201':
+        return '快递单号错误'
+        break;
+     case '203':
+     return '快递公司不存在'
+        break;
+          case '204':
+     return '快递公司识别失败'
+        break;
+         case '205':
+     return '没有信息'
+        break;
+          case '207':
+     return '该单号被限制，错误单号 '
+        break;
+     default: return '没有信息'
+} 
+
+    },
+
+    tip(msg){
+       cml.showToast({
+        message: msg,
+        duration:1000
+    })
+
+    },
+    
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    console.log('接收',this.expNum)
+    this.getOsn()
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Logistics_details();
+</script>
+
+<style scoped>
+.details-card{
+  background: #fff;
+  padding:30cpx 0;
+}
+.price-bottom{
+    margin-top:100cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+
+}
+
+.panel-text{
+    margin-left:50cpx;
+   letter-spacing: 2cpx;
+}
+.panel-top{
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.panel-bottom{
+  background-color: #fff;
+  padding:15cpx 50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+}
+.details-text{
+  letter-spacing: 2cpx;
+color:#ff410f;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+}
+
+.trans-panel{
+  margin-top:20cpx;
+  color:#212121;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+  
+
+}
+.spec-size{
+  font-size: 20cpx;
+  width: 600cpx;
+}
+
+
+
+.container{
+width: 750cpx;
+
+}
+.transport{
+  margin-top:20cpx;
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+ 
+}
+
+.title-style{
+  color:#fff;
+}
+
+.icon-nav{
+  margin-bottom: 25cpx;
+}
+
+
+.detail{
+  width: 750cpx;
+}
+
+.wrap{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items:center;
+  position: static!important;
+}
+
+.order-price{
+  color: #ff0000;
+}
+
+.detail-info{
+  width: 750cpx;
+  margin-top:20cpx;
+}
+
+.info-name{
+   color: #ff0000;
+   font-size: 32rpx;
+   
+
+}
+
+.wrap-info{
+    display: flex;
+  flex-direction: column;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.harvest-address{
+    width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.harvest-wrap{
+    display: flex;
+  flex-direction: row;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.user-info{
+  display: flex;
+  flex-wrap:wrap;
+  flex-direction: row;
+  justify-content:center;
+  align-items:center;
+
+}
+.address-info{
+  width: 550cpx;
+   display: flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+
+}
+
+.logistics-info{
+  width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.logistics-text{
+    color: #ff0000;
+   font-size: 32rpx;
+}
+
+.add-height{
+  width: 750cpx;
+}
+
+.submit{
+  margin: 80cpx auto;
+  width: 710cpx;
+}
+
+.custom-content{
+  width: 600cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.all-total{
+  color: #969697;
+  font-size: 24cpx;
+
+}
+
+.spec-text{
+  color: #df281a;
+}
+
+.total{
+    display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancel-border{
+position: static!important;
+}
+.items{
+  padding-top: 7cpx;
+  border-top: 2cpx solid rgb(238,238,238);
+  padding-bottom:7cpx;
+  border-bottom:2cpx solid rgb(238,238,238);
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.items4{
+    justify-content:flex-end;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+       "van-nav-bar": "/vant/nav-bar/index",
+       "van-icon": "/vant/icon/index",
+       "i-card": "/iview/card/index",
+       "van-submit-bar": "/vant//submit-bar/index",
+        "van-button": "/vant/button/index",
+        "van-loading": "/vant/loading/index",
+         "van-collapse": "/vant/collapse/index",
+          "van-collapse-item": "/vant/collapse-item/index"
+    }
+  }
+}
+</script>

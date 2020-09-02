@@ -1,0 +1,87 @@
+<template>
+  <view>
+  <view class="head">
+  <text style="margin-bottom:20cpx;">{{title}}</text>
+  </view>
+  <view style="height:150cpx;"></view>
+    
+  </view>
+</template>
+
+<script>
+
+class Head implements HeadInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     title: {
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Head();
+</script>
+
+<style scoped>
+.head{
+  z-index: 999;
+  position: fixed;
+  width: 750cpx;
+  height: 150cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: flex-end;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {}
+  }
+}
+</script>

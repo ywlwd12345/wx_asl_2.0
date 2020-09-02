@@ -1,0 +1,174 @@
+<template>
+  <view class="container">
+   <view class="head">
+   <view class="head-img">
+    <image src="{{imageHead}}" style="width:248cpx;height:196cpx;"></image>
+   </view>
+   
+
+   </view>
+   <!-- head end-->
+   <view class="user-registered">
+   <view class="input">
+   <van-cell-group>
+  <van-field
+    value="{{ value1 }}"
+    placeholder="请输入用户名"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img1}}"
+  />
+
+
+<van-field
+    value="{{ value2 }}"
+    placeholder="请输入用户名"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img2}}"
+  />
+
+  <van-field
+    value="{{ value3 }}"
+    placeholder="请输入验证码"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img3}}"
+    use-button-slot
+  >
+  <van-button slot="button" size="small" type="primary">获取验证码</van-button>
+  
+  
+  </van-field>
+
+  <van-field
+    value="{{ value4 }}"
+    placeholder="请填写推荐人"
+    border="{{ true }}"
+    bind:change="onChange"
+    left-icon="{{img4}}"
+  />
+
+  </van-cell-group>
+   </view>
+   <!-- input  end-->
+   <view class="submit">
+   <van-button block type="info" color="linear-gradient(to right, #e65245, #e43a15);" custom-style="border-radius:20rpx;">注册</van-button>
+   </view>
+  
+
+   </view>
+   <!-- user-registered end-->
+
+  </view>
+</template>
+
+<script>
+
+class Registered implements RegisteredInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    value:'',
+    img1:require('../../assets/images/linkIcon/login/dlsj.png'),
+    img2:require('../../assets/images/linkIcon/login/mm.png'),
+    img3:require('../../assets/images/linkIcon/login/yzm.png'),
+    img4:require('../../assets/images/linkIcon/login/tjr.png'),
+    imageHead:require('../../assets/images/linkIcon/login/logo.png'),
+
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Registered();
+</script>
+
+<style  scoped>
+.container{
+  width: 750cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.head{
+width: 750cpx;
+height:580cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+
+}
+
+.user-registered{
+  position: absolute;
+  top:450cpx;
+  width: 710cpx;
+  min-height: 500cpx;
+  border-radius: 20cpx;
+  background: #fff;
+}
+.input{
+  margin-top:20cpx;
+}
+
+.submit{
+  margin:20cpx  10cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-field": "/vant/field/index",
+       "van-button": "/vant//button/index"
+
+    }
+  }
+}
+</script>

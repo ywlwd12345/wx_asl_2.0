@@ -1,0 +1,247 @@
+<template>
+  <view class="container">
+  <nav title="{{title}}"></nav>
+  <view class="join">
+  <view class="item item1">
+<view class="icon">
+<van-icon name="hot" color="#ff410f" size="30px" />
+</view>
+<view class="tip" style="margin-left:10cpx;">加盟类型</view>
+  
+  </view>
+
+  <view class="item item2"> 
+  <block  c-for="{{list}}"
+          c-for-index="i"
+          c-for-item="item">
+  <view class="{{item.flag?'txt1':'txt2'}}" c-bind:tap="goJoin" data-id="{{item.id}}" style="margin-right:10cpx;">
+  <text>{{item.name}}</text></view>
+  </block>
+  </view>
+
+
+   <view class="item item3">
+<view class="icon">
+<van-icon name="hot" color="#ff410f" size="30px" />
+</view>
+<view class="tip" style="margin-left:10cpx;">申请理由</view>
+  </view>
+
+
+  <view class="item item4">
+  <van-cell-group>
+  <van-field
+    type="textarea"
+    placeholder="请输入加盟理由~"
+    border="{{ false }}"
+    input-class="spec-input"
+    bind:change="godesc"
+  />
+</van-cell-group>
+
+  </view>
+
+
+
+
+
+  </view>
+
+  <!-- join end-->
+
+
+  
+ <view class="btn">
+
+ <van-button round type="info" 
+color="linear-gradient(to right, #e73827, #f85032)" 
+ block c-bind:tap="sure">确定</van-button>
+ 
+ 
+ </view>
+
+
+
+
+
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {goUpdate} from '../../api/index'
+
+class Update implements UpdateInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'申请升级',
+    list:[{id:1,name:'加盟店',flag:true},{id:2,name:'地区代理',flag:false}],
+    desc:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    goJoin(e){
+      let id=e.currentTarget.dataset.id
+      this.list=this.list.map(d=>{
+        if(d.id===id){
+          d.flag=true
+        }else{
+          d.flag=false
+
+        }
+        return d
+      })
+
+    },
+    sure(){
+      if(this.check()){
+        this.goData()
+      }
+
+    },
+    godesc(e){
+      this.desc=e.detail 
+
+    },
+    check(){
+      if(!this. desc){
+        this.tip('请输入申请理由')
+        return false
+        
+      }else{
+        return true 
+      }
+
+    },
+    tip(msg){
+       cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+
+    },
+    goData(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      let type=this.list.find(d=>d.flag).id
+      goUpdate({desc:this.desc,type:type,uname:uname}).then(res=>{
+        // console.log(res,999888)
+        if(res.code){
+          this.tip(res.msg)
+        }else{
+          this.tip(res.msg)
+        }
+      }).catch(err=>{})
+      })
+
+    }
+
+
+
+    
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Update();
+</script>
+
+<style >
+.item{
+  width:80%;
+  margin:0 auto;
+  margin-top:30cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+  
+}
+
+.join{
+  margin-top:15cpx;
+}
+
+.txt1{
+  border:2cpx solid #ff410f;
+  padding:15cpx 15cpx;
+  border-radius: 10cpx;
+
+}
+
+.txt2{
+  border:2cpx solid #000;
+  padding:15cpx 15cpx;
+  border-radius: 10cpx;
+
+}
+
+.spec-input{
+  width: 600cpx;
+  height: 300cpx;
+  background: #eee;
+  padding:0 10cpx;
+  padding-top:25cpx;
+  /* border:2cpx solid #000; */
+}
+
+.btn{
+  width: 80%;
+  margin:0 auto;
+  margin-top:50cpx;
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "van-icon": "/vant/icon/index",
+         "van-icon": "/vant/icon/index",
+          "van-field": "/vant/field/index",
+           "van-button": "/vant/button/index"
+
+
+    }
+  }
+}
+</script>

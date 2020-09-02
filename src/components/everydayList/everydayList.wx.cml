@@ -1,0 +1,239 @@
+<template>
+   <view class="container">
+  
+    <nav title="{{title}}"></nav>
+  
+
+ <view class="goods-detais">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{newList}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+          <view class="panel" c-bind:click="goDetails" data-gid="{{item.id}}">
+          <view class="goods-img"><image src="{{item.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
+          <view class="goods-name"><text class="spec-text-name" >{{item.name}}</text></view>
+          <view class="price">
+           <view class="price-left"><text class="spec-text">￥{{item.price}}</text></view>
+          <view class="price-right" style="margin-left:15cpx;"><text>￥{{item.marketPrice}}</text></view>
+          </view>
+          </view>
+        </cell>  
+  </list>
+  </view>
+
+  <!-- goods-detais end-->
+   <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getIndexgoods} from '../../api/index'
+import {dealStoreTitleName} from '../../untils/processData'
+import store from '../../store'
+class EverydayList implements EverydayListInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     flag:{
+         type: Number,
+         default:1
+     }
+  }
+
+  data = {
+   goodsLists:[],
+   newList:[],
+   imageSp2:require('../../assets/images/sp2.png'),
+   title:'每日上新',
+   loading:false,
+   page:1,
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+     onClickLeft(){
+      cml.navigateBack(-1);
+    },
+    //每日上新
+    getActiviGoodsData(){
+      getIndexgoods({isActivity:0,isActive:0,isRef:0,isScore:0,pageNum:this.page,isNew:1}).then(res=>{
+        if(res.code==1){
+          this.newList= this.newList.concat(res.data.map(d=>{
+            d.thumb='http://'+d.thumb
+            d.name=dealStoreTitleName(d.name,10)
+            return d
+          }))
+        }else if(res.code==0){
+              cml.showToast({
+                message: "没有更多了",
+                duration: 1000
+              })
+        }
+        console.log('上新列表',res)
+      }).catch(err=>{
+
+      })
+
+    },
+    onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+      this.getActiviGoodsData()
+      }, 800)
+
+    },
+  //去详情
+goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getActiviGoodsData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new EverydayList();
+</script>
+
+<style scoped>
+
+.container{
+width: 750cpx;
+background: #eee;
+
+
+}
+
+.goods-name{
+  padding:10cpx;
+  margin-top:20cpx;
+}
+
+
+
+
+
+
+
+
+.goods-detais{
+  width: 720cpx;
+  margin:0 auto;
+  margin-top: 15cpx;
+  position: relative;
+}
+
+.cell{
+  display:inline-block;
+}
+
+
+
+.panel{
+  width: 320cpx;
+  margin:0 20cpx;
+  margin-bottom:20cpx;
+  background: #fff;
+  height: 486cpx;
+  border-radius:20cpx;
+  padding-bottom:10cpx;
+  /* background: red; */
+}
+
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.price{
+  width: 100%;
+  padding: 0 10cpx;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+.price-right text{
+  color:#b0bec5;
+  letter-spacing: 2cpx;
+  text-decoration:line-through;
+  font-size: 28cpx;
+
+}
+
+
+
+.spec-text{
+   color:#ff2626;
+    letter-spacing: 2cpx;
+    font-size: 28cpx;
+}
+
+.spec-text-name{
+   letter-spacing: 2cpx;
+   font-size: 28cpx;
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "van-nav-bar": "/vant/nav-bar/index",
+        "van-icon": "/vant/icon/index",
+          "i-spin": "/iview/spin/index",
+          "nav":"/components/nav/nav"
+
+    }
+  }
+}
+</script>

@@ -1,0 +1,457 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{ title}}"></nav>
+<van-tabs active="{{ active }}" bind:change="onChange" border="{{false}}">
+  <van-tab title="全部"></van-tab>
+  <van-tab title="待付款"></van-tab>
+  <van-tab title="待发货"></van-tab>
+  <van-tab title="待收货"></van-tab>
+  <van-tab title="已收货"></van-tab>
+</van-tabs>
+  <view class="panel-list">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+      cstyle="background:#eee;"
+    >
+      <cell
+          class="cell"
+          c-for="{{detailsList}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+        >
+      <view class="panel">
+      <view class="items items1">
+      <view class="order-number"><text style="color:#ff410f;" class="spec-order-text">{{item.order_no}}</text></view>
+      <view class="status"><text class="spec-order-text">{{item.statusText}}</text>
+      <view class="icon" style="margin-left:10cpx;"  c-bind:tap="deleteOrder"
+      data-id="{{item.order_no}}"
+      ><van-icon name="delete" size="20" color="#f5222d"/></view></view>
+      </view>
+      <view class="items items2"    data-id="{{item.order_no}}"  c-bind:tap="goOrderInfo" >
+      <view>
+        <image src="{{item.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
+      </view>
+      <view style="width:300cpx;"><text class="spec-order-text" style="font-size:22cpx;">{{item.goods_name}}</text> 
+      <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{false}}">{{item.attr}}</text></view>
+      <view ><text class="spec-order-text">￥{{item.price}}</text> <text class="spec-order-text">x{{1}}</text>
+      </view>
+      </view>
+      <view class="items3">
+      <view class="top">
+      <text class="spec-order-text" >共{{1}}件</text>
+      <text style="margin-left:10cpx;" class="spec-order-text" >应付总额:</text>
+      <text class="now-price">￥{{item.money}}</text>
+      </view>
+      <view class="bottom"  c-if="{{item.pay_status}}">
+      <text class="spec-order-text">实付总额:</text>
+      <text class="now-price">{{item.money}}</text>
+      </view>
+      </view>
+      <view class="items items4">
+      <view class="btn" c-if="{{item.status}}" >
+      <van-button round type="default" size="small"  bind:click="operateOrder"   data-id="{{item.order_no}}" >
+      取消订单
+      </van-button>
+
+      </view>
+      <view style="margin-left:10cpx;"  c-if="{{item.status===0}}">
+      <van-button round type="info" size="small" color="#f44336" bind:click="goPay" data-orderNo="{{item.order_no}}" >立即付款</van-button></view>
+      </view>
+          </view>
+        </cell>
+    </list>
+  </view>
+  
+    <view class="loading">
+    <i-spin  c-if="{{loading}}"  size="large"></i-spin>
+  </view>
+  <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getGroupOrder,groupOrderOperating} from '../../api/grouping.js' //引入拼团模块接口
+class GroupOrder implements GroupOrderInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+     title:'拼团订单',
+     active:0,
+     detailsList:[],
+     loading:false,
+     status:'',
+     page:1,
+     otherLoading:false
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getData(){
+      this.loading=true
+       cml.getStorage('uname').then((value)=>{
+         if(value)
+           getGroupOrder({uname:value,status:this.status,page:this.page}).then(res=>{
+             this.loading=false
+             if(res.code){
+               this.detailsList=this.detailsList.concat(res.data.map(d=>{
+                 d.statusText=this.dealStatusText(d.status)
+                 return d
+               }))
+               if(!res.data.length){
+                 this.tip('没有更多')
+
+               }
+
+             }    
+      }).catch(err=>{})
+
+
+       })
+    
+    },
+    goOrderInfo(e){
+  let id=e.currentTarget.dataset.id
+  cml.navigateTo({
+  path: '/pages/group-order-info/group-order-info',
+  query:{id:id}
+  })
+    },
+goPay(e){
+    let orderId=e.currentTarget.dataset.orderno
+   cml.navigateTo({
+  path: '/pages/group-pay/group-pay',
+  query:{orderId:orderId}
+  })
+  
+},
+
+    init(){
+      this.status=-1
+      this.getData()
+    },
+
+    onChange(e){
+      this.page=1
+      this.detailsList=[]
+      this.dealTab(e.detail.title)
+    },
+    dealTab(name){ 
+      switch(name) {
+     case '全部':
+        this.status=-1
+        break;
+     case '待付款':
+         this.status=0
+        break;
+    case '待发货':
+         this.status=4
+        break;
+    case '待收货':
+         this.status=5
+        break;
+    case '已收货':
+         this.status=6
+        break;
+      default:
+    
+} 
+this.getData()
+},
+
+dealStatusText(status){
+  switch(status) {
+     case 0:
+        return '待付款'
+        break;
+    case 1:
+        //  this.status=1
+         return '已付款'
+        break;
+    case 3:
+        //  this.status=3
+          return '未中奖'
+        break;
+    case 2:
+        //  this.status=2
+          return '中奖'
+        break;
+
+        case 4:
+        //  this.status=3
+          return '待发货'
+        break;
+
+    case 5:
+        //  this.status=4
+          return '待收货'
+        break;
+
+    case 6:
+        //  this.status=5
+         return '已完成'
+        break;
+          case 7:
+        //  this.status=5
+         return '已取消'
+        break;
+
+          break;
+
+          case 8:
+        //  this.status=5
+         return '已删除'
+        break;
+
+            case -1:
+        //  this.status=5
+         return '全部'
+        break;
+      default:
+       return '未知状态'
+    
+} 
+
+
+
+},
+
+    onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getData()
+      }, 800)
+
+    },
+
+    tip(msg){
+        cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+
+    },
+    //删除订单
+    deleteOrder(e){
+        let orderId=e.currentTarget.dataset.id
+
+        this.otherLoading=true
+      groupOrderOperating({order_no:orderId,type:8}).then(res=>{
+          this.otherLoading=false
+          this.tip(res.msg)
+          if(res.code){
+          this.detailsList=this.detailsList.filter(d=>d.order_no!== orderId)
+
+
+          }
+
+      
+
+      }).catch(err=>{})
+
+
+    },
+
+    //取消订单
+    operateOrder(e){
+       let orderId=e.currentTarget.dataset.id
+      groupOrderOperating({order_no:orderId,type:7}).then(res=>{
+        this.tip(res.msg)
+      if(res.code){
+        this.detailsList.map(d=>{
+          if(d.order_no=== orderId){
+           d.statusText=this.dealStatusText(7)
+          }
+          return d
+        })
+
+      }
+
+      }).catch(err=>{})
+
+    }
+
+    
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+this.init()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new GroupOrder();
+</script>
+
+<style >
+
+.container{
+  width:750cpx;
+ 
+}
+
+.items2{
+  padding:10cpx!important;
+}
+
+.num-posi{
+  margin-top:5cpx;
+}
+
+
+
+.panel-list{
+  position: absolute;
+  top: 250cpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+}
+
+.panel{
+  width:750cpx;
+  min-height: 250cpx;
+  background: #fff;
+  padding:10cpx;
+}
+
+.items{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top:10cpx;
+  padding-bottom:5cpx;
+  border-bottom:2cpx solid #eee;
+}
+
+.items3{
+  padding:10cpx!important;
+  width: 100%;
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  border-bottom:2cpx solid #eee;
+
+}
+.top{
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+
+.bottom{
+  margin-top:10cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+.real-total{
+  align-self:flex-end;
+position: relative;
+right: 120cpx;
+}
+
+view.items4{
+  border-bottom:none;
+    justify-content:flex-end;
+
+}
+
+.status{
+   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cell{
+   margin-top:20cpx;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.now-price{
+  color:#ff0000;
+  display: inline-block;
+  letter-spacing: 2cpx;
+  font-size:26cpx;
+}
+
+.tab{
+  background: #fff;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+   font-size: 26cpx;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+           "van-tab": "/vant//tab/index",
+            "van-tabs": "/vant/tabs/index",
+             "i-spin": "/iview/spin/index",
+              "van-icon": "/vant//icon/index",
+              "van-button": "/vant/button/index",
+              "van-loading": "/vant/loading/index"
+
+
+    }
+  }
+}
+</script>

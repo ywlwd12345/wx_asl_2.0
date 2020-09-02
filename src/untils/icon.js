@@ -1,0 +1,1 @@
+export const addressUrlIcon = 'https://w.aishenglian.com/static/icon/zwy-icon/dz.png' //小程序平台地址 图标

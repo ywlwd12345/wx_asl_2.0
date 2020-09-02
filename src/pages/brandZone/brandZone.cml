@@ -1,0 +1,78 @@
+<template>
+  <view class="container">
+    <brandZone ids="{{id}}"></brandZone>
+  </view>
+</template>
+
+<script>
+
+class BrandZone   {
+
+  data = {
+    id:''
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+    this.id=query.id
+    console.log('收到',this.id)
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new BrandZone();
+</script>
+
+<style>
+.container{
+  width: 750cpx;
+  min-height: 1500cpx;
+  background: #eee;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "brandZone": "/components/brandZone/brandZone"
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

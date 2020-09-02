@@ -1,0 +1,350 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <view class="nav">
+   <van-nav-bar
+  title="{{title}}"
+  left-arrow="{{false}}"
+  bind:click-left="onClickLeft"
+  border="{{false}}"
+  custom-class="nav-root"
+  title-class="title-style"
+  bind:click-right="onClickRight"
+  safe-area-inset-top="{{true}}"
+>
+<van-icon name="arrow-left"  slot="left" color="#fff" size="64rpx" custom-class="icon-nav"/>
+<text slot="right" class="slot-text">提现日志</text>
+</van-nav-bar>
+  </view>
+  <!--nav end-->
+
+
+<view class="panel">
+<view class="item1">
+<text class="coin1">{{coinData.fee1}}</text>
+<text class="coin2">现金币</text>
+</view>
+<view class="item2">
+<text class="coin1">{{coinData.asl2}}</text>
+<text class="coin2">ASL2</text>
+</view>
+
+<view class="item3">
+<text class="coin1">{{coinData.asl5}}</text>
+<text class="coin2">ASL5</text>
+</view>
+
+</view>
+
+<view class="put">
+<view>提现币种</view>
+<view class="radio" >
+<van-radio-group value="{{ radio }}" bind:change="onChange" custom-class="spec-radio">
+  <view class="rad1"><van-radio
+  checked-color="#f4211a"
+  name="1">现金币</van-radio></view>
+  <view class="rad2"><van-radio
+   checked-color="#f4211a"
+   name="2">ASL币2</van-radio></view>
+
+     <view class="rad3"><van-radio
+   checked-color="#f4211a"
+   name="3">ASL币5</van-radio></view>
+</van-radio-group>
+</view>
+</view>
+
+<!-- put-end-->
+<view
+class="transfer"
+>
+<view class="total"><text class="tip">提现金额</text></view>
+<view class="input-icon">
+<van-cell-group>
+  <van-field
+    placeholder="请输入金额"
+    border="{{ false }}"
+    bind:change="onChangeCoin"
+    input-class="spec-input"
+  />
+</van-cell-group>
+</view>
+<view class="servicefee">
+<text class="tip">*提现扣除手续费{{coinData.serverFee}}%</text>
+</view>
+</view>
+
+<!-- transfer end-->
+<view class="btn">
+<van-button type="primary" round
+color="linear-gradient(to right, #e73827, #f85032)"
+block bind:click="submit">提交</van-button>
+</view>
+
+
+
+
+
+  </view>
+</template>
+
+<script>
+
+
+import cml from 'chameleon-api';
+import {  getDepositCoin ,postCoin} from '../../api/index'
+class PutCoin implements PutCoinInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'提现',
+    radio: '1',
+    coin:'',
+    coinData:{},
+    viewPortHeight:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+    onChange(e){
+      this.radio=e.detail
+      console.log(this.radio,555)
+    },
+    onChangeCoin(e){
+      this.coin=e.detail
+
+    },
+    getCoinData(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+        uname=value
+      getDepositCoin({uname:uname}).then(res=>{
+        console.log("获取")
+        console.log(res)
+          this.coinData=res.data[0]
+
+      }).catch(err=>{})
+      })
+    },
+  postCoin(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+      uname=value
+    postCoin({uname:uname,value:this.coin,type:this.radio}).then(res=>{
+      if(res.code){
+          cml.showToast({
+      message:res.msg,
+      duration: 1000
+    })
+      }else{
+          cml.showToast({
+      message:res.msg,
+      duration: 1000
+    })
+      }
+    }).catch(err=>{})     
+    })
+  },
+    submit(){
+      if(this.check){
+        this.postCoin()
+
+      }
+
+
+
+    },
+    check(){
+      let num =Number(this.coin)
+      if(num%100===0){
+        return true
+
+      }else{
+          cml.showToast({
+        message:'请输入100的倍数金额',
+        duration: 1000
+      })
+      return false
+
+      }
+
+    },
+    onClickRight(e){
+      cml.navigateTo({
+  path: '/pages/put-log/put-log'
+  })
+
+
+
+    },
+    onClickLeft(){
+      cml.navigateBack(-1);
+
+    }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+     cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+
+    this.getCoinData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PutCoin();
+</script>
+
+<style scoped >
+.container{
+  width:750cpx;
+  background: #eee;
+
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+padding-bottom: 60cpx;
+}
+
+.title-style{
+  margin-top:55cpx;
+  color:#fff;
+}
+
+.icon-nav{
+  margin-bottom: 25cpx;
+}
+
+
+.slot-text{
+  color: #fff;
+}
+
+
+.panel{
+  width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+  padding:10cpx 20cpx;
+border-radius: 10cpx;
+
+}
+
+.coin1{
+
+  color:#f44336;
+  margin-bottom:15cpx;
+
+}
+
+.put{
+   width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+}
+.spec-radio{
+  /* background: red;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center; */
+}
+
+.rad1,.rad2,.rad3{
+  display: inline-block;
+  margin-top:20cpx;
+}
+
+.transfer{
+   width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content:center;
+  align-items: flex-start;
+  flex-direction:column;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+
+}
+
+
+.input-icon{
+  width: 100%;
+}
+.spec-input{
+  width: 100%;
+ border-bottom: 2cpx solid #000;
+}
+
+
+.servicefee{
+   align-self:flex-end;
+}
+
+.tip{
+  color:#f44336;
+  font-size: 24cpx;
+}
+.btn{
+  width: 710cpx;
+  margin:0 auto;
+  margin-top:20cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+          "nav":"/components/nav/nav",
+           "van-radio": "/vant/radio/index",
+            "van-radio-group": "/vant/radio-group/index",
+            "van-field": "/vant/field/index",
+              "van-button": "/vant/button/index",
+               "van-nav-bar": "/vant/nav-bar/index",
+              "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

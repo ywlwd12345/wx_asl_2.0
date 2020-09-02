@@ -1,0 +1,269 @@
+<template>
+  <view class="container">
+<nav title="{{title}}"></nav>
+<view class="column" style="height:15cpx"></view>
+  <van-cell-group>
+  <van-field
+    required
+    clearable
+    label="原手机号："
+    value="{{oldPhone}}"
+    disabled
+    type="number"
+  />
+
+  <van-field
+    label="登录密码："
+    placeholder="请输入登录密码"
+    required
+    type="password"
+    bind:change="loginPassWord"
+    error-message="{{ checkPassword }}"
+
+  />
+
+  <van-field
+    label="新手机号："
+    placeholder="请输入新手机号码"
+    required
+    bind:change="newPhone"
+    error-message="{{ checkMobile }}"
+    type="number"
+
+  />
+
+   <van-field
+    center
+    required
+    clearable
+    label="短信验证码"
+    placeholder="请输入短信验证码"
+    border="{{ false }}"
+    use-button-slot
+    bind:change="newCode"
+    error-message="{{ checkCode }}"
+    type="number"
+  >
+    <van-button slot="button" 
+    color="linear-gradient(to right, #e73827, #f85032)"
+    round
+    size="small" type="primary" 
+     bind:click="passVerfilyData"
+    
+    >{{verification}}</van-button>
+  </van-field>
+    </van-cell-group>
+
+<view class="btn">
+<van-button type="primary"  round block
+color="linear-gradient(to right, #e73827, #f85032)" 
+bind:click="sure">确定修改</van-button>
+</view>
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {passNumber,sureChangePhone,getMakerUserInfo,getBaseUserInfo} from '../../api/index'
+class ChangePhone implements ChangePhoneInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'修改手机号',
+    oldPhone:' ',
+    mobile:'',
+    password:'',
+    code:'',
+    verification:'获取验证码',
+    count:60,
+    checkMobile:'',
+    checkPassword:'',
+    checkCode:''
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    loginPassWord(e){
+      this.password=e.detail
+      this.checkPassword=''
+
+    },
+    newPhone(e){
+      this.mobile=e.detail
+      this.checkMobile=''
+    },
+    newCode(e){
+      this.code=e.detail
+      this.checkCode=''
+
+    },
+  passVerfilyData(){
+    //校验
+    if(this.verification!=='获取验证码' && this.verification!=='重新发送'){
+      return 
+    }
+    passNumber({mobile:this.mobile}).then(res=>{
+      if(res.code){
+        cml.showToast({
+          message: res.msg,
+          duration: 1000
+        })
+        this.count=60
+        this.durationTime()
+      }else{
+        cml.showToast({
+          message: res.msg,
+          duration: 1000
+        })
+
+      }
+    })
+
+  },
+//延迟发送
+    durationTime(){
+      this.verification=this.count+'s'
+        this.count--
+      let TimeId=setTimeout(() => {
+        if(this.count<0){
+
+          this.verification='重新发送'
+         clearTimeout(TimeId)
+        }else{
+          this.durationTime()
+
+        }       
+      },1000);
+    },
+    sure(){
+      if(this.check()){
+         this.changephoneData()
+
+      }
+    },
+  changephoneData(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    sureChangePhone({uname:uname,oldMobile:this.oldPhone,newMobile:this.mobile,passWord:this.password,smsCode:this.code}).then(res=>{
+      console.log("修改")
+      console.log(res)
+      if(res.code){
+        cml.showToast({
+          message:"修改成功",
+          duration: 1000
+        })
+      // this.getUserInfo()
+      setTimeout(()=>{cml.navigateBack(-1)},2000)
+      }else{
+      cml.showToast({
+        message:res.msg,
+        duration: 1000
+      })
+    }
+    })
+    })
+
+  },
+      check(){
+      if(!this.password){
+        this.checkPassword='请输入登录密码'
+        return false
+      }else if(!this.mobile){
+        this.checkMobile='请输入电话号码'
+          return false
+      }else if(!this.code){
+        this.checkCode='请输入验证码'
+          return false
+      }else{
+        return true
+      }
+
+    },
+  //获取当前账号的手机号
+  getInfo(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+     uname=value
+      getBaseUserInfo({uname:uname}).then(res=>{
+        console.log(res)
+        this.oldPhone=res.data[0].mobile
+      }).catch(err=>{})
+
+    })
+
+  },
+    getUserInfo(){
+  getMakerUserInfo({}).then(res=>{
+    cml.setStorage('userInfo', res)
+   
+
+
+  })
+
+}
+  
+    
+    
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    this.getInfo()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ChangePhone();
+</script>
+
+<style  scoped>
+
+.btn{
+  width: 80%;
+  margin:0 auto;
+  margin-top:40cpx;
+  
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+        "van-field": "/vant/field/index",
+         "van-button": "/vant/button/index"
+    }
+  }
+}
+</script>

@@ -1,0 +1,231 @@
+<template>
+  <view class="container">
+  
+    <list
+      bottom-offset="{{bottomOffset}}"
+      c-bind:scrolltobottom="onBottom"
+      c-bind:onscroll="onScroll"
+      height="{{-1}}"
+      cstyle="background:#eee;"
+    >
+        <cell
+          class="cell"
+          c-for="{{detailsList}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+      <view class="panel">
+      <view class="items items1">
+      <view class="order-number"><text>{{item.osn}}</text></view>
+      <view class="status"><text>{{item.status}}</text>
+      <view class="icon" style="margin-left:10cpx;"><van-icon name="delete" size="20"/></view></view>
+      </view>
+      <view class="items items2">
+      <view>
+        <image src="{{item.thumb}}" style="width: 200cpx;height:200cpx;"></image>
+      </view>
+      <view style="width:200cpx;"><text>{{item.goods_name}}</text></view>
+      <view ><text>￥{{item.price}}</text> <text>x{{item.num}}</text></view>
+      </view>
+      <view class="items items3">
+      <text>共{{item.num}}件</text><text style="margin-left:10cpx;">应付总额：￥{{item.money}}</text>
+      
+      </view>
+      <view class="items items4">
+      <view class="btn">
+      <van-button round type="default" size="mini">取消订单</van-button>
+      </view>
+      <view style="margin-left:10cpx;"><van-button round type="info" size="mini" color="#f44336">立即付款</van-button></view>
+      </view>
+          </view>
+        </cell>
+    </list>
+
+     <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+  </view>
+</template>
+
+<script>
+import {getOrderLists} from '../../api/index'
+import store from '../../store'
+class DetailsPanel implements DetailsPanelInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    count:{
+      type:Number,
+      default:0
+    }
+
+  }
+
+  data = {
+    lists:[1,2,3,4],
+    imageSrc:require('../../assets/images/sp2.png'),
+    detailsList:[],
+    loading:false
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+      getDetaisList(){
+        this.loading=true
+        let type=this.count
+        getOrderLists({page:1,type:type}).then(res=>{
+          this.loading=false
+          console.log(res,7778889)
+          if(res.code){
+            this.detailsList=this.detailsList.concat(res.data.data.map(d=>{
+            d.thumb=store.state.domainUrl+ d.thumb
+            d.status=this.checkStatus(d.status)
+            return d
+            }))
+
+          }
+        })
+
+      },
+      checkStatus(status){
+        switch(status) {
+     case 0:
+        return '未发货'
+        break;
+     case 1:
+     return '已发货'
+        break;
+          case 2:
+     return '已收货'
+        break;
+         case 3:
+     return '已评价'
+        break;
+          case -1:
+     return '订单已取消'
+        break;
+          case -2:
+     return '申请退货'
+        break;
+          case -3:
+     return '同意退货'
+        break;
+          case -4:
+     return '已退货'
+        break;
+         case -5:
+     return '退货驳回'
+        break;
+     default:
+      
+} 
+        
+
+      }
+    
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    console.log(this.count,7777)
+    this.getDetaisList()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new DetailsPanel();
+</script>
+
+<style scoped>
+
+.container{
+  width:750cpx;
+   position: absolute;
+  top: 20cpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.panel{
+  width:750cpx;
+  /* background:red; */
+  min-height: 250cpx;
+  padding-bottom:10cpx;
+  background: #fff;
+}
+
+.items{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top:10cpx;
+}
+view.items3{
+    justify-content:flex-end;
+}
+
+view.items4{
+    justify-content:flex-end;
+
+}
+
+.status{
+   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cell{
+   margin-top:20cpx;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "van-icon":"/vant/icon/index",
+        "van-button": "/vant/button/index",
+         "i-spin": "/iview/spin/index"
+        
+    }
+  }
+}
+</script>

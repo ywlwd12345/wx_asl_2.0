@@ -1,0 +1,442 @@
+<template>
+  <view>
+  <view class="home">
+    <!-- 每日上新-->
+    <view class="day_news">
+      <view class="title">
+        <view class="title_1">每日上新</view>
+        <view class="title_2" c-bind:tap="mores">更多></view>
+      </view>
+      <view class="list">
+        <view class="newsupper" c-for="{{newList}}" c-for-index="index" c-for-item="item" c-if="{{index<=2}}" c-bind:tap="goDetails(item.id)">
+          <image src='{{item.thumb}}'></image>
+          <view class="newsuper_title">{{item.name}}</view>
+          <view class="newsuper_price">¥:{{item.price}}</view>
+          <view class="newsuper_asl3">可获得ASL3数量:{{item.getAsl3}}</view>
+        </view>
+      </view>
+    </view>
+    <!-- 秒杀和品牌-->
+    <view class="killbrand">
+    <!-- 秒杀和品牌标题-->
+    <view style="display: flex;flex-direction:row;align-items: center;width: 100%;margin-bottom: 10cpx;">
+      <view style="display: flex;flex-direction:row;align-items: center;">
+        <view class="seckill_titles" c-bind:tap="killslist">秒杀专区</view>
+        <view class="seconds">
+          <van-count-down use-slot time="{{ time }}" bind:change="onChange">
+            <text class="item">{{ timeData.hours }}&nbsp;:&nbsp;{{ timeData.minutes }}&nbsp;:&nbsp;{{ timeData.seconds }}</text>
+          </van-count-down>
+        </view>
+      </view>
+<!-- 秒杀专区-->
+      <view style="display: flex;flex-direction:row;align-items: center;margin-left: 80rpx;">
+        <view class="seckill_titles">品牌专区</view>
+        <view class="brands">精选好货</view>
+      </view>
+    </view>
+    <view style="display: flex;flex-direction:row;align-items: center;width: 100%;">
+      <view class="seckill_s">
+        <view class="seckill_t">
+          <view class="seckill" c-for="{{killsList}}" c-for-index="index" c-for-item="item">
+            <image src='{{item.poster}}'></image>
+            <view class="seckill_title">{{item.goodsName}}</view>
+            <view class="price_original">
+              <view class="seckill_price">¥:{{item.price}}</view>
+              <view class="seckill_original">¥:{{item.original}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    <!-- 品牌专区-->
+      <view class="brands_t">
+        <view c-for="{{brandlist}}" c-for-index="index" c-for-item="item">
+          <image src='{{item.poster}}' c-bind:tap="gobrandlist(item.id)"></image>
+        </view>
+      </view>
+    </view>
+    </view>
+  </view>
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getIndexgoods,getGoodCate,getclassificationgoods,indexkill} from '../../api/index'
+import { objChangeArray ,dealStoreTitleName} from '../../untils/processData'
+class HomeVer2 implements HomeVer2Interface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    killsList:[],
+    newList:[],
+    newimg:'https://w.aishenglian.com/static/icon/big/1t.png',
+    time: 30 * 60000,
+    timeData: {},
+    active:0,
+    brandlist:[],
+    activeList:[],
+    loading:false,
+    goodsLists:[],
+    page:1,
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+    //每日上新
+    getActiviGoodsData(){
+      getIndexgoods({isActivity:0,isActive:0,isRef:0,isScore:0,pageNum:1,isNew:1}).then(res=>{
+        if(res.code==1){
+          this.newList= this.newList.concat(res.data.map(d=>{
+            d.thumb='http://'+d.thumb
+            // d.name=dealStoreTitleName(d.name,10)
+            return d
+          }))
+        }
+      }).catch(err=>{
+
+      })
+
+    },
+    
+    //品牌秒杀
+    getindexkill(){
+      indexkill().then(res=>{
+        if(res.code==1){
+          this.killsList= this.killsList.concat(res.data.goodsInfo.map(d=>{
+            d.poster='http://'+d.poster
+            return d
+          }))
+          this.brandlist= this.brandlist.concat(res.data.cateInfo.map(d=>{
+            d.poster='http://'+d.poster
+            return d
+          }))
+          console.log('秒杀品牌',res.data);
+        }
+      }).catch(err=>{
+
+      })
+    },
+    //每日更新点击更多
+    mores(){
+      cml.navigateTo({
+        path: '/pages/everydayList/everydayList',
+      })
+    },
+    //秒杀专区
+    killslist(){
+      cml.navigateTo({
+        path: '/pages/seckilZone/seckilZone',
+      })
+    },
+    //去品牌专区
+    gobrandlist(id){
+      console.log('传走',id)
+      cml.navigateTo({
+        path: '/pages/brandZone/brandZone',
+        query:{id:id}
+      })
+    },
+    //查看详情
+    goDetails(id){
+    cml.navigateTo({
+    path: '/pages/details/details',
+    query:{gid:id}
+    })
+    },
+    onChange(e) {
+    this.setData({
+      timeData: e.detail,
+    });
+  },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+    
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getActiviGoodsData()
+    this.getindexkill()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new HomeVer2();
+</script>
+
+<style scoped>
+.home{
+  padding:  0 30cpx;
+  /* margin-top: 20rpx; */
+}
+.day_news{
+  padding: 14cpx 20cpx;
+  width: 710rpx;
+  background: #fff;
+  margin-top: 20cpx;
+  border-radius: 10cpx;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.0), 0 1.5px 22px rgba(0, 0, 0, 0.1);
+}
+.day_news .title{
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+  align-items: center;
+
+}
+.title .title_1{
+  font-size:30cpx;
+  font-weight:500;
+  color:rgba(34,34,34,1);
+}
+.title .title_2{
+  font-size:20cpx;
+  font-weight:300;
+  color:rgba(34,34,34,1);
+}
+.newsupper{
+  width: 28%;
+}
+.newsupper image{
+  width: 197rpx;
+  height: 220rpx;
+  border-radius: 20cpx 20cpx 0 0;
+}
+.newsuper_title{
+  font-size:22cpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 10cpx 0;
+}
+.newsuper_price{
+  font-size:25cpx;
+  color: #DC4D46;
+  padding-bottom: 3cpx;
+}
+.newsuper_asl3{
+  font-size:17cpx;
+  color: #DC4D46;
+  padding-bottom: 10cpx;
+}
+.list{
+  display: flex;
+  flex-direction:row;
+  justify-content:space-around;
+  align-items: center;
+  margin: 10rpx 0;
+}
+.killbrand{
+  /* display: flex;
+  flex-direction:row;
+  justify-content:space-around;
+  align-items: center; */
+  padding: 14cpx 20cpx;
+  width: 710rpx;
+  background: #fff;
+  margin-top: 40cpx;
+  border-radius: 10cpx;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.0), 0 1.5px 22px rgba(0, 0, 0, 0.1);
+}
+.seckill_titles{
+  font-size:30cpx;
+  font-weight:500;
+  color:rgba(34,34,34,1);
+}
+.seckill_s{
+  width: 50%;
+}
+.seckill_t{
+  display: flex;
+  flex-direction:row;
+  justify-content:space-around;
+  align-items: center;
+  margin: 10rpx 0;
+}
+.seckill image{
+  width: 152cpx;
+  height: 152cpx;
+}
+.price_original{
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+  align-items: center;
+}
+.seckill{
+  width: 152cpx;
+}
+.seckill_title{
+  font-size:20cpx;
+  font-weight:400;
+  color:#222222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin:15cpx 0;
+}
+.seckill_price{
+  font-size:25cpx;
+  font-weight:500;
+  color:rgba(220,77,70,1);
+}
+.seckill_original{
+  font-size:19cpx;
+  font-weight:300;
+  color:rgba(173,173,173,1);
+  text-decoration: line-through;
+}
+.seconds{
+  margin-left: 5cpx;
+  padding: 0 20cpx;
+  background-color: #DC4D46;
+  border-radius: 20cpx;
+  width: 145cpx;
+}
+.item {
+  color: #fff;
+  font-size: 22cpx;
+  text-align: center;
+}
+/* 品牌专区 */
+.brands{
+  border: 1rpx solid #DC4D46;
+  border-radius: 20rpx;
+  padding: 0 20rpx;
+  margin-left: 10rpx;
+  font-size: 19rpx;
+  color: #DC4D46;
+}
+.brands_t{
+  width: 50%;
+  height: 280rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.brands_t image{
+  width:316cpx;
+  height:132cpx;
+  border-radius: 15cpx;
+}
+/* 底部分类 */
+.classification{
+  margin-top: 50cpx;
+}
+.class_title{
+  padding: 0!important;
+  margin-bottom: 40cpx;
+}
+.tags{
+  color: #DC4D46;
+  font-size: 34cpx;
+}
+.goods-name{
+  padding:10cpx;
+  margin-top:20cpx;
+}
+
+
+
+
+
+
+
+
+.goods-detais{
+  width: 720cpx;
+  margin:0 auto;
+  margin-top: 15cpx;
+  position: relative;
+}
+
+.cell{
+  display:inline-block;
+}
+
+
+
+.panel{
+  width: 320cpx;
+  margin:0 20cpx;
+  margin-bottom:20cpx;
+  background: #fff;
+  height: 486cpx;
+  border-radius:20cpx;
+  padding-bottom:10cpx;
+  /* background: red; */
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+.price{
+  width: 100%;
+  padding: 0 10cpx;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+.price-right text{
+  color:#b0bec5;
+  letter-spacing: 2cpx;
+  text-decoration:line-through;
+  font-size: 28cpx;
+
+}
+.spec-text{
+   color:#ff2626;
+    letter-spacing: 2cpx;
+    font-size: 28cpx;
+}
+.spec-text-name{
+   letter-spacing: 2cpx;
+   font-size: 28cpx;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "van-count-down": "/vant/count-down/index",
+      "van-tab": "/vant/tab/index",
+      "van-tabs": "/vant/tabs/index",
+      "van-nav-bar": "/vant/nav-bar/index",
+      "van-icon": "/vant/icon/index",
+      "i-spin": "/iview/spin/index"
+    }
+  }
+}
+</script>

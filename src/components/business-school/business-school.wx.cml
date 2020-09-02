@@ -1,0 +1,405 @@
+<template>
+  <view  class="business-school">
+  <head-ver2 title="商学院"></head-ver2>
+
+    <view class="part">
+    <scroller
+    scroll-direction="{{scrollDirection}}"
+    width="{{740}}"
+    height="{{-1}}"
+  >
+  <block c-for="{{listArray}}"
+        c-for-index="i"
+        c-for-item="item"
+        c-key="id"
+        >
+  <view class="panels" style="background:{{item.bgColor}}" c-bind:tap="chooseCategory" data-pid="{{item.id}}">
+  <view class="school-name"><text class="school-name-text">{{item.name}}</text></view>
+  <view class="school-img"><image src="{{item.icon}}" style="width:82cpx;height:82cpx;border-radius:10cpx;"></image></view>
+  </view>
+  </block>
+  </scroller>
+
+ 
+ 
+
+     <view class="business-wrap">
+    <list
+      bottom-offset="{{bottomOffset}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{lists}}"
+          c-for-index="i"
+          c-for-item="item"
+       c-key="id"
+        >
+          <view class="panel"   c-bind:tap="goStuday" data-id="{{item.id}}">
+<view class="left">
+ <image src="{{item.icon}}" style="width:180cpx;height:180cpx;border-radius:10cpx;"></image>
+</view>
+<view class="right">
+<view class="right-1">{{item.title}}</view>
+<view class="right-2"> {{item.introduce}}</view>
+<view class="right-3" >
+<view class="right-3-l">{{item.createTime}}</view>
+<view class="right-3-r" style="margin-right:35cpx;"  c-catch:click="goShare($event)">
+<image src="{{shareIcon}}" style="width:45cpx;height:45cpx;"></image>
+ <origin-button open-type='share' data-studayId=""
+   class="origin-share-btn" size="mini" type="primary" id="1">分享</origin-button>
+</view>
+
+</view>
+
+</view>
+          </view>
+          <!-- panel end-->
+
+       
+           
+        </cell>
+    </list>
+
+    </view>
+
+    <!-- business-wrap end-->
+
+
+    </view>
+    <view class="loading">
+    <i-spin  c-if="{{loading}}"  size="large"></i-spin>
+  </view>
+
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+import {studayCategory,studayList} from '../../api/grouping'
+import {tip} from '../../untils/processData'
+class BusinessSchool implements BusinessSchoolInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+         scrollDirection:'horizontal',
+         listArray:[],
+         lists:[],
+         imgsrc:require("../../assets/images/asl-share.jpg"),
+         pageNum:1,
+         loading:false,
+         shareIcon:'https://w.aishenglian.com/static/icon/ver2-icon/store/fx@2x.png'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+getData(){
+
+  studayCategory({}).then(res=>{
+    if(res.code){
+       this.listArray=res.data.map((d,key)=>{
+        d.icon&&(d.icon="https://"+d.icon)
+  if(key===0){
+    this.id=d.id
+    this.listData()
+  }
+        if(key%2===0){
+          d.bgColor='linear-gradient(132deg, #7FEBD2, #6AD0CB);'
+        }else if(key%3===0){
+          d.bgColor='linear-gradient(135deg, #65B1F8, #5088F7);'
+        }else{
+           d.bgColor='linear-gradient(135deg, #F7D256, #EFAB4C);'
+        }
+         return d
+       })
+    }
+  }).catch(err=>{})
+
+},
+// 获取分类列表数据
+
+listData(){
+  this.loading=true
+  studayList({pid:this.id,pageNum:this.pageNum}).then(res=>{
+     this.loading=false
+    if(res.code){
+       this.lists=this.lists.concat(res.data.map(d=>{
+          d.icon&&(d.icon="https://"+d.icon)
+         return d
+       }))
+       if(!res.data.length){
+         tip('没有数据')
+       }
+    }
+
+
+
+  }).catch(err=>{})
+
+},
+
+chooseCategory({currentTarget}){
+const id=currentTarget.dataset.pid
+this.id=id
+this.lists=[]
+this.listData()
+},
+    onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.pageNum++
+        this.listData()
+      }, 800)
+
+
+    },
+    goStuday({currentTarget}){
+      const id=currentTarget.dataset.id
+       cml.navigateTo({
+        path: '/pages/article-details/article-details',
+        query: {
+        id:id
+        }
+      })
+
+    },
+    goShare(){
+     
+    }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new BusinessSchool();
+</script>
+
+<style scoped>
+.panels{
+  min-width:272cpx;
+  min-height:183cpx;
+  padding:20cpx;
+  display: inline-block;
+  /* background:linear-gradient(132deg,rgba(127,235,210,1),rgba(106,208,203,1)); */
+  border-radius:10px;
+  margin-right: 20cpx; 
+}
+
+.panels > view{
+  margin-top:30cpx;
+}
+
+
+.part{
+  margin-top:20cpx;
+  padding:20cpx 32cpx;
+  background: #fff;
+
+}
+
+.panel{
+  width:100%;
+  min-height: 240cpx;
+  box-shadow:0px 5px 10px 0px rgba(183,183,183,0.22);
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+  border-top:3cpx solid rgba(243,243,243,1);
+}
+
+
+.school-img{
+  width:100%;
+   display: flex;
+  flex-direction: row;
+  justify-content:flex-end;
+  align-items: center;
+
+}
+
+
+.business-wrap{
+  margin-top:20cpx;
+}
+
+
+.right{
+   display: flex;
+   min-height: 180cpx;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-start;
+
+}
+  
+
+
+
+.right-1{
+font-weight:400;
+color:rgba(34,34,34,1);
+font-size:28cpx;
+
+}
+
+.business-school text{
+  letter-spacing: 2cpx;
+
+}
+
+.business-school view{
+  letter-spacing: 2cpx;
+}
+
+.right-3{
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+  width:570cpx;
+}
+
+
+.right-2,.right-1,.right-3{
+  max-width: 500cpx;
+}
+
+
+.right-2{
+font-size:24cpx;
+font-weight:400;
+color:rgba(184,184,184,1);
+}
+
+.right{
+  margin-left:20cpx;
+}
+
+.right-3-l{
+font-size:24cpx;
+font-weight:400;
+color:rgba(184,184,184,1);
+}
+
+.right-3-r{
+  position: relative;
+}
+
+.school-name-text{
+font-size: 28cpx;
+font-weight: 500;
+color: #FFFFFF;
+line-height: 35cpx;
+}
+
+
+
+.panels {
+  z-index: 1;
+  position: relative;
+  font-size: inherit;
+  font-family: inherit;
+  color: white;
+  padding: 0.5em 1em;
+  outline: none;
+  border: none;
+  background-color: hsl(236, 32%, 26%);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.panels::after {
+  content: '';
+  z-index: -1;
+  background-color: hsla(0, 0%, 100%, 0.2);
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  width: 1.25em;
+  transform: translate3d(-525%, 0, 0) rotate(35deg);
+}
+
+.panels:hover::after {
+  transition: transform 0.45s ease-in-out;
+  transform: translate3d(200%, 0, 0) rotate(35deg);
+}
+
+
+.loading{
+  position: fixed;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+}
+
+
+.origin-share-btn{
+  position: absolute;
+  width: 200cpx;
+  height:120cpx;
+  right: 0;
+  opacity: 0;
+  z-index: 999;
+}
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "head-ver2":"/components/head-ver2/head-ver2",
+         "i-spin": "/iview/spin/index"
+    
+
+
+
+
+    }
+  }
+}
+</script>

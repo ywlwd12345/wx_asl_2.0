@@ -1,0 +1,173 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+
+  <block  c-for="{{liveRoom}}"
+        
+          c-for-item="item"
+          c-key="roomid">
+  <view class="live-wrap">
+
+  <view class="live-status"><text class="live-text" style="color:#bbbec4;">{{item.live_status_text}}</text></view>
+
+  <view class="live-content">
+
+  <view class="left">
+    <origin-image src="{{item.cover_img}}"
+     c-if="{{liveRoom.length>0}}" style="width:200cpx;height:200cpx;border-radius:20cpx;"></origin-image>
+  </view>
+  <view class="right">
+  <view class="live-title" style="width:300cpx;"><text class="live-text">{{item.name}}</text></view>
+  <view class="live-name" style="width:300cpx;"><text  class="live-text">主播名：{{item.anchor_name}}</text></view>
+  <view class="live-btn">
+  <van-button plain hairline type="primary" round size="mini" color="#ff410f" 
+  data-roomid="{{item.roomid}}" bind:click="goLive">去围观</van-button>
+  </view>
+  </view>
+  </view>
+  
+  </view>
+
+  </block>
+
+
+
+  </view>
+</template>
+
+<script>
+import {getLiveRoom } from '../../api/grouping.js' //引入拼团模块接口
+import cml from 'chameleon-api';
+
+class LiveRoom implements LiveRoomInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    viewPortHeight:'',
+    title:'直播列表',
+    liveRoom:[]
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getData(){
+       cml.getStorage('liveRoom').then((value)=>{
+      if(value){
+        this.liveRoom=value
+      }else{
+        cml.showToast({
+    message: "暂无直播相关信息",
+    duration: 3000
+})
+
+      }
+  })
+
+    },
+  
+    goLive(e){
+  let roomId=e.currentTarget.dataset.roomid
+  let customParams = encodeURIComponent(JSON.stringify({ path: 'pages/details/details', pid: 1 }))  //开发者携带的自定义参数
+ 
+wx.navigateTo({
+    url: `plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=${roomId}&custom_params=${customParams}`
+
+})
+
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+       this.viewPortHeight=value
+  })
+
+  this.getData()
+
+
+//  cml.showToast({
+//         message:'直播开发内侧中... 暂未正式上线',
+//         duration: 5000
+//         })
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new LiveRoom();
+</script>
+
+<style scoped>
+.container{
+  width: 750cpx;
+
+}
+
+.live-content{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-around;
+  align-items: center;
+
+}
+.live-wrap{
+   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+   width: 710cpx;
+   margin:0 auto;
+   margin-top:20cpx;
+   padding:15cpx;
+   border-radius: 20cpx;
+
+}
+.right view{
+  margin-bottom:20cpx;
+
+
+}
+
+.live-text{
+   letter-spacing: 2cpx;
+  font-size: 28cpx;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+       "van-button": "/vant/button/index"
+
+    }
+  }
+}
+</script>

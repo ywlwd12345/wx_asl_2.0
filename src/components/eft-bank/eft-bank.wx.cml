@@ -1,0 +1,359 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+  <view class="payee">
+  <van-cell-group>
+  <van-field
+    clearable
+    label="收款人"
+    placeholder="请输入对方账户名"
+    border="{{false}}"
+      bind:change="onChangeAccount"
+  />
+</van-cell-group>
+  </view>
+
+  <!-- payee end-->
+  <view class="coin">
+  <view class="item item1"><text>转账币种</text></view>
+  <view class="item item2">
+  <van-radio-group value="{{ type }}" bind:change="onChangeRdio">
+   <view class="rad1 rad"><van-radio  checked-color="#f4211a" name="fee1">现金币</van-radio></view>
+   <view class="rad2 rad"><van-radio  checked-color="#f4211a" name="fee2">ASL1</van-radio></view>
+   <view class="rad3 rad"><van-radio  checked-color="#f4211a" name="fee3">ASL2</van-radio></view>
+   <view class="rad4 rad"><van-radio  checked-color="#f4211a" name="score">积分</van-radio></view>
+  </van-radio-group>
+  </view>
+  </view>
+
+  <!-- coin end-->
+  <view class="money">
+  <view class="coin1"><text>转账金额</text></view>
+  <view class="input-coin">
+   <van-cell-group>
+  <van-field
+    clearable
+    input-class="spec-input"
+     bind:change="onChangePay"
+ 
+  />
+</van-cell-group>
+   </view>
+
+   <view><text class="spec-cash">可用余额</text></view>
+   <view class="cash1 cash coin1"><text>现金币：{{coinObj.fee1}}</text> <text>ASL1：{{coinObj.fee2}}</text></view>
+   <view class="cash1 cash coin1"><text>ASL2：{{coinObj.fee3}}</text> <text>积分：{{coinObj.score}}</text></view>
+  </view>
+  <!-- money end-->
+
+
+<view class="btn">
+<van-button type="primary" round 
+color="linear-gradient(to right, #e73827, #f85032)" 
+block bind:click="sure">提交</van-button>
+</view>
+<van-dialog
+  use-slot
+  title="输入支付密码"
+  show="{{ show }}"
+  show-cancel-button
+ bind:confirm="okSure"
+ bind:close="close"
+ bind:cancel="cancel"
+ 
+>
+
+ <van-field
+    clearable
+    input-class="spec-input"
+    bind:change="onChangePassword"
+    type="password"
+  />
+  
+
+
+
+</van-dialog>
+
+
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+import { putPay ,getUserInfoByName,getBaseUserInfo} from '../../api/index'
+class EftBank implements EftBankInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'转账',
+    type:'fee1',
+    coinObj:{},
+    to:'',
+    money:'',
+    password:'',
+    show:false,
+    word:'',
+    id:'',
+    viewPortHeight:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    onChangeRdio(e){
+        this.type=e.detail
+
+    },
+
+    onChangeAccount(e){
+      this.to=e.detail
+    },
+
+    onChangePay(e){
+      this.money=e.detail
+
+    },
+
+    onChangePassword(e){
+      this.word=e.detail
+
+    },
+//确定支付
+  okSure(){
+    this.password=this.word
+    this.getInfoData()
+  },
+
+    cancel(){
+       this.password=''
+    },
+
+    close(){
+       this.show=false
+    
+    },
+    
+  getInfo(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+      uname=value
+      getBaseUserInfo({uname:uname}).then(res=>{
+        if(res.code==1){
+          this.coinObj=res.data[0]
+        }
+      }).catch(err=>{})
+    })
+  },
+
+  Pay(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+      uname=value
+    putPay({sender:uname,receiver:this.to,value:this.money,type:this.type,pass2:this.password}).then(res=>{
+      console.log(res)
+      if(res.code==1){
+        this.tip(res.msg)
+        this.password=''
+        this.getInfo()
+      }else{
+        this.tip(res.msg)
+        this.password=''
+      }
+
+    }).catch(err=>{
+
+    })
+    })
+  },
+    sure(){
+     
+      this.check()
+      
+      
+
+    },
+    check(){
+      if(!this.to){
+this.tip('请输入对方账户名')
+        return false
+      }else if(!this.money){
+        this.tip('请输入转账金额')
+        return false
+      }else if(!this.password){
+
+        this.show=true
+        return false
+      
+
+      }else{
+        return true
+      }
+
+    },
+    tip(msg){
+            cml.showToast({
+        message: msg,
+        duration: 1500
+      })
+    },
+    getInfoData(){
+      this.Pay()
+      // getUserInfoByName({receiver:this.to,value:this.money,type:this.type}).then(res=>{
+      //   if(res.code){
+      //     this.id=res.data.id
+      //     this.Pay()
+
+      //   }else{
+      //     this.tip(res.msg)
+      //     this.password=''
+      //   }
+
+      // }).catch(err=>{})
+
+
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+
+  }
+
+  mounted() {
+//     cml.getStorage('viewPortHeight').then((value)=>{
+//     // 处理获取到的键值
+//     this.viewPortHeight=value
+// })
+    this.getInfo()
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new EftBank();
+</script>
+
+<style scoped>
+
+.container{
+  width:750cpx;
+  background: #eee;
+}
+
+.payee{
+  width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+
+}
+
+.coin{
+  width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+
+}
+
+.rad{
+  margin-top:10cpx;
+
+}
+
+.input-coin{
+  width: 100%;
+}
+
+.spec-input{
+  width: 100%;
+ border-bottom: 2cpx solid #000;
+}
+
+.money{
+  width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items:flex-start;
+  flex-direction: column;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+}
+
+ .cash{
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content:space-between;
+   align-items:center;
+   
+ }
+
+ .coin1{
+  color:#f44336;
+ 
+
+}
+
+.btn{
+  width: 710cpx;
+  margin:0 auto;
+  margin-top:50cpx;
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "van-field": "/vant/field/index",
+         "van-radio": "/vant/radio/index",
+        "van-radio-group": "/vant/radio-group/index",
+        "van-button": "/vant/button/index",
+        "van-dialog": "/vant/dialog/index"
+        
+
+
+    }
+  }
+}
+</script>

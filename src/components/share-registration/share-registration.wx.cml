@@ -1,0 +1,567 @@
+<template>
+  <view>
+  <!--<view class="head">
+  <van-icon name="wap-home" color="#ffffff" size="30px" bind:click="goIndex" />
+  <text style="margin-right:200cpx;">{{title}}</text>
+  </view> -->
+  <!-- head end-->
+  <view c-if="{{shows}}">
+  <view class="content">
+  <van-cell-group>
+  <van-field
+    label="手机号码:"
+    value="{{ value }}"
+    placeholder="你的手机号码"
+    border="{{ true }}"
+    bind:change="onChangePhone"
+    c-if="{{showto}}"
+  />
+
+   <van-field
+    type="password"
+    label="密码:"
+    value="{{ value1 }}"
+    placeholder="请设置密码"
+    border="{{ true }}"
+    bind:change="onChangePassWord"
+  />
+  <van-field
+    value="{{ sms }}"
+    center
+    clearable
+    label="短信验证码"
+     bind:change="onChangeCode"
+    placeholder="验证码"
+    border="{{ true }}"
+    use-button-slot
+    c-if="{{showto}}"
+  >
+    <van-button slot="button" size="small" type="primary"   color="linear-gradient(to right, #e73827, #f85032)"  bind:click="passVerification">{{verification}}</van-button>
+
+  </van-field>
+
+<view c-bind:tap="chooseArea">
+  <van-field
+   icon="arrow"
+    label="所属地区:"
+    value="{{ valueArea }}"
+    placeholder="请选择地区"
+    border="{{ true }}"
+    disabled
+  />
+  </view>
+
+
+  <van-field
+    label="推荐人:"
+    value="{{ uid }}"
+    border="{{ true }}"
+    disabled
+  />
+
+
+</van-cell-group>
+  </view>
+   <view class="area"> 
+   <van-popup
+  show="{{show}}"
+  round
+  position="bottom"
+  custom-style="height:40%"
+  bind:close="onClose"
+> 
+<van-area area-list="{{ areaList }}"  value="110101"
+ bind:change="getCode"
+ bind:confirm="yes"
+ bind:cancel="cancel"
+ />
+    </van-popup>
+    </view>
+
+    <view class="btn">
+    <van-button square type="primary" block bind:click="submit"  color="linear-gradient(to right, #e73827, #f85032)" c-if="{{showto}}">注册</van-button>
+    <van-button square type="primary" block open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"  color="linear-gradient(to right, #e73827, #f85032)" c-else>注册</van-button>
+    </view>
+    <view class="login" c-bind:tap="goPassWordLogin" ><text style="margin-right:25cpx;">>>用密码登录</text></view>
+   
+
+  </view>
+
+    <view class="asl-logo" c-if="{{btns}}">
+    <image src="{{imageSrc}}" style="width:410cpx;height:392cpx;"></image>
+    </view>
+    <view c-if="{{btns}}" >
+      <view class="btn">
+        <van-button  block round bind:click="onekeys"  color="linear-gradient(to right, #e73827, #f85032)" >一键注册</van-button>
+      </view>
+
+      <view class="btn">
+        <van-button block  round bind:click="ordinarys"  color="linear-gradient(to right, #e73827, #f85032)" >普通注册</van-button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import areaData from '../../untils/area'
+import cityId from '../../untils/city'
+import {passNumber,invitationToRegister,userInfoToUid,getnumber,wxregistration,getUserLogin} from '../../api/index'
+import {caOpenid} from '../../api/grouping.js'
+import cml from 'chameleon-api';
+import store from '../../store'
+class ShareRegistration implements ShareRegistrationInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    uid: {
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    sessionkey:'',
+    shows:false,
+    showto:false,
+    btns:true,
+   title:'分享注册',
+   areaList:areaData,
+   show:false,
+   mobile:'',
+   verification:'获取验证码',
+   num:60,
+   referrer:'',
+   city:'',
+   county:'',
+   valueArea:'',
+   transitObj:{},
+   uname:'',
+   password:'',
+   code:'',
+   province:'',
+   isFlag:false,
+   intercept:true, //分享注册防点击
+  imageSrc: require('../../assets/images/linkIcon/login/gy.png'),
+  openId:'',
+  infodata:{
+    uname:'',
+    passWord:'',
+    mobile:''
+  },
+  userdata:[]
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    onekeys(){
+      this.shows=true
+      this.btns=false
+      this.getiphone()
+      console.log("一键注册")
+    },
+    ordinarys(){
+      this.shows=true
+      this.showto=true
+      this.btns=false
+      console.log("普通注册")
+    },
+    getiphone(){
+      let that=this
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    //发起网络请求
+                    caOpenid({
+                        code: res.code
+                    }).then(res => {
+                      if(res.code==1){
+                        console.log('获取sessionKey：',res.sessionKey)
+                        that.sessionkey=res.sessionKey
+                        that.openId=res.openId
+                        console.log(res, 'openId')
+                      }else{
+
+                      }
+                    }).catch(err => {})
+                } else {
+                    console.log('登录失败！' + res.errMsg)
+                }
+            }
+        })
+    },
+getPhoneNumber (e) {
+    console.log(e.detail.errMsg)
+    if(e.detail.errMsg==="getPhoneNumber:fail user deny"){
+      this.tip("授权失败") 
+      return
+    }
+    getnumber({
+        encryptedData:e.detail.encryptedData,
+        iv:e.detail.iv,
+        session_key:this.sessionkey
+    }).then(res => {
+      if(res.code==1){
+        this.mobile=res.data.phoneNumber
+        this.submito()
+      }else{
+        this.tip("解密失败") 
+      }
+    }).catch(err => {
+      console.log(res, '解密失败')
+    })
+  },
+    tip(msg){
+      cml.showToast({
+    message: msg,
+    duration: 1000
+})
+
+    },
+    chooseArea(){
+      this.show=true
+     
+
+
+    },
+    //密码输入框
+    onChangePassWord(e){
+      this.password=e.detail
+
+    },
+//验证码输入框
+    onChangeCode(e){
+      this.code=e.detail
+    },
+
+
+    //城市编码
+    getCode(e){
+      
+      if(e.detail.values[0].name===e.detail.values[1].name){
+        this.valueArea=e.detail.values[0].name+e.detail.values[2].name
+         this.transitObj.province=e.detail.values[0].name
+         this.transitObj.city=e.detail.values[1].name
+         this.transitObj.county=e.detail.values[2].name
+         this.isFlag=true
+
+
+      }else{
+         this.valueArea=e.detail.values[0].name+e.detail.values[1].name+e.detail.values[2].name
+         this.transitObj.province=e.detail.values[0].name
+         this.transitObj.city=e.detail.values[1].name
+         this.transitObj.county=e.detail.values[2].name
+         this.isFlag=false
+      }
+      this.dealAreaObj() 
+      // this.province=this.transitObj.city
+      // this.city=this.transitObj.county
+    },
+    yes(){
+       this.show=false
+
+    },
+    cancel(){
+       this.show=false
+
+    },
+    onChangePhone(e){
+      this.mobile=e.detail
+    },
+    //发送验证码
+    passVerification(){
+       //校验
+      if(this.verification!=='获取验证码' && this.verification!=='重新发送'){
+        return 
+      }
+      passNumber({mobile:this.mobile}).then(res=>{
+        this.tip(res.msg)
+        if(res.code){
+          this.num=60
+          this.Countdown()
+
+        }
+
+
+      }).catch(err=>{
+
+      })
+
+
+    },
+    // 倒计时
+    Countdown(){
+      this.verification=this.num+'s'
+      this.num--
+      let TimeId=setTimeout(() => {
+        if(this.num<0){
+          this.verification='重新发送'
+         clearTimeout(TimeId)
+        }else{
+          this.Countdown()
+
+        }
+
+    },1000)
+    },
+    dealAreaObj(){
+      console.log(this.transitObj.province,'省份')
+      console.log(this.transitObj.city,'城市')
+      console.log(this.transitObj.county,'区县')
+       this.province=cityId.find(d=>d.name===this.transitObj.province).id
+       console.log( this.province,1)
+       if(this.isFlag){
+          this.city=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.county).id
+           this.county=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.county).s.find(d=>d.name===this.transitObj.county).id
+          
+
+       }else{
+           this.city=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.city).id
+           this.county=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.city).s.find(d=>d.name===this.transitObj.county).id
+          
+          
+       }
+    
+    },
+    submit(){
+       this.goRegister()
+       setTimeout(()=>{this.intercept=false},10)
+    },
+    submito(){
+       this.goRegisterwx()
+       setTimeout(()=>{this.intercept=false},10)
+    },
+    goRegisterwx(){
+      console.log(this.transitObj.province)
+      if(this.password==''||this.transitObj.province==''||this.transitObj.province==undefined){
+        this.tip('信息请填写完整')
+      }else{
+        wxregistration({rid:this.uid,
+        mobile:this.mobile,
+        province:this.transitObj.province,
+        city:this.transitObj.city,county:this.transitObj.county,password:this.password}).then(res=>{
+          this.tip(res.msg)
+          setTimeout(()=>{this.intercept=true},6000)
+          if(res.code===1){
+            console.log("注册反馈")
+            setTimeout(()=>{
+              // cml.redirectTo({
+              //     path: '/pages/login/login'
+              //   })
+              this.logins()
+          },1000)
+            
+
+          }
+
+          
+        }).catch(err=>{})
+      }      
+    },
+    logins(){
+      getUserLogin({uName:this.mobile,passWord:this.password, openid: this.openId}).then(res=>{
+        if(res.code){
+          console.log("新"+res)
+          this.infodata.uname=this.mobile
+          this.infodata.passWord=this.password
+          this.infodata.mobile=res.mobile
+          cml.setStorage('infodata',this.infodata)
+          cml.setStorage('token', res.token)
+          cml.setStorage('uname', this.mobile)
+          cml.setStorage('mobile', res.mobile)
+          store.commit('changeStatus')
+          this.userdata.push(this.infodata)
+          cml.getStorage('userdata').then((value)=>{
+            if(value){
+              for(var i=0;i<value.length;i++){
+                if(this.userdata[0].uname==value[i].uname){
+
+                }else{
+                  this.userdata.push(value[i])
+                  cml.setStorage('userdata',this.userdata)
+                }
+              }
+            }else{
+              cml.setStorage('userdata',this.userdata)
+            }
+          })
+      //登录成功更改登录按钮状态
+      store.commit('changeCancelLogin',false)
+      //判断是否是新用户，新用户传个参数做首页弹出判断
+      if(res.firstLogin==0){
+        setTimeout(() => {
+        cml.navigateTo({
+          path: '/pages/index/index',
+          query:{newsuser:1}
+        }) 
+        }, 1500)
+      }else{
+        setTimeout(() => {
+        cml.navigateTo({
+          path: '/pages/index/index',
+        }) 
+        }, 1500)
+      }
+        }else{
+           cml.showToast({
+        message: res.msg,
+        duration: 2000
+      })
+
+        }
+
+
+      })
+        
+    // 处理获取到的键值
+
+
+   
+    
+
+    },
+    goRegister(){
+       if(!this.intercept && this.code) return
+      invitationToRegister({passWord:this.password,rid:this.uid,
+      smsCode:this.code,mobile:this.mobile,
+      province:this.transitObj.province,
+      city:this.transitObj.city,county:this.transitObj.county}).then(res=>{
+        this.tip(res.msg) 
+        setTimeout(()=>{this.intercept=true},6000)
+        if(res.code){
+          console.log("注册反馈")
+          setTimeout(()=>{
+             cml.redirectTo({
+                path: '/pages/login/login'
+              })
+        },2000)
+          
+
+        }
+
+        
+      }).catch(err=>{})
+
+
+    },
+
+    getInfo(){
+      console.log(this.uid,'组件')
+      userInfoToUid({uname:this.uid}).then(res=>{
+        this.referrer=this.uid
+        this.uname=res.data.uname
+      }).catch(err=>{})
+
+
+           
+                              
+
+    },
+    goIndex(){
+      cml.redirectTo({
+  path: '/pages/index/index'
+})
+
+
+    },
+    goPassWordLogin(){
+       cml.redirectTo({
+  path: '/pages/login/login'
+})
+
+
+    }
+
+
+
+  
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+        cml.showToast({
+            message: this.uid,
+            duration: 1000
+          })
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    // this.getInfo()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ShareRegistration();
+</script>
+
+<style scoped>
+.head{
+  width: 750cpx;
+  height: 150cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: space-around;
+align-items: center;
+}
+
+.btn{
+  margin:0 auto;
+  width:600cpx;
+  margin-top:50cpx;
+}
+
+.login{
+ 
+  width:100%;
+  margin-top:20cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-end;
+  align-items: center;
+  
+
+}
+.asl-logo{
+  margin:0 auto;
+  margin-top:50cpx;
+}
+</style>
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "van-icon": "/vant/icon/index",
+       "van-field": "/vant/field/index",
+       "van-button": "/vant/button/index",
+        "van-area": "/vant/area/index",
+        "van-popup": "/vant/popup/index"
+
+    }
+  }
+}
+</script>

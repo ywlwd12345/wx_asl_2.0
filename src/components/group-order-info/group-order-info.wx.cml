@@ -1,0 +1,492 @@
+<template>
+   <view class="container"  style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+  <view class="details-card">
+  <view class="panel-top">
+  <view class="panel-img" style="margin-left:50cpx;">
+ <image src="{{detailsData.thumb}}" style="width:150cpx;height:150cpx;border-radius:20cpx;"></image>
+  </view>
+  <view class="panel-text" style="width:440cpx;">
+  <view><text style="font-size:26cpx;">{{detailsData.goods_name}}</text></view>
+  <view class="price-bottom">
+  <text class="details-text">￥{{detailsData.money}}</text>
+  <text  c-if="{{false}}">x{{detailsData.num}}</text>
+  </view>
+  </view>
+  </view>
+  <view class="panel-bottom">
+  <text>订单总价</text>
+  <text class="details-text">￥{{detailsData.money}}</text>
+  </view>
+  </view>
+   <!--detail end-->
+   <view class="detail-info">
+   <i-card   full="{{true}}"   i-class="cancel-border">
+    <view slot="content" >
+    <view class="info-name"><text class="spec-order-text">订单信息</text></view>
+    <view  class="wrap-info">
+    <text  class="spec-order-text">订单编号：{{detailsData.order_no}}</text>
+    <text  class="spec-order-text">抵扣的拼吧币：{{detailsData.money_pb}}</text>
+    <text  class="spec-order-text">实际支付的金额：{{detailsData.money}}</text>
+    <text  class="spec-order-text">创建时间：{{detailsData.c_time}}</text>
+    </view>
+   </view>
+</i-card>
+   </view>
+
+   <!--detail-info end-->
+   <view class="harvest-address">
+    <i-card   full="{{true}}"  i-class="cancel-border" >
+    <view slot="content" class="harvest-wrap">
+    <view class="address-logo">
+    <!--<van-icon name="location" size="30px" color="#f4211a" />-->
+      <image src="{{addressUrlIcon}}" style="width:60cpx;height:60cpx;"></image>
+
+
+    </view>
+     <view class="address-info" style="width:550cpx;">
+     <view class="user-info"><text  class="spec-order-text receiver-name">{{detailsData.receiver}}</text><text>{{detailsData.mobile}}</text></view>
+     <view class="user-address"><text  class="spec-order-text">{{detailsData.province + detailsData.city+ detailsData.district}}</text></view>
+    </view>
+    </view>
+</i-card>   
+   </view>
+    <!--harvest-address end-->
+
+
+    <view class="transport">
+<van-collapse value="{{ activeNames }}" bind:change="onChangeInfo">
+  <van-collapse-item title="物流信息" name="1">
+  <view c-if="{{transInfo.expNum}}"><text  class="spec-order-text">快递单号:{{transInfo.expNum}}</text></view>
+   <view c-if="{{transInfo.expName}}"><text  class="spec-order-text">快递公司:{{transInfo.expName}}</text></view>
+  <view c-if="{{deliveryStatusText}}"><text class="spec-order-text">快递状态:{{deliveryStatusText}}</text></view>
+  <view c-if="{{!deliveryStatusText && !transInfo.expName &&!transInfo.expNum }}"><text class="spec-order-text">暂无信息</text></view>
+<block 
+  c-for="{{transInfo.expInfo}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id"
+>
+  <view class="trans-panel" >
+  <view class="icon" style="margin-right:50cpx;"><van-icon name="stop"  size="20px" 
+  color="{{i===0?'#bdbdbd':'#2196f3'}}" /></view>
+  <view class="time-info">
+  <view><text  class="spec-order-text spec-size">时间:{{item.time}}</text></view>
+  <view style="max-width:600cpx;"><text  class="spec-order-text spec-size ">信息:{{item.status}}</text></view>
+  </view>
+  </view>
+  </block>
+
+
+  </van-collapse-item>
+</van-collapse>
+
+    
+    
+    </view>
+
+    <!-- transport end-->
+
+
+<view class="submit" c-if="{{ detailsData.status===0 }}" c-bind:tap="gopay">
+<van-button type="primary"
+color="linear-gradient(to right, #e73827, #f85032)"
+ round block >立即付款</van-button>
+</view>
+
+<view class="submit" c-if="{{ pay_status && (status===0 || status===1 || status===2) }}" c-bind:tap="returnsGoods">
+<van-button type="primary"
+color="linear-gradient(to right, #e73827, #f85032)"
+ round block >申请退货</van-button>
+
+</view>
+ <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getGroupItemOrderInfo, transportInfo} from '../../api/grouping.js' //引入拼团模块接口
+import {moment} from '../../untils/moment.js' 
+import {addressUrlIcon} from '../../untils/icon.js'
+class GroupOrderInfo implements GroupOrderInfoInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     gid: {
+      type: String,
+      default: ''
+    }
+  }
+  data = {
+    addressUrlIcon:addressUrlIcon,
+    title:'拼团订单详情',
+    viewPortHeight:'',
+    detailsData:{},
+    activeNames:[],
+    transInfo:{},
+    deliveryStatusText:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  getData(){
+
+      cml.getStorage('uname').then((value)=>{
+         if(value){
+    getGroupItemOrderInfo({order_no:this.gid,uname:value}).then(res=>{
+
+      
+
+
+
+    
+      if(res.code){
+        this.detailsData=res.data
+        this.detailsData.c_time=moment(this.detailsData.c_time)
+        this.getExpressDelivery(this.detailsData.exp_num)
+
+
+      }
+
+
+    }).catch(err=>{})
+       
+       
+       }
+
+
+      })
+
+
+
+
+},
+
+gopay(){
+   cml.navigateTo({
+  path: '/pages/group-pay/group-pay',
+  query:{orderId:this.gid}
+  })
+  
+
+
+},
+
+//获取快递信息
+
+getExpressDelivery(expNum){
+   transportInfo({expNum:expNum}).then(res=>{
+ 
+     if(res.code){
+       this.transInfo=res.data[0]
+       this.deliveryStatusText=this.setDeliveryStatus(this.transInfo.deliveryStatus)
+     
+
+     }
+
+
+   }).catch(err=>{})
+
+
+},
+
+//设置快递状态
+setDeliveryStatus(status){
+    switch(status) {
+     case '0':
+       return '快递收件(揽件)'
+        break;
+     case '1':
+        return '在途中 '
+        break;
+        case '2':
+        return '正在派件'
+        break;
+           case '3':
+         
+        return '已签收'
+        break;
+           case '4':
+        return '派送失败'
+        break;
+          case '5':
+        return '疑难件'
+        break;
+           case '6':
+        return '退件签收'
+        break;
+     default:
+         return '未知状态'
+       
+} 
+
+
+
+},
+onChangeInfo(e){
+    this.activeNames=e.detail
+    
+},
+
+init(){
+  this.getData()
+}
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+    this.init()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new GroupOrderInfo();
+</script>
+
+<style scoped >
+.details-card{
+  background: #fff;
+  padding:30cpx 0;
+}
+.price-bottom{
+    margin-top:100cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+
+}
+
+.panel-text{
+    margin-left:50cpx;
+   letter-spacing: 2cpx;
+}
+.panel-top{
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.panel-bottom{
+  margin-top:15cpx;
+  padding:0 50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+}
+.details-text{
+  letter-spacing: 2cpx;
+color:#ff410f;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+}
+
+.trans-panel{
+  margin-top:20cpx;
+  color:#212121;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+  
+
+}
+.spec-size{
+  font-size: 20cpx;
+}
+
+
+
+.container{
+width: 750cpx;
+
+}
+.transport{
+  margin-top:20cpx;
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+ 
+}
+
+.title-style{
+  color:#fff;
+}
+
+.icon-nav{
+  margin-bottom: 25cpx;
+}
+
+
+.detail{
+  width: 750cpx;
+}
+
+.wrap{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items:center;
+  position: static!important;
+}
+
+.order-price{
+  color: #ff0000;
+}
+
+.detail-info{
+  width: 750cpx;
+  margin-top:20cpx;
+}
+
+.info-name{
+   color: #ff0000;
+   font-size: 32rpx;
+
+}
+
+.wrap-info{
+    display: flex;
+  flex-direction: column;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.harvest-address{
+    width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.harvest-wrap{
+    display: flex;
+  flex-direction: row;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.user-info{
+  display: flex;
+  flex-wrap:wrap;
+  flex-direction: row;
+  justify-content:center;
+  align-items:center;
+
+}
+.address-info{
+  width: 550cpx;
+   display: flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+
+}
+
+.logistics-info{
+  width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.logistics-text{
+    color: #ff0000;
+   font-size: 32rpx;
+}
+
+.add-height{
+  width: 750cpx;
+}
+
+.submit{
+  margin: 80cpx auto;
+  width: 710cpx;
+}
+
+.custom-content{
+  width: 600cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.all-total{
+  color: #969697;
+  font-size: 24cpx;
+
+}
+
+.spec-text{
+  color: #df281a;
+}
+
+.total{
+    display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancel-border{
+position: static!important;
+}
+
+
+.receiver-name{
+  color: #ff410f;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav":"/components/nav/nav",
+       "van-nav-bar": "/vant/nav-bar/index",
+       "van-icon": "/vant/icon/index",
+       "i-card": "/iview/card/index",
+       "van-submit-bar": "/vant//submit-bar/index",
+        "van-button": "/vant/button/index",
+        "van-loading": "/vant/loading/index",
+         "van-collapse": "/vant/collapse/index",
+          "van-collapse-item": "/vant/collapse-item/index"
+
+    }
+  }
+}
+</script>

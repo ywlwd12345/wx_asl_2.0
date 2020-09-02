@@ -1,0 +1,21 @@
+{
+  "name": "aishenlian",
+  "version": "1.0.0",
+  "description": "A chameleon project",
+  "author": "",
+  "private": true,
+  "scripts": {},
+  "license": "MIT",
+  "dependencies": {
+    "@vant/weapp": "^1.0.1",
+    "animate.css": "^4.1.0",
+    "chameleon-api": "1.0.0",
+    "chameleon-runtime": "1.0.0",
+    "chameleon-store": "1.0.0",
+    "chameleon-ui-builtin": "1.0.0",
+    "cml-ui": "^1.0.3"
+  },
+  "devDependencies": {
+    "sass-loader": "^7.3.1"
+  }
+}

@@ -1,0 +1,695 @@
+<template>
+  <view class="container" >
+    <view style="min-height:{{ viewPortHeight }};background:#eee;">
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}"></component>
+    </view>
+    <!-- 分类标题-->
+    <view class="class_title"  c-if="{{ currentComp==='home'}}">
+      <van-tabs active="{{ active }}" sticky bind:scroll="scrolls" bind:click="goactives" swipeable animated tab-active-class="tags">
+        <view c-for="{{activeList}}" c-for-index="index" c-for-item="item">
+          <van-tab title="{{item.name}}"></van-tab>
+        </view>
+      </van-tabs>
+    </view>
+ <!--<view class="title" c-if="{{ currentComp==='home'}}"><text class="text-store">. 全部商品 .</text></view>-->
+
+  <view class="all-store" c-if="{{ currentComp==='home'}}">
+  <block
+    c-for="{{goodsLists}}"
+            c-for-index="i"
+            c-for-item="item"
+            c-key="id"
+  >
+  <view class="store" c-bind:click="goDetails" data-gid="{{item.id}}">
+  <view class="store-img" style="border-radius:20cpx;">
+  <image src="{{item.thumb}}" style="width:340cpx;height:340cpx;border-radius:20cpx;"></image>
+  </view>
+  <view class="bot-area">
+   <view class="list-name"><text class="spec-name">{{item.name}}</text></view>
+    <view class="list-price"><text class="now-price">￥{{item.price}}</text>
+    <text class="original-price" style="margin-left:20cpx;">￥{{item.marketPrice}}</text></view>
+    <view class="asl-count"><text class="count">可获得ASL3数量:{{item.getAsl3}}</text></view>
+    </view>            
+  </view>
+  </block>
+  
+  </view>
+  <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" c-if="{{ currentComp==='home'}}">
+    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+  </view>
+
+ <!-- c-if="{{ currentComp==='home' && indexLoading===false}}" 以后备用-->
+<view class="live-card" c-bind:tap="goLive" c-if="{{currentComp==='home' && indexLoading===false}}">
+   <image src="{{liveCard}}" style="width:64cpx;height:64cpx;" class="live-anmation"></image>
+</view>
+
+<!--  直播弹框-->
+<view class="live-pop">
+<live-pop c-bind:onshow="setRecommendPop"></live-pop>
+</view>
+<!--  直播弹框 end-->
+
+<!--  推荐弹框-->
+<view class="recommende-pop" c-if="{{isShowRecommendPop}}">
+<recommende-pop ></recommende-pop>
+</view>
+<!-- 推荐弹框 end-->
+  <c-tabbar 
+    c-bind:onclick='handleTabbarClick' 
+    c-model="{{currentComp}}"  
+    tabbar="{{tabbar}}"
+    ></c-tabbar>  
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import { checkLogin,  cachOpenid} from '../../untils/publicInterface.js'; 
+import store from '../../store'
+import {getIndexRecommendgoods,getShareInfo,getGoodCate,getclassificationgoods} from '../../api/index'
+import { dealStoreTitleName} from '../../untils/processData'
+class Index  {
+  data = {
+    viewPortHeight:0,
+    currentComp:'home',
+    tabbar:{
+      "tabbarStyle":"height:120cpx;background-color:#fff;",//tabbar最外层的样式支持自定义
+      "tabLineStyle":"background-color:#069ADC;height:2cpx;",//自定义tabline的高度和背景色
+      "textStyle":"color:#3b3b3b", //文案默认style ,可以这里控制文案的大小，样式等
+      "selectedTextStyle":"color:#e81929",//文案被选择style
+      // "position":"top", //tabbar的位置 top/bottom
+      "useFixedLayout":true,  //是否通过fixed布局进行tabbar的布局
+      "list":[
+        { 
+          "compName":"home",
+          "text": "首页",
+          "icon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-2/sy@2x.png',
+          "selectedIcon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-1/sy@2x.png',
+        },
+
+           {
+         "compName":"business-school",
+          "text": "商学院",
+          "icon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-2/sxy@2x.png',
+          "selectedIcon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-1/sxy@2x.png'
+        },
+        {
+         "compName":"shopping-cart",
+          "text": "购物车",
+          "icon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-2/gwc@2x.png',
+          "selectedIcon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-1/gwc@2x.png',
+        },
+        {
+         "compName":"personal-center",
+          "text": "我的",
+          "icon": 'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-2/wd@2x.png',
+          "selectedIcon":'https://w.aishenglian.com/static/icon/ver2-icon/nav/nav-1/wode@2x.png'
+        }    
+      ]
+    },
+    active:0,
+    pid:'',
+    recommendList:[],
+    page:1,
+    activeList:[],
+    goodsLists:[],
+    value:'',
+    shareImg:'',
+    title:'',
+    newsuser:'',
+    indexLoading:true,
+    backTop:require("../../assets/images/back-top.png"),
+    backTopFlag:true,
+    liveCard:require("../../assets/images/live-img.png"),
+    isShowRecommendPop:true,
+    classification:0,//不同分类的覆盖还是合并
+    recommends:0, //用来判断是不是为你推荐分类，因为为你推荐和其他是两个接口
+  }
+  methods={
+    scrolls(){
+      return{
+        scrollTop:"120cpx",
+        isFixed:true
+      }
+    },
+    //切换分类
+    goactives(e){
+      console.log('点击',e)
+      this.active=e.detail.index
+      this.page=1
+      this.activeList.forEach(val => {
+        if(e.detail.title=='为你推荐'){
+          this.classification=1
+          this.recommends=0
+          this.getRecommendData()
+        }else if(val.name==e.detail.title){
+          //！=0就是其他分类
+          this.recommends=1
+          this.pid=val.id
+        }
+      });
+       if(this.recommends!=0){
+          this.classification=1
+          this.getdatas()
+        }
+
+    },
+    //获取分类标题
+    getClassifyItems(){
+
+      getGoodCate().then(res=>{
+        if(res.code){
+          this.activeList= this.activeList.concat({name:'为你推荐'})
+           console.log("这里是分类",res)
+          this.activeList= this.activeList.concat(res.data.map(d=>{
+            return d
+          }))
+          //获取为你推荐
+          this.getRecommendData()
+          // this.pid=this.activeList[0].id
+          // this.getdatas()
+        // console.log(pid)
+        }
+
+      }).catch(err=>{})
+
+    },
+    //获取具体分类商品
+    getdatas(){
+      let data={
+        category:this.pid,
+        level:1,
+        pageNum:this.page
+      }
+      getclassificationgoods(data).then(res=>{
+        if(res.code==1){
+          if(this.classification==0){
+             console.log("合并")
+            this.goodsLists= this.goodsLists.concat(res.data.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            }))
+            this.indexLoading=false
+          }else{
+             console.log("覆盖")
+            this.goodsLists=res.data.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            })
+          }
+          console.log(this.goodsLists)
+          if(this.goodsLists.length==0){
+                  cml.showToast({
+            message: "没有更多",
+            duration: 1000
+          })
+          }
+        }
+      }).catch(err=>{})
+    },
+    
+     //获取全部商品
+  getRecommendData(data={pageNum:this.page}){
+    getIndexRecommendgoods(data).then(res=>{
+      //控制加载
+      this.indexLoading=false
+      if(res.code==1){
+        //逐个取出加到展示的data 中
+          if(this.classification==0){
+            this.goodsLists= this.goodsLists.concat(res.data.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            }))
+            this.indexLoading=false
+          }else{
+            this.goodsLists=res.data.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            })
+          }
+      }
+    }).catch(err=>{
+       this.indexLoading=false
+
+    })
+
+
+  },
+
+//  goLive  去直播
+goLive(){
+   cml.navigateTo({
+  path: '/pages/live-room/live-room'
+  })
+
+
+},
+  onBottom() {
+      cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.classification=0
+        //为0的时候为为你推荐
+        if(this.recommends==0){
+          this.getRecommendData()
+        }else{
+          this.getdatas()
+        }
+      }, 800)
+    },
+    goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+   handleTabbarClick(e){
+     if(e.detail.compName!=='home'){
+         store.commit('changeIndexAnmationFlag',false)
+     }
+
+  },
+  onShareAppMessage: function (res) {
+   
+
+    if(res.target.id==='1'){
+      //分享源自于直播分享按钮
+      const data=res.target.dataset.livedata
+        return {
+      title:data.name,
+      desc: data.anchor_name+'正在直播...',
+      path: '/pages/index/index?roomId='+data.roomid,
+      imageUrl:data.cover_img
+    }
+    }
+
+//签到分享
+      if(res.target.id==='2'){
+     
+        return {
+      
+    }
+    }
+
+    if (res.from === 'button'){
+        return {
+      title:'30亿拼团红包大放送，注册即送10元现金红包...',
+      desc: '',
+      path: '/pages/share-registration/share-registration?id='+this.value,
+      imageUrl:this.shareImg
+    }
+          }else{
+               return {
+      title:this.title,
+      desc: '',
+    }
+    }
+    },
+    //获取分享信息
+    shareInfo(){
+      getShareInfo({}).then(res=>{
+        if(res.code){
+          this.shareImg=store.state.domainUrl+res.data.url    
+          this.title=res.data.txt
+        }
+      }).catch(err=>{})
+    },
+
+    //监听小程序页面滚动
+        onPageScroll:function(e){
+      if(e.scrollTop>80 && e.scrollTop<700){
+        store.commit('changeIndexAnmationFlag',true)
+    }
+
+    if(e.scrollTop>1200){
+       this.backTopFlag=false
+       
+    }else{
+        this.backTopFlag=true
+       
+    }
+},
+//小程序页面回到顶部
+goTop(){
+   wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 2000
+    })
+
+},
+// 设置推荐弹框的显隐
+setRecommendPop(e){
+  
+  this.isShowRecommendPop=e.detail.value
+
+
+
+}
+
+  }
+
+
+
+ created(res){
+
+      cml.getSystemInfo().then(info => {
+    //这里要减去tabbar的高度，默认是120cpx,如果tabbarStyle中设置了其他高度，则要减去对应的值；
+    
+      this.viewPortHeight = (Number(info.viewportHeight)-120);
+      cml.setStorage('viewPortHeight', this.viewPortHeight+120)
+
+    });
+    if(res.comp){ //这里可以在传递的query中获取到想要激活的组件,具体使用方式参见文末的demo链接
+      this.currentComp = res.comp;    
+    }
+    //去直播间
+    const roomId=res.roomId
+    if(/^\d+(?=\.{0,1}\d+$|$)/.test(roomId)){
+        let customParams = encodeURIComponent(JSON.stringify({ path: 'pages/details/details', pid: 1 }))  //开发者携带的自定义参数
+wx.navigateTo({
+    url: `plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=${roomId}&custom_params=${customParams}`
+
+})
+
+
+    }
+    console.log(res,'分享数据123特别的')
+if(res.scene){
+let str=decodeURIComponent(res.scene)
+console.log('字符串',str)
+let gid=str.split('=')[1]
+console.log('分享参数',gid)
+ if(/^\d+(?=\.{0,1}\d+$|$)/.test(gid)){
+       cml.navigateTo({
+  path: '/pages/details/details',
+  query: {gid:gid}
+       })
+
+     }
+}
+
+    const gid=res.gid
+     if(/^\d+(?=\.{0,1}\d+$|$)/.test(gid)){
+       cml.navigateTo({
+  path: '/pages/details/details',
+  query: {gid:gid}
+       })
+
+     }
+  }
+
+    mounted() {
+      // this.shareInfo()
+      cml.getStorage('uname').then((value) => {
+      // 处理获取到的键值
+      if (value) {
+        this.value=value
+      }
+      })
+      // this.getRecommendData()
+      this.getClassifyItems()
+      if(store.state.isCancelLogin){
+        checkLogin()
+      }
+  }
+
+  beforeCreate(query) {
+     if(query.currentComp==='shopping-cart'){
+      this.currentComp='shopping-cart'
+    }
+    this.newsuser=query.newsuser
+   
+  }
+
+  onShow(){
+     cachOpenid()
+  
+    if(store.state.cartFlag){
+       this.currentComp="shopping-cart"
+       store.commit('changeCart', false)
+    }
+    
+  
+ 
+  }
+
+  onReachBottom(){
+    if(this.currentComp==='home'){
+       this.onBottom()
+    }
+  }
+
+
+ 
+  
+
+  
+}
+
+export default new Index();
+
+</script>
+<style scoped>
+
+.container{
+   overflow: hidden;
+   min-height: 100vh;
+   background: #eee;
+}
+
+.spec-name{
+  font-size: 28cpx;
+  letter-spacing: 2cpx;
+}
+
+.all-store{
+  width:710cpx;
+  margin:0 auto;
+  margin-top:20cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  align-items: center;
+}
+
+.title{
+  width:710cpx;
+  margin:0 auto;
+  height:50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: #ff0000;
+  font-size: 32cpx;
+  font-weight: bold;
+  margin-top:10cpx;
+}
+.text-store{
+  font-size: 48cpx!important;
+  font-weight: bold;
+
+}
+
+
+.store{
+  width: 340cpx;
+  border-radius: 20cpx;
+  background: #fff;
+  margin-bottom:20cpx;
+}
+
+.list-price{
+  width: 100%;
+  display: flex;
+  justify-content:flex-start;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+.original-price{
+  color:#b0bec5;
+  text-decoration:line-through;
+  font-size: 26cpx;
+
+}
+
+.now-price{
+  color:#ff2626;
+  font-size: 26cpx;
+}
+
+.count{
+    color:#ff2626;
+    font-size:26cpx;
+   letter-spacing: 2cpx;
+}
+
+.bot-area{
+  padding:10cpx;
+}
+
+.back-top{
+  width: 80cpx;
+  height: 80cpx;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  position: fixed;
+  z-index: 999;
+  bottom: 18%;
+  right:0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transition: all 1.5s;
+  border-radius: 50%;
+
+}
+
+
+.back-top1{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.6;
+  position: fixed;
+  z-index: 999;
+  bottom: 18%;
+  right:0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+
+
+.live-card{
+  width: 80cpx;
+  height: 80cpx;
+  border-radius: 50cpx 0 0 50cpx;
+  opacity: 0.88;
+  position: fixed;
+  background: #fff;
+  z-index: 999;
+ top:40%;
+ right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.live-anmation{
+   animation:flash 3s infinite;
+
+}
+.class_title{
+  padding: 0!important;
+  margin-bottom: 40cpx;
+  margin-top: 40cpx;
+}
+.tags{
+  color: #DC4D46!important;
+  font-size: 34cpx!important;
+}
+
+
+@-webkit-keyframes flash {
+  from,
+  50%,
+  to {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  from,
+  50%,
+  to {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+.live-pop{
+  /* position: relative; */
+}
+
+
+
+
+</style>
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "c-tabbar":"cml-ui/components/c-tabbar/c-tabbar",
+      "demo-com": "/components/demo-com/demo-com",
+      "vant": "/components/vant/vant",
+      "home": "/components/home/home",
+      "shopping-cart": "/components/shopping-cart/shopping-cart",
+      "leaderboard": "/components/leaderboard/leaderboard",
+      "business-school": "/components/business-school/business-school",
+      "news": "/components/news/news",
+      "personal-center": "/components/personal-center/personal-center",
+      "live-pop": "/components/live-pop/live-pop",
+      "recommende-pop": "/components/recommende-pop/recommende-pop",
+      "van-tab": "/vant/tab/index",
+      "van-tabs": "/vant/tabs/index"
+
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+   
+    
+  
+    
+  
+  },
+  "alipay": {
+    "defaultTitle": "index",
+    "pullRefresh": false,
+    "allowsBounceVertical": "YES",
+    "titleBarColor": "#ffffff"
+  },
+  "baidu": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "index",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  },
+  "qq": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

@@ -1,0 +1,338 @@
+<template>
+   <view class="container">
+    <view class="nav">
+   <van-nav-bar
+  title="{{title}}"
+  left-arrow="{{false}}"
+  bind:click-left="onClickLeft"
+  border="{{false}}"
+  custom-class="nav-root"
+  title-class="title-style"
+  fixed="{{true}}"
+>
+<van-icon name="arrow-left"  slot="left" color="#fff" size="60rpx" custom-class="icon-nav"/>
+</van-nav-bar>
+  </view>
+  <!-- nav end-->
+  <view class="column" ></view>
+ 
+  
+   
+
+
+
+
+
+
+  <view class="serach">
+    <van-search
+  placeholder="请输入搜索关键词"
+  bind:search="onSearch"
+  custom-class="out-style"
+  shape="round"
+  background="#c8c9cc"
+  input-class="input-style"
+  value="{{ searchValue }}"
+/>
+</view>
+
+
+ <!-- serach end-->
+
+ <view class="goods-detais">
+   <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{goodsLists}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+          <view class="panel" c-bind:click="goDetails" data-gid="{{item.id}}">
+          <view class="goods-img"><image src="{{item.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
+          <view class="goods-name"><text class="spec-name">{{item.name}}</text></view>
+           <view class="price">
+  <view class="price-left"><text>￥{{item.price}}</text></view>
+  <view class="price-right" style="margin-left:20cpx;"><text>￥{{item.marketPrice}}</text></view>
+  </view>
+          </view>
+        </cell>  
+  </list>
+  </view>
+
+  <!-- goods-detais end-->
+   <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {sousuogoods} from '../../api/index'
+import store from '../../store'
+import {dealStoreTitleName} from '../../untils/processData'
+
+
+class Serach implements SerachInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    searchValues: {
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    title:'查询',
+    goodsLists:[],
+    imageSp2:require('../../assets/images/sp2.png'),
+    page:1,
+    loading:false,
+    searchValue:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    onSearch(e){
+    
+      this.goodsLists=[]
+      this.page=1
+      this.searchValue=e.detail
+      this.getClassifyData()
+    },
+    //搜索商品列表
+ getClassifyData(){
+   let data={}
+   data.name=this.searchValue
+  data.pageNum=this.page
+  this.loading=true
+  sousuogoods(data).then(res=>{
+    this.loading=false
+   
+    if(res.code==1){
+      if(res.data.length==0){
+        cml.showToast({
+          message: "没有更多数据了",
+          duration: 1000
+        })
+        }else{
+          for(var i=0;i<res.data.length;i++){
+            res.data[i].thumb='http://'+res.data[i].thumb
+            this.goodsLists.push(res.data[i])
+          }
+        }
+    }
+   
+
+
+  }).catch(err=>{
+
+  })
+
+},
+ onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getClassifyData()
+       
+      }, 800)
+
+    },
+    //去详情
+goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+ 
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+     onClickLeft(){
+      cml.navigateBack(-2);
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    console.log("传过来了",this.searchValues)
+    this.goodsLists=[]
+    this.page=1
+    this.searchValue=this.searchValues
+    this.getClassifyData()
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Serach();
+</script>
+
+<style scoped>
+
+.spec-name{
+  font-size: 28cpx;
+  letter-spacing: 2cpx;
+}
+
+
+.goods-name{
+  margin:10cpx;
+}
+
+.container{
+width: 750cpx;
+background: #eee;
+
+
+}
+
+.serach{
+  width: 750cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.out-style{
+  /* background: transparent!important; */
+ 
+}
+
+.input-style{
+  width: 600cpx;
+}
+
+.goods-detais{
+  width: 720cpx;
+  margin:0 auto;
+  margin-top: 15cpx;
+  position: relative;
+}
+
+.cell{
+  display:inline-block;
+}
+
+
+
+.panel{
+  width: 320cpx;
+  margin:0 20cpx;
+  border-radius:20cpx;
+  margin-bottom:20cpx;
+  background: #fff;
+  padding-bottom:10cpx;
+
+}
+
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.price-right text{
+  color:#b0bec5;
+  text-decoration:line-through;
+  font-size: 28cpx;
+
+}
+
+.price-left{
+  color:#ff2626;
+}
+
+
+
+.price-left text{
+  font-size: 28cpx;
+}
+
+
+.price{
+  width: 100%;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+  margin:0 15cpx;
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+ 
+}
+
+.title-style{
+  color:#fff!important;
+}
+
+.icon-nav{
+  margin-bottom: 16cpx;
+}
+ .column{
+   height: 140cpx;
+ }
+
+@media screen and (min-width: 375px) {
+ .column{
+ height:150cpx;
+}
+
+   
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+       "van-nav-bar": "/vant/nav-bar/index",
+        "van-icon": "/vant/icon/index",
+         "van-search": "/vant/search/index",
+          "i-spin": "/iview/spin/index"
+    }
+  }
+}
+</script>

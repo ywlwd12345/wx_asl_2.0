@@ -1,0 +1,180 @@
+<template>
+  <view>
+    <nav title="{{title}}"></nav>
+    <view class="imgs">
+      <image src="{{imgto}}"></image>
+    </view>
+    <view class="goods-detais">
+      <list
+          bottom-offset="{{20}}"
+          c-bind:scrolltobottom="onBottom"
+          height="{{-1}}"
+        >
+            <cell
+              class="cell"
+              c-for="{{goodsLists}}"
+              c-for-index="i"
+              c-for-item="item"
+              data-idx="{{i}}"
+            >
+              <view class="panel" c-bind:click="goDetails" data-gid="{{item.id}}">
+              <view class="goods-img"><image src="{{item.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
+              <view class="goods-name"><text class="spec-text-name" >{{item.name}}</text></view>
+              <view class="price">
+              <view class="price-left"><text class="spec-text">￥{{item.price}}</text></view>
+              <view class="price-right" style="margin-left:15cpx;"><text>￥{{item.marketPrice}}</text></view>
+              </view>
+              </view>
+            </cell>  
+      </list>
+      </view>
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getActivityIndex} from '../../api/index'
+import { objChangeArray ,dealStoreTitleName} from '../../untils/processData'
+class BrandZone implements BrandZoneInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    ids:{
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    title:'品牌专区',
+    goodsLists:[],
+    imgto:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  getIndexGoodsData(){
+    console.log('id',this.ids)
+      getActivityIndex().then(res=>{
+        if(res.code){
+          console.log('品牌专区',res)
+         res.data.map(c=>{
+          if(this.ids==c.id){
+            this.goodsLists= this.goodsLists.concat(c.goodsData.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            }))
+            this.imgto='http://'+c.poster
+          }
+            return c
+          })
+         
+        }
+
+      }).catch(err=>{})
+  },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getIndexGoodsData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new BrandZone();
+</script>
+
+<style >
+.goods-name{
+  padding:10cpx;
+  margin-top:20cpx;
+}
+.goods-detais{
+  width: 720cpx;
+  margin:0 auto;
+  margin-top: 15cpx;
+  position: relative;
+  margin-top: 40cpx;
+}
+
+.cell{
+  display:inline-block;
+}
+.panel{
+  width: 320cpx;
+  margin:0 20cpx;
+  margin-bottom:20cpx;
+  background: #fff;
+  height: 486cpx;
+  border-radius:20cpx;
+  padding-bottom:10cpx;
+  /* background: red; */
+}
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+.price{
+  width: 100%;
+  padding: 0 10cpx;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+.price-right text{
+  color:#b0bec5;
+  letter-spacing: 2cpx;
+  text-decoration:line-through;
+  font-size: 28cpx;
+
+}
+.spec-text{
+   color:#ff2626;
+    letter-spacing: 2cpx;
+    font-size: 28cpx;
+}
+.spec-text-name{
+   letter-spacing: 2cpx;
+   font-size: 28cpx;
+}
+.imgs image{
+  width: 100%;
+  height: 300cpx;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav":"/components/nav-ver2/nav-ver2"
+    }
+  }
+}
+</script>

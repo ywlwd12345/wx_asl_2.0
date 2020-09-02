@@ -1,0 +1,338 @@
+<template>
+  <view class="container">
+    <nav title="{{title}}"></nav>
+    <!-- 顶部海报-->
+    <view class="poster">
+      <image src="{{skillimg}}"></image>
+    </view>
+<!-- 时间-->
+  <view class="period">
+    <scroller
+      scroll-direction="{{scrollDirection}}"
+      width="{{740}}"
+      height="{{-1}}"
+    >
+      <block  c-for="{{listArray}}"
+            c-for-index="i"
+            c-for-item="item"
+            c-key="id"
+            >
+        <view class="panels"  c-bind:click="getClassifiyData(item.time,i,item.status)" data-id="{{item.id}}" >
+        <view class="panel-text">
+          <text class="{{i==statusindex?'curtitle':''}}" style="text-align:center;font-size:35cpx;">{{item.time}}</text>
+        </view>
+        <view  class="panel-text" >
+          <text class="{{i==statusindex?'cur':''}}" style="text-align:center;font-size:23cpx;color:#999999;">{{item.status}}</text>
+        </view>
+        </view>
+      </block>
+  
+    </scroller>
+  </view>
+
+  <!-- 列表-->
+  <view class="list">
+    <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.goodsId)">
+      <view class="lift">
+        <image src="{{item.thumb}}"></image>
+      </view>
+      <view class="right">
+        <view style="font-size: 29rpx">{{item.goodsName}}</view>
+        <view class="price">
+          <view class="price_s">
+            <view class="price_s">
+              <view class="rmb">¥</view>
+              <view class="rmb_p">{{item.price}}</view>
+            </view>
+            <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.original}}</view>
+          </view>
+          <view class="purchase" c-if="{{purchase==purchasetime}}">立即抢购</view>
+          <view class="purchase" c-else style="background: linear-gradient(89deg, #F59626, #FDC227);color:#fff;">提醒我</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {secondkilltime,secondkillproduct} from '../../api/index.js'
+import {momentTime} from '../../untils/moment.js'
+import { dealStoreTitleName } from '../../untils/processData'
+class SeckilZone implements SeckilZoneInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'秒杀专区',
+    scrollDirection:'horizontal',
+    listArray:[], 
+    specTime:'',
+    skillimg:'https://w.aishenglian.com/static/imgs/ms.png',
+    list:[],
+    status:'',
+    statusindex:'',
+    purchase:1,
+    purchasetime:0
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    goDetails(id){
+      console.log(id)
+      cml.navigateTo({
+      path: '/pages/details/details',
+      query:{gid:id}
+      })
+    },
+    getData(){
+      secondkilltime({}).then(res=>{
+        if(res.code){
+          this.listArray=res.data.map((d,index)=>{
+           
+            d.name=dealStoreTitleName(d.name,14)
+            d.time=this.dealTimePeriod(d.time)
+            d.flag=false
+            if(d.status==1){
+              d.flag=true
+              this.statusindex=index
+              this.specTime=this.setTime(d.time)
+              this.getClassifiyData(d.time)
+            }
+            d.status=this.dealStatus(d.status)
+            return d
+          })
+          // 防止空数据时间段
+          if(!this.listArray.find(d=>d.status===1)){
+            this.listArray[0].flag=true
+            this.specTime=this.setTime(this.listArray[0].time)
+            // this.getClassifiyData(this.listArray[0].id)
+          }
+        }
+      }).catch(err=>{})
+    },
+    getClassifiyData(val,index,status){
+      console.log(index)
+      if(index>=0){
+        this.statusindex=index
+      }
+      if(status=='进行中'){
+        this.purchasetime=1
+      }else{
+        this.purchasetime=0
+      }
+      secondkillproduct({time:val}).then(res=>{
+        if(res.code){
+          console.log('秒杀产品',res)
+            this.list=res.data.map((d,index)=>{
+           
+            d.thumb='https://'+d.thumb
+            d.goodsName=dealStoreTitleName(d.goodsName,14)
+            return d
+          })
+          if(this.list.length==0){
+            cml.showToast({
+              message: "暂无秒杀产品",
+              duration: 1000
+            })
+          }
+        }
+      }).catch(err=>{})
+    },
+    dealStatus(status){
+    switch(status) {
+     case 0:
+        return '待开售'
+        break;
+     case 1:
+         return '进行中'
+        break;
+      default:
+      return '已结束'
+} 
+    },
+    dealTimePeriod(str){
+      let arr=str.split(':')
+      return `${arr[0]}:${arr[1]}`
+
+
+    },
+    setTime(tm){
+    let num
+     if(parseInt(tm.split(":")[0])===0){
+      tm='24:00:00'
+    }
+
+    const  newDate = new Date();
+  
+
+    const startTime= momentTime(newDate)+`${tm}`
+
+  //获取整点开奖的时间戳
+    let timestamp1= new Date(startTime).getTime()
+
+    let timestamp2= new Date().getTime()
+    
+    
+    num=timestamp1-timestamp2
+
+    return num
+
+    
+  },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getData()
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new SeckilZone();
+</script>
+
+<style >
+.container{
+width: 750cpx;
+background: #eee;
+}
+.poster{
+  padding: 30cpx;
+}
+.poster image{
+  width: 100%;
+  height: 250cpx;
+  border-radius: 20cpx;
+}
+.period{
+  z-index:99999; 
+  background: #fff;
+  width: 100%;
+  margin:0 atuo;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 120cpx;
+}
+.panels{
+  min-width:152cpx;
+  min-height:50cpx;
+  display: inline-block;
+  margin-right: 5cpx;
+  padding:10cpx;
+}
+.panel-text{
+  margin-top:10cpx;
+}
+.remaining{
+  width: 100%;
+   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.curtitle{
+  color: #ED4129;
+}
+.cur{
+    background: #ED4129;
+    color: #fff!important;
+    font-size: 25cpx!important;
+    border-radius: 20rpx;
+    padding: 2rpx 0;
+}
+.list{
+  padding: 0 30cpx;
+}
+.list_num{
+    background: #fff;
+    border-radius: 15cpx;
+    margin-top: 30cpx;
+    padding: 20cpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.list_num image{
+    width: 200cpx;
+    height: 200cpx;
+    border-radius: 10cpx;
+}
+.right{
+  width: 62%;
+  height: 200cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.price{
+  width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.price_s{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.rmb{
+    color: #ED4129;
+    padding-right: 5cpx;
+}
+.rmb_p{
+    color: #ED4129;
+    padding-right: 15cpx;
+    font-size: 38cpx;
+}
+.purchase{
+    font-size: 25cpx;
+    background: #ED4129;
+    color: #fff;
+    padding: 8cpx 30cpx;
+    border-radius: 30cpx;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav":"/components/nav/nav"
+    }
+  }
+}
+</script>

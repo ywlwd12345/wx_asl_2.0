@@ -1,0 +1,328 @@
+<template>
+ <view class="container">
+
+  <view class="nav">
+   <van-nav-bar
+  title="{{title}}"
+  left-arrow="{{false}}"
+  bind:click-left="onClickLeft"
+  border="{{false}}"
+  custom-class="nav-root"
+  title-class="title-style"
+  bind:click-right="onClickRight"
+  safe-area-inset-top="{{true}}"
+>
+<van-icon name="arrow-left"  slot="left" color="#fff" size="64rpx" custom-class="icon-nav"/>
+<text slot="right" class="slot-text">添加</text>
+</van-nav-bar>
+  </view>
+  <!--nav end-->
+
+   <block 
+         c-for="{{lists}}"
+          c-for-index="i"
+          c-for-item="item"
+      >
+
+  <view class="swipe-cell">
+  <van-swipe-cell right-width="{{ 100 }}" >
+  <view class="cell-content">
+  <view class="addres-info" c-bind:tap="Changeadd(item)">
+  <view class="info-top" style="width:400cpx;">
+  <view class="tag" c-if="{{item.isDefault}}">
+  <i-tag 
+    class="i-tags"
+    i-class="spec-tag"
+   >
+    默认
+</i-tag>
+  </view>
+  <view class="info-name"><text>{{item.receiver}}</text></view>
+  <view class="info-phone"><text>{{item.mobile}}</text></view>
+  </view>
+    <!--info-top end-->
+
+   <view class="info-bottom" style="width:400cpx;">
+   <view class="user-addres" ><text>{{item.province+item.city+item.district+item.place}}</text></view>
+  </view>
+
+   <!--info-bottom end-->
+  
+  
+  </view>
+
+  <view class="update">
+  <van-icon name="edit" size="30px" bind:tap="edit" data-id="{{item.id}}"/>
+  </view>
+  </view>
+  <!-- cell-content-->
+  <view slot="right" class="spec-delete"
+  c-bind:tap="deleteItem(item.id)"  data-id="{{item.id}}" ><text >删除</text></view>
+</van-swipe-cell>
+  </view>
+  </block>
+
+  <!-- swipe-cell end-->
+ 
+ 
+  
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import {getAddrlist,deleteAddr} from '../../api/index'
+class Address implements AddressInterface {
+ props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    adds:{
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    title:"收货地址",
+    lists:[],
+    checked:false
+  }
+
+  computed = {
+    f1() {
+        return store.state.Cancels
+  }
+  }
+
+  watch = {
+    //监听数据变化  刷新数据
+    f1(curVal, oldVal) {
+      this.changeData() 
+        }
+  }
+  methods = {
+    changeData(){
+      store.commit('changeCancel',true)
+      //刷新确认订单页的默认地址
+      store.commit('changeaddress',false)
+       console.log('address',store.state.address)
+    this.getData();
+    },
+    onClickLeft(){
+      cml.navigateBack(-1);
+     
+    },
+    onClickRight(e){
+       cml.navigateTo({
+  path: '/pages/add-location/add-location'
+      })
+
+
+    },
+    //获取收获地址
+    getData(){
+      let uname
+      cml.getStorage("uname").then(value => {
+        uname=value
+        getAddrlist({uname:uname}).then(res=>{
+          console.log(res,888444666)
+          if(res.code==1){
+            this.lists=res.data
+          }
+        }).catch(err=>{})
+      })
+
+    },
+    deleteItem(id){
+      console.log(id)
+      this.confirmTip(id)
+    },
+    //点击修改
+    edit(e){
+      let areaId=e.currentTarget.dataset.id
+      this.lists.forEach((value)=>{
+        if(value.id==areaId){
+          cml.navigateTo({
+            path:'/pages/add-location/add-location',
+            query:{
+              areaId:value.id,
+              value1:value.receiver,
+              value2:value.mobile,
+            }
+          })
+        }
+      });
+      
+    },
+    //点击选择地址
+    Changeadd(val){
+      let that=this
+      if(that.adds==1){
+        cml.setStorage('address',val)
+        store.commit('changeNewaddress',false)
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    },
+
+    deleteOne(id){
+      let uname
+      cml.getStorage("uname").then(value => {
+        uname=value
+        deleteAddr({id:id,uname:uname}).then(res=>{
+            this.tip(res.msg)
+            if(res.code==1){
+              this.getData()
+            }
+        }).catch(err=>{})
+      })
+    },
+    tip(msg){
+        cml.showToast({
+        message:msg,
+        duration: 1000
+        })
+
+    },
+    confirmTip(id){
+      let self=this
+      cml.confirm({
+    message:'你确定删除当前地址？',
+    confirmTitle:"确定",
+    cancelTitle: "取消"
+}).then(function(value){
+    if(value==='确定'){
+      self.deleteOne(id)
+    }
+})
+
+    }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Address();
+</script>
+
+<style scoped>
+
+
+.container{
+width: 750cpx;
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+padding-bottom: 60cpx;
+}
+
+.title-style{
+  margin-top:55cpx;
+  color:#fff;
+}
+
+.icon-nav{
+  margin-bottom: 25cpx;
+}
+
+
+.slot-text{
+  color: #fff;
+}
+
+.swipe-cell{
+  width: 750cpx;
+  border-bottom:5cpx solid #eee;
+}
+
+.spec-delete{
+  width: 200cpx;
+  height: 200cpx;
+  background: red;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  flex-direction: flex-direcrow;
+  align-items: center;
+}
+
+.cell-content{
+  width: 750cpx;
+  min-height:200cpx;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-top: 40cpx;
+}
+
+.spec-tag{
+  background: #f4211a;
+  color: #fff;
+}
+
+.info-top{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
+}
+.info-top > view{
+  margin-right: 15cpx;
+}
+.info-bottom{
+  margin-top: 20cpx;
+}
+
+.checkbox{
+  margin-top:20cpx;
+}
+
+.update{
+  width:150cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "van-nav-bar": "/vant/nav-bar/index",
+        "van-icon": "/vant/icon/index",
+        "van-swipe-cell": "/vant/swipe-cell/index",
+        "van-cell": "/vant/cell/index",
+        "van-cell-group": "/vant/cell-group/index",
+        "van-checkbox": "/vant/checkbox/index",
+        "van-checkbox-group": "/vant/checkbox-group/index",
+        "i-tag": "/iview/tag/index",
+        "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

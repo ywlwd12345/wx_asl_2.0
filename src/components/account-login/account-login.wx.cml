@@ -1,0 +1,204 @@
+<template>
+  <view >
+  <head title="{{title}}"></head>
+
+  <view class="bg">
+  <image src="{{imageSrc}}" style="width:400cpx;height:400cpx;" ></image>
+  </view>
+  <view class="title"><text class="spec-account">选择账户</text></view>
+
+  <view class="panel">
+
+<black c-for="{{userList}}" c-for-index="index" c-for-item="item">
+  <view class="zh" c-bind:tap="goIndex(item)">
+    <text>账户:{{item.uname}}</text>
+    <text>手机号:{{item.mobile}}</text>
+  </view>
+</black>
+
+<view class="login" c-bind:tap="login">
+<text class="spec-login">>>用密码登录</text>
+</view>
+  
+  </view>
+
+  
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import {CacheUserCookie,getUserLogin} from '../../api/index.js'
+class AccountLogin implements AccountLoginInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'账户登录',
+    imageSrc: require('../../assets/images/linkIcon/login/gy.png'),
+    userList:{},
+    openid:'',
+    infodata:{
+      uname:'',
+      passWord:'',
+      mobile:''
+    }
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    showUserList(){
+        // cml.getStorage('openid').then((value)=>{
+        //   this.openid=value
+        // })
+      cml.getStorage('userdata').then((value)=>{
+        this.userList=value
+      })
+    },
+    goIndex(val){
+      getUserLogin({uName:val.uname,passWord:val.passWord}).then(res=>{
+        if(res.code){
+          console.log("新"+res)
+          this.infodata.uname=val.uname
+          this.infodata.passWord=val.passWord
+          this.infodata.mobile=res.mobile
+          cml.setStorage('infodata',this.infodata)
+          cml.setStorage('token', res.token)
+          cml.setStorage('uname', val.uname)
+          cml.setStorage('mobile', res.mobile)
+            store.commit('changeStatus')
+           cml.showToast({
+        message: "登录成功",
+        duration: 1000
+      })
+      //登录成功更改登录按钮状态
+      store.commit('changeCancelLogin',false)
+      setTimeout(() => {
+      cml.navigateTo({
+        path: '/pages/index/index'
+      }) 
+      }, 2000)
+        }else{
+           cml.showToast({
+        message: res.msg,
+        duration: 2000
+      })
+        }
+      })
+    },
+    login(e){
+        cml.redirectTo({path: '/pages/login/login'}) 
+    }
+  }
+
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.showUserList()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AccountLogin();
+</script>
+
+<style scoped>
+
+.bg{
+  width: 750cpx;
+  margin-top:30cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.title{
+  width: 750cpx;
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top:20cpx;
+
+}
+
+.panel{
+  width:710cpx;
+  margin:0 auto;
+}
+
+.zh{
+  height: 150cpx;
+  padding:20cpx;
+  margin-top:20cpx;
+  color:#fff;
+  background: linear-gradient(to right, #FF4B2B, #FF416C); 
+  display: flex;
+  flex-direction: column;
+  justify-content:space-around ;
+  align-items: center;
+}
+
+.login{
+  margin-top:20cpx;
+   display: flex;
+  flex-direction:row;
+  justify-content:flex-end;
+  align-items: center;
+  margin-bottom:40cpx;
+}
+
+.spec-account{
+   letter-spacing: 2cpx;
+  font-size: 36cpx;
+  font-weight: 600;
+
+}
+
+.spec-login{
+    letter-spacing: 2cpx;
+  font-size: 28cpx;
+ 
+
+
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "head":"/components/head/head"
+    }
+  }
+}
+</script>

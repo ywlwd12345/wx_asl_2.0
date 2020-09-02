@@ -1,0 +1,652 @@
+<template>
+   <view class="container">
+
+  <nav title="{{title}}"></nav>
+
+<view class="detail">
+  <cell
+  c-for="{{detailsData.goodsInfo}}"
+  c-for-index="i"
+  c-for-item="item"
+  data-idx="{{i}}"
+  c-key="i"
+>
+  <view class="detail" c-if="{{false}}">
+    <i-card title="{{item.goodsName}}"  full="{{true}}" thumb="{{item.thumb}}" 
+ extra="{{item.price+'x'+item.totalCount}}">
+      <view slot="content" class="wrap">
+        <view class="order-name spec-order-text"><text>订单总价</text></view>
+        <view class="order-price spec-order-text"><text>{{item.totalMoney}}</text></view>    
+      </view>
+    </i-card>
+  </view>
+
+  <view class="details-card" c-bind:tap="goDetails" data-gid="{{item.goodsId}}">
+    <view class="panel-top">
+      <view class="panel-img" style="margin-left:50cpx;">
+        <image src="{{item.thumb}}" style="width:150cpx;height:150cpx;border-radius:20cpx;"></image>
+      </view>
+    
+    <view class="panel-text" style="width:440cpx;">
+      <view><text style="font-size:26cpx;">{{item.goodsName}}</text></view>
+      <view class="price-bottom">
+        <text class="details-text">￥{{item.price}}</text>
+        <text >x{{item.totalCount}}</text>
+      </view>
+    </view>
+    </view>
+  </view>
+
+  <view style="margin:12cpx;" c-if="{{item.statusNum==2||item.statusNum==3||item.statusNum==5}}" c-bind:tap="returnGood">
+    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">申请退货</van-button>
+  </view>
+
+  <view style="margin:12cpx;" c-if="{{item.statusNum==6}}">
+    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">已取消</van-button>
+  </view>
+
+  <view style="margin:12cpx;" c-if="{{item.statusNum==7}}">
+    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">退货中</van-button>
+  </view>
+
+  <view style="margin:12cpx;" c-if="{{item.statusNum==8}}">
+    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">同意退货</van-button>
+  </view>
+
+  <view style="margin:12cpx;" c-if="{{item.statusNum==9}}">
+    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">已退货</van-button>
+  </view>
+
+  <view c-if="{{detailsData.status==='已发货'}}">
+    <view c-if="{{i!==indexs}}">
+      <view class="items items4" c-if="{{detailsData.goodsInfo.length!==1}}">
+        <view c-bind:tap="logisticss(item,i)">
+          <van-button round type="default" size="small">
+          {{setBtnName}}
+          </van-button>
+        </view>
+      </view>
+    </view>
+  </view>
+</cell>
+  <view class="panel-bottom">
+  <text>订单总价</text>
+  <text class="details-text">￥{{detailsData.totalMoney}}</text>
+  </view>
+</view>
+   <!--detail end-->
+
+   <view class="detail-info">
+   <i-card   full="{{true}}"   i-class="cancel-border">
+    <view slot="content" >
+    <view class="info-name"><text class="spec-order-text">订单信息</text></view>
+    <view  class="wrap-info">
+    <text  class="spec-order-text">订单编号：{{detailsData.orderId}}</text>
+    <text  class="spec-order-text">抵扣的ASL1：{{detailsData.asl1}}</text>
+     <!--<text  class="spec-order-text">抵扣的ASL1：{{detailsData.paid_money===null?'0.00':detailsData.paid_money}}</text>-->
+    <text  class="spec-order-text">抵扣的ASL3：{{detailsData.asl3}}</text>
+    <text  class="spec-order-text">实际支付的金额：{{detailsData.realMoney}}</text>
+    <text  class="spec-order-text">创建时间：{{detailsData.createTime}}</text>
+    </view>
+    </view>
+</i-card>
+   </view>
+
+   <!--detail-info end-->
+   <view class="harvest-address">
+    <i-card   full="{{true}}"  i-class="cancel-border" >
+    <view slot="content" class="harvest-wrap">
+    <view class="address-logo">
+    <!--<van-icon name="location" size="30px" color="#f4211a" />-->
+     <image src="{{addressUrlIcon}}" style="width:60cpx;height:60cpx;"></image>
+    </view>
+     <view class="address-info" style="width:550cpx;">
+     <view class="user-info"><text  class="spec-order-text">{{detailsData.receiver}}</text><text>{{detailsData.mobile}}</text></view>
+     <view class="user-address"><text  class="spec-order-text">{{detailsData.province}}{{detailsData.city}}{{detailsData.district}}{{detailsData.place}}</text></view>
+    </view>
+    </view>
+</i-card>   
+   </view>
+    <!--harvest-address end-->
+<!-- 暂时隐藏-->
+    <view class="logistics-info" c-if="{{false}}">
+    <i-card   full="{{true}}"  i-class="cancel-border">
+    <view slot="content" class="logistics-wrap">
+    <view class="logistics-text"><text>物流信息</text></view>
+    <view class="company"><text>快递公司：</text></view>
+    <view class="logistics-number"><text>快递单号：</text></view>
+    </view>
+</i-card>
+    </view>
+    <!--logistics-info info-->
+
+    <view class="transport" c-if="{{detailsData.status==='已发货'}}">
+<van-collapse value="{{ activeNames }}" bind:change="onChangeInfo">
+  <van-collapse-item title="物流信息" name="1">
+  <view ><text  class="spec-order-text">{{msg}}</text></view>
+  <view><text  class="spec-order-text">快递单号:{{expNum}}</text></view>
+   <view><text  class="spec-order-text">快递公司:{{expName}}</text></view>
+<block 
+  c-for="{{transInfo}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+>
+  <view class="trans-panel">
+  <view class="icon" style="margin-right:50cpx;"><van-icon name="stop"  size="20px" 
+  color="{{i===0?'#bdbdbd':'#2196f3'}}" /></view>
+  <view class="time-info">
+  <view><text  class="spec-order-text spec-size">时间:{{item.time}}</text></view>
+  <view><text  class="spec-order-text spec-size">信息:{{item.status}}</text></view>
+  </view>
+  </view>
+  </block>
+
+
+  </van-collapse-item>
+</van-collapse>
+
+    
+    
+    </view>
+
+    <!-- transport end-->
+
+
+<view class="submit" c-if="{{detailsData.status==='待支付'}}" c-bind:tap="getNumber(detailsData.orderId)">
+
+<van-button type="primary"
+color="linear-gradient(to right, #e73827, #f85032)"
+ round block >立即付款</van-button>
+
+</view>
+
+ <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {getOrderData,getOrderNumber, transportInfo,returnsGoodsToOid,modifyState} from '../../api/index'
+import {addressUrlIcon} from '../../untils/icon.js'
+import store from '../../store'
+
+class OrderDetails implements OrderDetailsInterface {
+ props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     orderid: {
+      type:Number,
+      default: 0
+    }
+
+  }
+
+  data = {
+    addressUrlIcon:addressUrlIcon,
+    expName:'',
+    expNum:'',
+    indexs:0,
+    setBtnName:'查看物流',
+    title:"订单详情",
+    detailsData:{},
+    imageURL:require('../../assets/images/sp2.png'),
+    pay_status:0,
+    otherLoading:false,
+    status:'',
+    activeNames: ['0'],
+    logistics:'',
+    msg:'',
+    transInfo:{},
+    orderids:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+  goDetails(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  },
+
+    logisticss(val,i){
+      console.log(val,i)
+      this.indexs=i
+      this.expName=val.expName
+      this.expNum=val.expNum
+      this.getOsn(val.expNum)
+    },
+  //申请退货
+  returnGood(){ 
+      let status=7
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      modifyState({uname:uname,orderId:this.detailsData.orderId,status:status,goodsId:this.detailsData.goodsInfo[0].goodsId}).then(res=>{
+          console.log("结果",res)
+        if(res.code==1){
+          cml.showToast({
+            message: "申请成功",
+            duration: 1000
+          })
+          this.getData()
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+      })
+  },
+    //物流信息操作
+    onChangeInfo(e){
+       this.activeNames=e.detail
+
+    },
+
+    onClickLeft(){
+      cml.navigateBack(-1);
+     
+    },
+    //获取订单数据
+    getData(){
+      let uname
+      cml.getStorage("uname").then(value => {
+        uname=value
+        getOrderData({orderId:this.orderids,uname:uname}).then(res=>{
+          console.log(res,'哈哈猪')
+          if(res.code){
+            // res.data.thumb=store.state.domainUrl+res.data.thumb
+             res.data[0].createTime=res.data[0].createTime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+             res.data[0].createTime=res.data[0].createTime.substring(0,res.data[0].createTime.length-7)
+            res.data[0].goodsInfo.forEach(element => {
+              element.thumb='http://'+element.thumb             
+            });
+            this.detailsData=res.data[0]
+            // this.pay_status=res.data.pay_status
+            // this.status=res.data.status
+            //  this.detailsData.thumb=store.state.domainUrl+ this.detailsData.thumb
+            this.expName=this.detailsData.goodsInfo[0].expName
+            this.expNum=this.detailsData.goodsInfo[0].expNum
+            this.getOsn(res.data[0].goodsInfo[0].expNum)
+
+          }
+        }).catch(err=>{})
+      })
+    },
+     //获取付款信息
+    getNumber(id){
+      let uname
+      cml.getStorage("uname").then(value => {
+        uname=value
+        this.otherLoading=true
+        getOrderNumber({orderId:id,uname:uname}).then(res=>{
+         this.otherLoading=false
+        if(res.code==1){
+          cml.setStorage('payData',res.data)
+          cml.navigateTo({
+            path: '/pages/payment/payment',
+            query:{osn:res.data.totalMoney}
+          })
+        }else{
+          cml.showToast({
+            message: res.msg,
+            duration: 1000
+          })
+        }
+        
+      })
+        })
+    },
+    //间接获取物流信息
+    getOsn(no){
+  transportInfo({expNum:no}).then(res=>{
+    console.log('获取物流信息',res)
+    this.transInfo=res.data[0].expInfo
+    if(res.data[0].deliveryStatus==0){
+      this.msg="已揽件"
+    }else if(res.data[0].deliveryStatus==1){
+      this.msg="运输中"
+    }else if(res.data[0].deliveryStatus==2){
+      this.msg="正在派件"
+    }else if(res.data[0].deliveryStatus==3){
+      this.msg="已签收"
+    }
+    // this.logistics=res.status
+    // this.msg=this.getStatus(res.status)
+
+    })
+  },
+    getStatus(status){
+        switch(status) {
+     case '201':
+        return '快递单号错误'
+        break;
+     case '203':
+     return '快递公司不存在'
+        break;
+          case '204':
+     return '快递公司识别失败'
+        break;
+         case '205':
+     return '没有信息'
+        break;
+          case '207':
+     return '该单号被限制，错误单号 '
+        break;
+     default: return '没有信息'
+} 
+
+    },
+
+    tip(msg){
+       cml.showToast({
+        message: msg,
+        duration:1000
+    })
+
+    },
+
+    pop(){
+      let self=this
+
+      cml.confirm({
+    message:'你确定退货?',
+    confirmTitle:"确定",
+    cancelTitle: "取消"
+}).then(function(value){
+  if(value==='确定'){
+
+    returnsGoodsToOid({oid:self.orderid}).then(res=>{
+      self.tip(res.msg)
+    }).catch(err=>{})
+
+  }
+   
+})
+
+    },
+    
+
+    returnsGoods(){
+    
+    this.pop()
+      
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+  cml.getStorage('orderid').then((value)=>{
+    // 处理获取到的键值
+    this.orderids=value
+    console.log(this.orderids)
+    cml.removeStorage('orderid')
+})
+
+    this.getData()
+    // this.getOsn()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new OrderDetails();
+</script>
+
+<style scoped>
+.details-card{
+  background: #fff;
+  padding:30cpx 0;
+}
+.price-bottom{
+    margin-top:100cpx;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+
+}
+
+.panel-text{
+    margin-left:50cpx;
+   letter-spacing: 2cpx;
+}
+.panel-top{
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.panel-bottom{
+  background-color: #fff;
+  padding:15cpx 50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items:center;
+}
+.details-text{
+  letter-spacing: 2cpx;
+color:#ff410f;
+}
+
+.spec-order-text{
+   letter-spacing: 2cpx;
+}
+
+.trans-panel{
+  margin-top:20cpx;
+  color:#212121;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items:center;
+  
+
+}
+.spec-size{
+  font-size: 20cpx;
+  width: 600cpx;
+}
+
+
+
+.container{
+width: 750cpx;
+
+}
+.transport{
+  margin-top:20cpx;
+}
+
+.nav-root{
+ background: linear-gradient(to right, #e73827, #f85032);
+ 
+}
+
+.title-style{
+  color:#fff;
+}
+
+.icon-nav{
+  margin-bottom: 25cpx;
+}
+
+
+.detail{
+  width: 750cpx;
+}
+
+.wrap{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items:center;
+  position: static!important;
+}
+
+.order-price{
+  color: #ff0000;
+}
+
+.detail-info{
+  width: 750cpx;
+  margin-top:20cpx;
+}
+
+.info-name{
+   color: #ff0000;
+   font-size: 32rpx;
+   
+
+}
+
+.wrap-info{
+    display: flex;
+  flex-direction: column;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.harvest-address{
+    width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.harvest-wrap{
+    display: flex;
+  flex-direction: row;
+  justify-content:space-around ;
+  align-items:flex-start;
+
+}
+
+.user-info{
+  display: flex;
+  flex-wrap:wrap;
+  flex-direction: row;
+  justify-content:center;
+  align-items:center;
+
+}
+.address-info{
+  width: 550cpx;
+   display: flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+
+}
+
+.logistics-info{
+  width: 750cpx;
+  margin-top:20cpx;
+
+}
+
+.logistics-text{
+    color: #ff0000;
+   font-size: 32rpx;
+}
+
+.add-height{
+  width: 750cpx;
+}
+
+.submit{
+  margin: 80cpx auto;
+  width: 710cpx;
+}
+
+.custom-content{
+  width: 600cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.all-total{
+  color: #969697;
+  font-size: 24cpx;
+
+}
+
+.spec-text{
+  color: #df281a;
+}
+
+.total{
+    display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancel-border{
+position: static!important;
+}
+.items{
+  padding-top: 7cpx;
+  border-top: 2cpx solid rgb(238,238,238);
+  padding-bottom:7cpx;
+  border-bottom:2cpx solid rgb(238,238,238);
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.items4{
+    justify-content:flex-end;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+       "van-nav-bar": "/vant/nav-bar/index",
+       "van-icon": "/vant/icon/index",
+       "i-card": "/iview/card/index",
+       "van-submit-bar": "/vant//submit-bar/index",
+        "van-button": "/vant/button/index",
+        "van-loading": "/vant/loading/index",
+         "van-collapse": "/vant/collapse/index",
+          "van-collapse-item": "/vant/collapse-item/index"
+    }
+  }
+}
+</script>

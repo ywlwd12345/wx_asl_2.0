@@ -1,0 +1,393 @@
+<template>
+    <view class="container">
+<nav title="{{title}}"></nav>
+  <van-cell-group>
+  <van-field
+    required
+    clearable
+    label="收货人："
+     placeholder="请输入收货人"
+    bind:change="getName"
+    value="{{value1}}"
+  />
+
+  <van-field
+    label="手机号码："
+    placeholder="请输入你的联系方式"
+    required
+    bind:change="getPhone"
+     value="{{value2}}"
+  />
+  <van-field
+    required
+    value="{{valueArea}}"
+    label="省/直辖市/区"
+    disabled
+    border="{{ false }}"
+    right-icon="arrow"
+    bind:click-icon="openPup"
+  />
+  <van-field
+    required
+    label="详细地址："
+    type="textarea"
+    placeholder="请输入详细地址"
+    border="{{ false }}"
+    input-class="area-input"
+    bind:change="getDetail"
+    value="{{value3}}"
+  />
+
+    </van-cell-group>
+
+    <view class="area">
+   <van-popup
+  show="{{show}}"
+  round
+  position="bottom"
+  custom-style="height:40%"
+  bind:close="onClose"
+> 
+<van-area area-list="{{ areaList }}"  value="110101"
+ bind:change="getCode"
+ bind:confirm="yes"
+ bind:cancel="cancel"
+ />
+    </van-popup>
+    </view>
+<view class="setDefault">
+<view class="checkbox" c-if="{{areaId}}">
+<van-checkbox value="{{ checked }}" bind:change="onChange" shape="square">设为默认地址</van-checkbox>
+</view>
+</view>
+<view class="btn">
+<van-button type="primary" 
+  color="linear-gradient(to right, #e73827, #f85032)"
+ round block bind:tap="submit">保存收货地址</van-button>
+</view>
+  </view>
+</template>
+
+<script>
+import {addAddaddress, getOneAddrInfo,editAddressInfo,setDefaultAddr} from '../../api/index'
+import areaData from '../../untils/area'
+import cityId from '../../untils/city'
+import store from '../../store'
+import cml from 'chameleon-api';
+class AddLocation implements AddLocationInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    areaId:{
+       type: String,
+        default: ''
+    }
+  }
+
+  data = {
+    title:'新增地址',
+    areaList:areaData,
+    show:false,
+    province_id:'',
+    city_id:'',
+    county_id:'',
+    value:'',
+    username:'刘',
+    tel:'',
+    addr:'',
+    value1:'',
+    value2:'',
+    value3:'',
+    checked: false,
+    isFlag:false,
+    transitObj:{
+      province:'北京市',
+      city:'北京市',
+      county:'东城区'
+    },
+    valueArea:'北京市东城区',
+    id:''
+   
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    getName(e){
+    
+      this.username=e.detail
+
+    },
+    getPhone(e){
+       this.tel=e.detail
+
+
+    },
+    getDetail(e){
+      this.addr=e.detail
+
+    },
+    openPup(){
+      this.show=true
+      
+    },
+    //选择地址
+  getCode(e){
+      if(e.detail.values[0].name===e.detail.values[1].name){
+      this.valueArea=e.detail.values[0].name+e.detail.values[2].name
+        this.transitObj.province=e.detail.values[0].name
+        this.transitObj.city=e.detail.values[1].name
+        this.transitObj.county=e.detail.values[2].name
+        this.isFlag=true
+    }else{
+        this.valueArea=e.detail.values[0].name+e.detail.values[1].name+e.detail.values[2].name
+        this.transitObj.province=e.detail.values[0].name
+        this.transitObj.city=e.detail.values[1].name
+        this.transitObj.county=e.detail.values[2].name
+        this.isFlag=false
+    }
+    this.dealAreaObj() 
+  },
+  yes(){
+      this.show=false
+  },
+  cancel(){
+      this.show=false
+  },
+    //保存收货地址
+  addLocation(){
+    console.log(this.transitObj.province,this.transitObj.city,this.transitObj.county)
+    if(this.username==''||this.transitObj.province==undefined || this.transitObj.city==undefined  ||this.transitObj.county== undefined ||this.addr==''||this.tel==''){
+      cml.showToast({
+        message: '请将信息填写完整',
+        duration: 1500
+      })
+    }else{
+    let uname
+    cml.getStorage("uname").then(value => {
+    uname=value
+      addAddaddress({
+        uname:uname,
+        receiver:this.username,
+        province:this.transitObj.province,
+        city:this.transitObj.city,
+        district:this.transitObj.county,
+        place:this.addr,
+        mobile:this.tel
+        }).then(res=>{
+        if(res.code==1){
+          this.tip("添加成功")
+          setTimeout(()=>{
+            store.commit('changeCancel',false)
+            wx.navigateBack({
+              delta: 1
+            })
+          }, 800);
+        }
+        // if(res.code){
+        //   // this.tip(res.msg)
+        // }else{
+        //   // this.tip(res.msg)
+        // }
+      }).catch(err=>{})
+    })
+    }
+  },
+  //修改收货地址
+  editLocation(){
+    let uname
+    cml.getStorage("uname").then(value => {
+      uname=value
+      editAddressInfo({
+      uname:uname,
+      receiver:this.username,
+      province:this.transitObj.province,
+      city:this.transitObj.city,
+      district:this.transitObj.county,
+      place:this.addr,
+      mobile:this.tel,
+      id:this.id
+      }).then(res=>{
+        console.log(res)
+        if(res.code==1){
+          this.tip("修改成功")
+          setTimeout(()=>{
+            store.commit('changeCancel',false)
+            wx.navigateBack({
+              delta: 1
+            })
+          }, 800);
+        }
+      }).catch(err=>{})
+    })
+  },
+  submit(){
+    if(this.areaId){
+      this.editLocation()
+    }else{
+      this.addLocation()
+    }
+  },
+  tip(str){
+      cml.showToast({
+      message: str,
+      duration: 1000
+      })
+
+  },
+  getInfo(){
+    this.title="编辑地址" 
+    console.log(this.areaId)
+    getOneAddrInfo({id:this.areaId}).then(res=>{
+      console.log("详情")
+      console.log(res)
+      if(res.code==1){
+          this.valueArea=res.data[0].province+res.data[0].city+res.data[0].district
+          this.transitObj.province=res.data[0].province
+          this.transitObj.city=res.data[0].city
+          this.transitObj.county=res.data[0].district
+          this.value1=res.data[0].receiver
+          this.value2=res.data[0].mobile
+          this.value3=res.data[0].place
+          this.username=res.data[0].receiver
+          this.tel=res.data[0].mobile
+          this.addr=res.data[0].place
+          //地址id
+          this.id=res.data[0].id
+          // this.province_id=res.data.province_id
+          // this.city_id=res.data.city_id
+          // this.county_id=res.data.county_id
+              }
+    })
+
+
+  },
+    
+    IsEdit(){
+      if(this.areaId){
+        this.getInfo()
+
+      }
+
+    },
+     onChange(e){
+       console.log(e)
+      this.checked=e.detail
+      if(this.checked){
+        this.setDefault()
+      }
+  },
+  //设置默认地址
+  setDefault(){
+    let uname
+    cml.getStorage("uname").then(value => {
+    uname=value
+    setDefaultAddr({id:this.id,uname:uname}).then(res=>{
+      if(res.code==1)
+      this.tip("设置成功")
+      store.commit('changeCancel',false)
+      console.log(store.state.Cancels)
+    }).catch(err=>{})
+    })
+  },
+  //处理提交地区数据
+    dealAreaObj(){
+       this.province_id=cityId.find(d=>d.name===this.transitObj.province).id
+       if(this.isFlag){
+          this.city_id=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.county).id
+           this.county_id=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.county).s.find(d=>d.name===this.transitObj.county).id
+          
+       }else{
+           this.city_id=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.city).id
+           this.county_id=cityId.find(d=>d.name===this.transitObj.province).s.find(d=>d.name===this.transitObj.city).s.find(d=>d.name===this.transitObj.county).id
+       }
+    
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    this.IsEdit()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AddLocation();
+</script>
+
+<style  scoped>
+
+.btn{
+  width: 700cpx;
+  margin:0 auto;
+  margin-top:60cpx;
+
+ 
+}
+
+.area-input{
+  width: 750cpx;
+  height: 200cpx;
+  /* background: red; */
+  background: #eee;
+  padding-top:20cpx;
+  padding-left:10cpx;
+ 
+}
+
+.setDefault{
+  width: 750cpx;
+  height: 100cpx;
+  padding:10cpx;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+.checkbox{
+  padding-left:10cpx;
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "van-field": "/vant/field/index",
+         "van-button": "/vant/button/index",
+          "van-area": "/vant/area/index",
+          "van-popup": "/vant/popup/index",
+          "van-checkbox": "/vant/checkbox/index",
+          "van-checkbox-group": "/vant/checkbox-group/index"
+    }
+  }
+}
+</script>

@@ -1,0 +1,102 @@
+<template>
+  <view>
+  
+<van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+
+
+  </view>
+</template>
+
+<script>
+import Dialog from '../../vant/dialog/dialog'
+import {isLogin} from '../../api/grouping'
+import cml from 'chameleon-api';
+class AllTip implements AllTipInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+     dialog(){
+     Dialog.confirm({
+  title: '提示',
+  context:this,
+  message: '你登录可能已实效,去登录？'
+}).then(() => {
+   cml.redirectTo({
+  path: '/pages/login/login'
+}) 
+ 
+}).catch(() => { 
+
+
+});
+
+   },
+
+sureIsLogin(){
+  isLogin({}).then(res=>{
+    console.log(res,'登录状态')
+    if(res.code===403|| res.code===0){
+        this.dialog()
+    }
+
+
+
+
+  }).catch(err=>{})
+  
+
+
+}
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+  mounted() {
+  this.sureIsLogin()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AllTip();
+</script>
+
+<style >
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "van-dialog": "/vant/dialog/index"
+
+    }
+  }
+}
+</script>

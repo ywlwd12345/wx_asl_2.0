@@ -1,0 +1,306 @@
+<template>
+ <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+  <view class="pay-price">
+  <view class="pay pay1"><text class="spec-big-text">支付金额</text></view>
+  <view class="pay pay2"><text class="spec-big-text">￥{{payData.price}}</text></view>
+  <view class="pay pay3"><text class="spec-small-text">商品最多可抵扣的拼吧币数量:{{payData.price_pt}}</text></view>
+  </view>
+  <!-- asl-alipay end-->
+  <view class="asl-alipay" >
+  <view class="asl">
+  <view><text class="spec-big-text">优先使用拼吧币</text></view>
+  <view><van-checkbox value="{{ checkedPb }}" 
+   checked-color="#f4211a"
+  bind:change="onChangePb"></van-checkbox></view>
+  </view>
+  <view class="asl-details"><text class="spec-small-text">账户余额：{{payData.group_fee}}</text></view>
+  </view>
+  <view class="wx-alipay asl-alipay">
+  <view class="asl">
+  <view><text class="spec-big-text">微信支付</text></view>
+  <view><van-checkbox value="{{ checkedWx }}"
+   checked-color="#f4211a"
+   bind:change="onChangeWx"></van-checkbox></view>
+  </view>
+  <view class="asl-details spec-small-text"><text>微信支付 安全  便捷</text></view>
+  </view>
+  <!-- wx-alipay end-->
+  <view class="alipay-details asl-alipay">
+  <view class="asl">
+  <view> <van-icon name="info-o" /> </view>
+  </view>
+  <view class="asl-details spec-small-text"><text>{{payData.tip}}</text></view>
+  </view>
+  <!-- wx-alipay end-->
+  <view class="submit">
+  <van-button type="primary" round 
+  color="linear-gradient(to right, #e73827, #f85032)" 
+  block bind:click="goPay">立即付款</van-button>
+  </view>
+  </view>
+</template>
+
+<script>
+
+import { groupWxPay, getGroupWxPayInfo } from '../../api/grouping.js' //引入拼团模块接口
+import cml from 'chameleon-api';
+class GroupPay implements GroupPayInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+      orderNo: {
+      type: String,
+      default:''
+    }
+  }
+
+  data = {
+      title:'拼团支付',
+      viewPortHeight:'',
+      formData:{
+        uname:'',
+        order_no:'',
+        openId:'',
+        p_type:1
+      },
+       checkedPb:true,
+       checkedWx:true,
+        payData:{}
+
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  launchWxpay(data){
+// appId: "wxf7806bb101980be8"
+// mchId: "1563390611"
+// nonceTtr: "336zbasf3icaalkkvgrwt3glv0qro37w"
+// prepayID: "wx15153201682496e396916a461124138200"
+// sign: "BFE68CEE484D2D650813089E76582195"
+// timestamp: "1589527921"
+
+    if (process.env.platform === 'wx') {
+        wx.requestPayment({
+  timeStamp: data.timestamp,
+  nonceStr: data.nonceTtr,
+  package:'prepay_id='+data.prepayID,
+  paySign:data.sign,
+  signType: 'MD5',
+  success (res) {
+     cml.redirectTo({
+  path: '/pages/successfully-paid-together/successfully-paid-together'
+  })
+
+
+   },
+  fail (res) { 
+
+   
+    cml.showToast({
+        message:'支付失败',
+        duration: 2000
+      })
+  }
+})
+        }
+
+    },
+
+    tip(msg){
+       cml.showToast({
+        message:msg,
+        duration: 1500
+      })
+
+    },
+    getbaseData(){
+   cml.getStorage('uname').then((value)=>{
+         value &&  (this.formData.uname=value)
+           this.getOrderData()
+        })
+        cml.getStorage('openid').then((value)=>{
+        value && (this.formData.openId=value)
+})
+
+    },
+    goPay(){
+
+      this.InitiatePayment()
+
+
+
+    },
+
+    InitiatePayment(){
+       groupWxPay(this.formData).then(res=>{
+     
+        if(res.code){
+          this.launchWxpay(res.data[0])
+
+
+        }else{
+          this.tip(res.msg)
+
+        }
+
+      }).catch(err=>{})
+
+    },
+    onChangePb(e){
+    this.checkedPb=e.detail
+      if(e.detail){
+        this.formData.p_type=1
+
+      }else{
+          this.formData.p_type=0
+      }
+
+
+    },
+    onChangeWx(e){
+      // this.checkedWx=e.detail
+
+
+    },
+//获取订单信息
+    getOrderData(){
+
+      getGroupWxPayInfo({order_no:this.orderNo,uname:this.formData.uname}).then(res=>{        
+          if(res.code){
+            this.payData=res.data
+
+          }
+
+
+
+       }).catch(err=>{})
+
+
+
+
+    },
+
+    init(){
+       this.getbaseData()
+
+    
+
+    }
+
+
+
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+      this.formData.order_no=this.orderNo
+      cml.getStorage('viewPortHeight').then((value)=>{
+       this.viewPortHeight=value
+  })
+
+  this.init()
+ 
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new GroupPay();
+</script>
+
+<style scoped >
+.container{
+  width:750cpx;
+  background: #eee;
+
+}
+
+.spec-big-text{
+   letter-spacing: 2cpx;
+   font-size:36cpx;
+   font-weight: 600;
+   color:#212121;
+}
+
+.spec-small-text{
+   letter-spacing: 2cpx;
+   font-size:33cpx;
+   color:#bdbdbd;
+}
+
+
+.pay-price{
+  width: 750cpx;
+  background: #fff;
+  min-height: 258cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.asl{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+ 
+}
+
+.asl-alipay{
+  width: 100%;
+    display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  background:#fff;
+  min-height: 150cpx;
+  margin-top:20cpx;
+  padding:0 15cpx;
+
+}
+
+.submit{
+  width: 700cpx;
+  margin:0 auto;
+  margin-top:80cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+        "van-checkbox": "/vant/checkbox/index",
+        "van-icon": "/vant/icon/index",
+        "van-button": "/vant/button/index"
+    }
+  }
+}
+</script>

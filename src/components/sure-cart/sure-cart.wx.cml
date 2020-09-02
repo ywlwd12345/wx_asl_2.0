@@ -1,0 +1,312 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+     <nav title="{{title}}"></nav>
+     <view class="address" c-bind:tap="goAddress">
+     <view class="address-icon">
+     <!--<van-icon name="location"  color="#ff410f" size="20"/>-->
+      <image src="{{addressUrlIcon}}" style="width:40cpx;height:40cpx;"></image>
+     </view>
+     <view class="add-text" style="width:300cpx;">
+     <view class="tex1">
+     <text style="color:#ff410f;" class="spec-text" >{{address.receiver}}</text>
+     <text style="margin-left:8cpx;" class="spec-text">{{address.mobile}}</text>
+     </view>
+     <view class="tex2">
+     <text class="spec-text">{{address.province+address.city+address.district+address.place}}</text>
+     </view>
+     </view>
+     <!-- add text end-->
+     <view class="icon">
+     <van-icon name="arrow"  size="20"/>
+     </view>
+     </view>
+     <!-- address end-->
+
+     <block 
+       c-for="{{goodsLists}}"
+          c-for-index="i"
+          c-for-item="item">
+
+    <view class="panel">
+    <view class="img">
+      <image src="{{item.thumb}}" style="width:200cpx;height:200cpx;"></image>
+    </view>
+
+    <view class="details"  style="width:200cpx;">
+    <view class="name">
+    <text>{{item.name}}</text>
+    <text c-if="{{item.attr}}" 
+ style="color:#e0e0e0;font-size:28cpx;margin:10cpx 0;" class="spec-text">{{item.attr}}</text>
+    </view>
+     <view class="price" style="margin-top:15cpx;">
+    <text class="now-price spec-text">{{item.price}}</text>
+    </view>
+    </view>
+     <!-- details end-->
+
+    <view class="num">
+    <text class="spec-text">x{{item.count}}</text>
+    </view>   
+     </view>
+     <!-- panel end-->
+     </block>
+
+<view class="goods-total">
+<text class="spec-text">商品小计</text>
+<text class="spec-text">{{ total/100}}元</text>
+</view>
+
+<view class="goods-total">
+<text class="spec-text">运费</text>
+<text class="spec-text">{{ 0}}元</text>
+</view>
+
+
+     <view class="submit">
+<van-submit-bar
+  price="{{ total }}"
+  button-text="提交订单"
+  bind:submit="onClickButton"
+  tip="{{ true }}"
+  custom-class="add-height"
+  loading="{{false}}"
+>  
+</van-submit-bar>
+
+</view>
+   
+   
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {sureCar ,getDefaultAddress,sureCartData,getCartLIstData} from '../../api/index'
+import {  totalCart } from '../../untils/processData'
+import store from '../../store'
+import {addressUrlIcon} from '../../untils/icon.js'
+
+class SureCart implements SureCartInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+     str: {
+      type: String,
+      default: ''
+    }
+  }
+
+  data = {
+    addressUrlIcon:addressUrlIcon,
+    title:'确认订单',
+    imageSp2:require('../../assets/images/sp2.png'),
+    goodsLists:[],
+    total:0,
+    address:{},
+    viewPortHeight:'',
+    ids:[]
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    //获取购物车列表
+  getCartData(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    getCartLIstData({uname:uname}).then(res=>{
+      console.log("购物车",res)
+      if(res.code==0){
+        res.data.forEach((val)=>{
+        val.thumb='http://'+val.thumb
+          for(var i=0;i<this.ids.length;i++){
+            if(this.ids[i]==val.id){
+              this.goodsLists.push(val)
+              let nums=Number(val.price)*Number(val.count)
+              this.total=Number(this.total) + (Number(nums)*100)
+            }
+          }
+        });
+        console.log(this.goodsLists)
+      }
+    }).catch(err=>{})
+    })
+  },
+    getCar(){
+      sureCar({ids:this.str}).then(res=>{
+        if(res.code){
+          this.goodsLists=res.data.map(d=>{
+              d.thumb=store.state.domainUrl+ d.thumb
+              d.flag=true
+              return d
+
+          })
+          this.total=(Math.floor(totalCart(this.goodsLists)* 100) / 100)*100
+        }
+
+      }).catch(err=>{
+
+      })
+
+    },
+     getAddress(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      getDefaultAddress({uname:uname}).then(res=>{
+        if(res.code==1){
+          console.log("默认地址",res)
+          this.address=res.data
+        }
+      }).catch(err=>{})
+      })
+
+
+    },
+
+    yesCart(){
+
+
+    },
+
+    onClickButton(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      uname=value
+      sureCartData({uname:uname,addressId:this.address.id,DIN:1}).then(res=>{
+        if(res.code){
+          console.log("提交结果",res)
+          cml.setStorage('payData',res.data[0])
+          cml.navigateTo({
+            path: '/pages/payment/payment',
+            query:{osn:res.data[0].totalMoney}
+            })
+        }else{
+            cml.showToast({
+        message: res.msg,
+        duration: 1000
+      })
+
+
+        }
+      }).catch(err=>{})
+      })
+    },
+    goAddress(){
+       cml.navigateTo({
+  path: '/pages/address/address'
+  })
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.getCartData()
+    this.ids = this.str.split(","); 
+    this.getAddress()
+//     cml.getStorage('viewPortHeight').then((value)=>{
+//     // 处理获取到的键值
+//     this.viewPortHeight=value
+// })
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new SureCart();
+</script>
+
+<style  scoped>
+.container{
+  width: 750cpx;
+  background:#eee;
+}
+
+.spec-text{
+   letter-spacing: 2cpx;
+   font-size:28cpx;
+}
+
+.address{
+  width: 750cpx;
+  padding:10cpx 0;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+.panel{
+   width: 750cpx;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  margin-top:20cpx;
+  padding:10cpx 10cpx;
+
+}
+
+.now-price{
+  color:#ff0000;
+  /* font-weight: bold; */
+}
+
+.tex1{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.goods-total{
+  width:100%;
+  min-height: 100cpx;
+  padding: 0 20cpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background: #fff;
+  margin-top:20cpx;
+}
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+         "nav":"/components/nav/nav",
+          "van-icon": "/vant/icon/index",
+          "van-submit-bar": "/vant/submit-bar/index"
+    }
+  }
+}
+</script>

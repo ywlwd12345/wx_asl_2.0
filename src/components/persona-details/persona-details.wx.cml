@@ -1,0 +1,306 @@
+<template>
+  <view>
+  <nav title="{{title}}"></nav>
+
+<view class="column" style="height:15cpx"></view>
+  
+
+
+  <van-cell-group>
+  <van-field
+    required
+    clearable
+    label="姓名"
+    icon="arrow"
+    placeholder="请输入姓名"
+    bind:change="changeName"
+    error-message="{{checkName}}"
+    value="{{  realname }}"
+  />
+
+  <van-field
+    type="number"
+    label="身份证号"
+    icon="arrow"
+    placeholder="请输入身份证号码"
+    required
+    bind:change="changeIdNum"
+    error-message="{{checkId}}"
+    value="{{   idnum }}"
+  />
+
+<view c-bind:tap="changeBank">
+  <van-field
+    label="开户行"
+    icon="arrow"
+    placeholder="请输入开户行"
+    required
+    disabled
+    error-message="{{ checkHang }}"
+     value="{{   kaihuhang }}"
+    
+  />
+</view>
+
+   <van-field
+    type="number"
+    label="银行卡号"
+    icon="arrow"
+    placeholder="请输入银行卡号"
+    required
+    bind:change="changeCard"
+    error-message="{{  checkCard }}"
+      value="{{ card }}"
+  
+  />
+</van-cell-group>
+
+<view class="btn">
+
+
+<van-button type="primary" color="linear-gradient(to right, #e73827, #f85032)" round block  bind:click="dialog" c-if="{{determine}}">确定</van-button>
+<van-button type="primary" color="linear-gradient(to right, #e73827, #f85032)" round block  bind:click="modifys" c-else>修改</van-button>
+
+
+
+</view>
+  <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+  <van-popup show="{{shows}}" bind:close="onClose" position="bottom" custom-style="width: 100%;">
+      <van-picker
+        show-toolbar
+        title="选择开户行"
+        columns="{{ columns }}"
+        bind:cancel="onCancel"
+        bind:confirm="onConfirm"
+      />
+  </van-popup>
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import picker from '../../vant/picker/index'
+import Dialog from '../../vant/dialog/dialog'
+import popup from '../../vant/popup/index'
+import { changeUserInfo ,getMakerUserInfo,getBaseUserInfo,modify_info} from '../../api/index'
+
+class PersonaDetails implements PersonaDetailsInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    columns: ['中国银行', '中国建设银行', '中国农业银行', '中国工商银行'],
+    title:'个人信息', 
+    realname:'',
+    idnum:'',
+    kaihuhang:'',
+    card:'',
+    checkName:'',
+    checkId:'',
+    checkHang:'',
+    checkCard:'',
+    shows:false,
+    determine:true
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+ onConfirm(event) {
+    this.kaihuhang=event.detail.value
+    this.shows=false
+  },
+  onCancel() {
+    this.shows=false
+  },
+   dialog(){
+      Dialog.confirm({
+      title: '提示',
+      context:this,
+      message: '请务必填写正确无误的信息，信息保存后将无法更改'
+    }).then(() => {
+      this.sure()
+    }).catch(() => { 
+
+
+    });
+   },
+    sure(){
+      if(this.check()){
+         this.changeInfo()
+
+      }
+    },
+    check(){
+      if(!this.realname){
+        this.checkName='请输入姓名'
+        return false
+      }
+      else if(!this.idnum){
+        this.checkId='请输入身份证号'
+          return false
+      }else if(!this.kaihuhang){
+        this.checkHang='请输入开户行'
+          return false
+
+      }else if(!this.card){
+         this.checkCard='请输入银行卡号'
+          return false
+      }else{
+        return true
+      }
+
+    },
+  //提交身份信息
+  changeInfo(){
+    let uname
+    cml.getStorage("uname").then(value => {
+      uname=value
+      changeUserInfo({uname:uname,realName:this.realname,idNum:this.idnum,kaihuhang:this.kaihuhang,card:this.card}).then(res=>{
+        if(res.code){
+          cml.showToast({
+            message: "提交成功",
+            duration: 1000
+          })
+        // this.getUserInfo()
+        setTimeout(()=>{cml.navigateBack(-1)},2000)
+
+        }else{
+            cml.showToast({
+        message: res.msg,
+        duration: 1000
+      })
+        }
+      }).catch(err=>{})
+    })
+  },
+  // 修改信息
+  modifys(){
+      modify_info({newRealName:this.realname,newIdNum:this.idnum,newKaihuhang:this.kaihuhang,newCard:this.card}).then(res=>{
+        if(res.code==1){
+          cml.showToast({
+            message: "修改提交成功",
+            duration: 1500
+          })
+        // this.getUserInfo()
+        setTimeout(()=>{cml.navigateBack(-1)},2000)
+
+        }else{
+            cml.showToast({
+        message: res.msg,
+        duration: 1000
+      })
+        }
+      }).catch(err=>{})
+  },
+    changeName(e){
+      // console.log(e,9997775566)
+      
+      this.realname=e.detail
+      this.checkName=""
+
+
+
+
+    },
+    changeIdNum(e){
+      this.idnum=e.detail
+        this.checkId=''
+
+
+    },
+    changeBank(e){
+      this.shows=true
+      //  this.kaihuhang=e.detail
+        this.checkHang=''
+
+    },
+    changeCard(e){
+      this.card=e.detail
+      this.checkCard=''
+
+    },
+  getInfo(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+      uname=value
+      getBaseUserInfo({uname:uname}).then(res=>{
+        this.realname=res.data[0].realName
+        this.idnum=res.data[0].idNum
+        this.kaihuhang=res.data[0].kaihuhang
+        this.card=res.data[0].card
+        if(this.idnum!=''){
+          this.determine=false
+        }
+      }).catch(err=>{})
+
+    })
+  },
+    getUserInfo(){
+  getMakerUserInfo({}).then(res=>{
+    cml.setStorage('userInfo', res)
+   
+  })
+
+}
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    this.getInfo()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PersonaDetails();
+</script>
+
+<style scoped>
+
+.btn{
+  width: 80%;
+  margin:0 auto;
+  margin-top:40cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+        "van-field": "/vant/field/index",
+         "van-button": "/vant/button/index",
+         "van-picker": "/vant/picker/index",
+         "van-popup": "/vant/popup/index",
+         "van-dialog": "/vant/dialog/index"
+    }
+  }
+}
+</script>

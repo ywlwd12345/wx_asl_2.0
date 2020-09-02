@@ -1,0 +1,193 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+
+      <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      c-bind:onscroll="onScroll"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{shareList}}"
+          c-for-index="i"
+          c-for-item="item"
+        
+        >
+          <view class="panel">
+          <view class="left">
+          <view class="item1 item">
+          <text>{{item.channel}}</text>
+          </view>
+          <view class="item2 item"><text>{{item.createTime}}</text></view>
+          <view class="item3 item"><text>{{item.typeMsg}}</text></view>
+          </view>
+          <view class="right">
+          <text class="color2">{{item.fee}}</text>
+          </view>
+          </view>
+        </cell>
+    </list>
+
+
+  <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+import {getShareCoin,getAslData} from '../../api/index'
+import { moment }  from '../../untils/moment.js'
+
+class ShareCoin implements ShareCoinInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'分享收益',
+    shareList:[],
+    loading:false,
+    page:1,
+    viewPortHeight:''
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+   
+  }
+
+  methods = {
+     onBottom(){
+      cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getData()
+      }, 800)
+
+   },
+     getData(){
+      this.loading=true
+      let uname
+      cml.getStorage("uname").then(value => {
+      uname=value
+      getAslData({pageNum:this.page,type:'fee1',uname:uname}).then(res=>{
+        console.log(res,88888)
+        this.loading=false
+        if(!res.data.length){
+            cml.showToast({
+        message: "没有更多了",
+        duration: 1000
+      })
+
+        }
+        if(res.code){
+          this.shareList= this.shareList.concat(res.data.map(d=>{
+            if(d.type==1){
+              d.fee='+'+d.fee
+            }else{
+              d.fee='-'+d.fee
+            }
+            // d.createTime = d.createTime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+            // d.createTime = d.createTime.substring(0, d.createTime.length - 7);
+            return d
+          }))
+        }
+      }).catch(err=>{})
+      })
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ShareCoin();
+</script>
+
+<style scoped >
+
+.container{
+  width:750cpx;
+  
+
+
+}
+
+.panel{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 750cpx;
+  background: #fff;
+  border-bottom:2cpx solid #eee;
+  padding:20cpx 20cpx;
+
+}
+
+.item{
+  margin-top:15cpx;
+}
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.color2{
+  color:#ff410f;
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+    "nav":"/components/nav/nav",
+      "i-spin": "/iview/spin/index"
+
+    }
+  }
+}
+</script>

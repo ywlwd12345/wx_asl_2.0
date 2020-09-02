@@ -1,0 +1,341 @@
+<template>
+ <view class="container">
+  <head title="{{title}}"></head>
+  <!-- view end-->
+  <view class="news-list">
+
+      <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{newsLists}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+ 
+
+  <view class="list">
+  <view class="list-head">
+  <view class="head-left">
+  <view class="head-img">
+   <image src="{{item.img}}" style="width:48cpx;height:48cpx;"></image>
+  </view>
+  <view class="head-message">
+  <text class="spec-text">{{item.name}}</text>
+  </view>
+  </view>
+  <!-- head-left end-->
+  <view class="head-right">
+  <view class="news-time"><text  class="spec-text">{{item.createTime}}</text></view>
+  </view>
+
+  <!--head-right end-->
+  
+  </view>
+  <!-- list-head end-->
+
+  <view class="list-content">
+  <view class="mess-text"><text  class="spec-text">{{item.message}}</text></view>
+  <view class="content-btn">
+  <view><van-button plain  round type="info" data-id="{{item.id}}" 
+   color="{{item.color}}" size="mini" bind:click="read">已读</van-button></view>
+  <view style="margin-left:20cpx"><van-button plain data-id="{{item.id}}" round type="info" 
+  bind:click="ignore"
+  size="mini" color="#313131" style="margin-right:15cpx" >忽略</van-button></view>
+  </view>
+  </view>
+  <!-- list-content end-->
+
+  
+  </view>
+
+  <!-- list end-->
+    </cell>
+    </list>
+
+  
+  
+  </view>
+
+    <!-- news-list end-->
+
+       <c-loading loading="{{ loading}}"></c-loading>
+
+
+
+
+
+
+
+   
+  </view>
+</template>
+
+<script> 
+
+import {getUserNews,delNews,yetNews} from '../../api/index'
+import { moment }  from '../../untils/moment.js'
+import {dealStoreTitleName} from '../../untils/processData'
+import cml from 'chameleon-api';
+import store from '../../store'
+class News implements NewsInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    imageNews:require('../../assets/images/linkIcon/ld.png'),
+    newsLists:[],
+    page:1,
+    loading:false,
+    title:'消息中心'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+    getNewsData(){
+      let uname
+      cml.getStorage("uname").then(value => {
+        uname=value
+      getUserNews({uname:uname,pageNum:this.page}).then(res=>{
+        console.log(res,999888776655233)
+      if(!store.state.isCancelLogin){
+        if(res.code==403){
+          cml.redirectTo({
+            path: '/pages/login/login'
+          })
+          cml.showToast({
+            message: "登录失效",
+            duration: 2000
+          })
+        }
+      }
+        if(res.code){
+          this.newsLists=this.newsLists.concat(res.data.map(d=>{
+             //处理json时间
+             d.createTime=moment(d.createTime)
+            d.color='#fc3741'
+            d.img=require('../../assets/images/linkIcon/ld.png')
+            d.name=dealStoreTitleName(d.message,10)
+            return d
+          }))
+        }
+        if(!res.data.length){
+          cml.showToast({
+            message: "没有更多数据了",
+            duration: 1000
+          })
+        }
+
+      }).catch(err=>{})
+      })
+
+    },
+    onBottom(){
+        cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getNewsData()
+      }, 800)
+
+    },
+    read(e){
+      let id=e.currentTarget.dataset.id
+      // this.goYetNews(id)
+      this.newsLists= this.newsLists.map(d=>{
+        if(d.id===id){
+          d.color='#313131'
+          d.img=require('../../assets/images/linkIcon/ld1.png')
+        }
+        return d
+      })
+      // cml.redirectTo({
+      //   path: '/pages/share-registration/share-registration'
+      // })
+    },
+    goYetNews(id){
+      yetNews({id:id}).then(res=>{
+        if(res.code){
+          this.newsLists= this.newsLists.map(d=>{
+            if(d.id===id){
+              d.color='#313131'
+              d.img=require('../../assets/images/linkIcon/ld1.png')
+            }
+            return d
+          })
+
+        }
+      }).catch(err=>{
+
+      })
+    },
+    ignore(e){
+      let id=e.currentTarget.dataset.id
+      this.delet(id)
+    },
+    delet(id){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+        uname=value
+      this.loading=true
+      delNews({uname:uname,id:id}).then(res=>{
+        console.log("删除消息")
+        console.log(res)
+        setTimeout(()=>{
+          this.loading=false
+        },300)
+        if(res.code){
+          this.newsLists=this.newsLists.filter(d=>d.id!==id)
+        }
+
+      })
+      })
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    this.getNewsData()
+
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new News();
+</script>
+
+<style  scoped>
+
+.container{
+  width: 750cpx;
+  
+  
+}
+
+.spec-text{
+   letter-spacing: 2cpx;
+   font-size: 26cpx;
+}
+
+
+
+.news-list{
+  width: 750cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom:150cpx;
+ 
+}
+
+
+.list{
+  width: 710cpx;
+  background: #fff;
+  min-height: 210cpx;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 20cpx;
+  margin-top:20cpx;
+
+}
+.list-head{
+  width: 100%;
+  border-bottom: 2cpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  padding:15cpx;
+
+}
+
+.head-left{
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction: row;
+
+
+}
+.list-content{
+   margin-top:20cpx;
+   margin-bottom: 20cpx;
+   color: #6a6a6a;
+
+}
+.mess-text{
+  padding-left:15cpx;
+   color: #6a6a6a;
+}
+
+.head-message{
+  text-align: center;
+  color: #6a6a6a;
+}
+
+.news-time{
+  color: #6a6a6a;
+
+}
+.content-btn{
+  width: 710cpx;
+  display: flex;
+  justify-content:flex-end;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "van-button": "/vant//button/index",
+        "c-loading": "cml-ui/components/c-loading/c-loading",
+          "head": "../head/head"
+    
+    }
+  }
+}
+</script>

@@ -1,0 +1,191 @@
+<template>
+  <view class="container">
+
+   <scroller
+    scroll-direction="{{scrollDirection}}"
+    width="{{710}}"
+    height="{{-1}}"
+  >
+  <block  c-for="{{listArray}}"
+        c-for-index="i"
+        c-for-item="item">
+  <view class="panels"  c-bind:click="goDetailsGoods" data-gid="{{item.id}}" >
+   <image src="{{item.thumb}}" style="width:200cpx;height:200cpx;border-radius:20cpx;"></image>
+   <view class="goods-wrap">
+  <view class="price">
+  <view class="price-left"><text>￥{{item.price}}</text></view>
+  <view class="price-right"><text>￥{{item.market_price}}</text></view>
+  </view>
+  <!--price end-->
+  <view class="titles"><text class="title-text">{{ item.name }}</text></view>
+   </view>
+   <!--goods-wrap end-->
+               
+
+
+
+    </view>
+
+    </block>
+  
+  
+  
+  
+  </scroller>
+  
+
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import { dealStoreTitleName } from '../../untils/processData'
+class ScrolX implements ScrolXInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+    panels:{
+       type: Array,
+      default: []
+    }
+
+  }
+
+  data = {
+    imageSrc:require('../../assets/images/sp2.png')  ,
+    listArray:[],
+    scrollDirection:'horizontal',
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+   
+  }
+
+  methods = {
+   
+dealTitle(){
+  console.log("快来看啊")
+  console.log(this.panels)
+  this.panels.map(d=>{
+    d.name=dealStoreTitleName(d.name,13)
+    return d
+  })
+  this.listArray=this.panels
+  
+},
+goDetailsGoods(e){
+  let gid=e.currentTarget.dataset.gid
+  cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:gid}
+  })
+  }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.dealTitle()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ScrolX();
+</script>
+
+<style scoped >
+.panels{
+  width: 200cpx;
+min-height:320cpx;
+display: inline-block;
+margin-right: 10cpx;
+background: #fff;
+padding:10cpx;
+margin-bottom:20cpx;
+border-radius: 20cpx;
+}
+
+.goods-wrap{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  
+}
+
+.container {
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+  margin-top:15cpx;
+}
+
+.price-right text{
+  color:#b0bec5;
+  text-decoration:line-through;
+  font-size: 22cpx;
+
+}
+
+.price-left{
+  color:#ff2626;
+}
+
+
+
+.price-left text{
+  font-size: 28cpx;
+}
+
+
+.price{
+  width: 100%;
+  display: flex;
+  justify-content:center;
+  align-items:flex-start;
+  flex-direction: column;
+}
+
+.titles{
+  width: 100%;
+  text-align: center;
+}
+
+.titles .title-text{
+  font-size: 22cpx;
+  letter-spacing: 2cpx;
+  color:#b0bec5;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {}
+  }
+}
+</script>

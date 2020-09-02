@@ -1,0 +1,520 @@
+<template>
+  <view>
+<view class="nt-pop"  c-if="{{ntShow}}" >
+<view class="nt-icon">
+<view class="nt-icon-close">
+<van-icon name="cross"  color="#80848f" size="30px" bind:click="ntClose"/>
+</view>
+</view>
+<!-- nt-icon end-->
+<view class="nt-img">
+<image src="{{ntImg}}"  style="width:650cpx;height:460cpx;" class="nt-bigImg"   data-roomid="{{showItem.roomid}}" c-bind:tap="goLive"></image>
+</view>
+<view class="nt-btn">
+<view class="nt-btn1">
+ <van-button  round size="small" color="linear-gradient(to right, #ff512f, #f09819)" 
+  data-roomid="{{showItem.roomid}}" bind:click="goLive" custom-style="padding:0 20px;">立即观看</van-button>
+
+</view>
+<view class="nt-btn2">
+ <van-button  round size="small"  open-type="share"  color="linear-gradient(to right, #ff512f, #f09819)"
+  custom-style="padding:0 20px;" >立即分享</van-button>
+   <origin-button open-type='share' data-livedata="{{showItem}}"
+   class="share-nt-btn" size="mini" type="primary" id="1">去分享</origin-button>
+</view>
+</view>
+</view>
+
+<!-- nt-pop end-->
+
+
+
+
+<!-- 下面弹框不展示的原因是客户太脑瘫  非要自己ui设计的脑瘫弹框-->
+<van-dialog
+  use-slot
+  show="{{false}}"
+  show-confirm-button="{{showSure}}"
+>
+<view class="live-pop"  c-if="{{showItem.flag}}">
+<view class="live-icon">
+<view class="live-ani">
+<view class="ani"></view>
+<view class="ani"></view>
+<view class="ani"></view>
+<view class="ani"></view>
+</view>
+</view>
+<!-- live-icon end-->
+<view  class='live-img'>
+ <origin-image src="{{showItem.cover_img}}" c-if="{{showItem.flag}}" style="width:100%;height:300cpx;"></origin-image>
+</view>
+<!-- live-img end-->
+<view class="live-msg">
+<view><text class="live-text">正在直播：{{showItem.name}}</text></view>
+<view><text class="live-text">主播：{{showItem.anchor_name}}</text></view>
+</view>
+
+<!-- live-msg end-->
+
+<view class="live-btn">
+<view class="btn">
+  <van-button plain hairline type="info" round size="small"  open-type="share"  >去分享</van-button>
+
+  <origin-button open-type='share' data-livedata="{{showItem}}"
+   class="share-btn" size="mini" type="primary" id="1">去分享</origin-button>
+</view>
+<view class="btn">
+ <van-button plain hairline type="primary" round size="small" color="#ff410f" 
+  data-roomid="{{showItem.roomid}}" bind:click="goLive">去围观</van-button>
+
+</view>
+
+</view>
+
+<!-- live-btn end-->
+
+<view class="close-icon">
+
+<van-icon name="cross"  color="#fff" size="20px" bind:click="close"/>
+
+
+</view>
+
+
+
+
+</view>
+
+<!-- live-pop end-->
+ 
+
+
+</van-dialog>
+
+
+
+  </view>
+</template>
+
+<script>
+
+import {getLiveRoom } from '../../api/grouping.js' //引入拼团模块接口
+import cml from 'chameleon-api';
+
+class LivePop implements LivePopInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    show:false,
+    zIndex:99999,
+    showSure:false,
+    showItem:null,
+    liveRoom:[],
+    ntImg:'https://aishenglian.com/start/zhibo.png',
+    ntShow:false,
+  
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+     getData(){
+    getLiveRoom({start:0,limit:10 }).then(res=>{
+     res.code===403 && (cml.removeStorage('liveRoom'))
+  if(res.data.errcode===0){
+    this.liveRoom=res.data.room_info.map((d,index)=>{
+      d.live_status_text=this.delLiveStatus(d.live_status)
+      d.cover_img=d.cover_img.replace(/\\\//gi, "/")
+      if(d.live_status===101){
+         d.flag=true
+        
+        //  有直播的时候  推送商品弹框不出现
+        this.$cmlEmit('onshow',{value:false})
+        this.showItem=d
+        this.show=true
+        this.ntShow=true
+     
+      }
+      return d
+    })
+    cml.setStorage('liveRoom', this.liveRoom)
+
+  }
+
+
+}).catch(err=>{
+
+})
+
+    },
+
+    delLiveStatus(status){
+      switch(status) {
+     case 101:
+        return '直播中'
+        break;
+     case 102:
+        return '未开始'
+        break;
+
+        case 103:
+        return '查看回放'
+        break;
+
+          case 104:
+        return '禁播'
+        break;
+
+          case 105:
+        return '暂停'
+        break;
+          case 106:
+        return '异常'
+        break;
+
+            case 107:
+        return '已过期'
+        break;
+     default:
+        return '未知'
+} 
+
+
+
+
+  },
+    goLive(e){
+   
+  let roomId=e.currentTarget.dataset.roomid
+  let customParams = encodeURIComponent(JSON.stringify({ path: 'pages/details/details', pid: 1 }))  //开发者携带的自定义参数
+ 
+wx.navigateTo({
+    url: `plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id=${roomId}&custom_params=${customParams}`
+
+})
+
+    },
+
+    close(){
+      this.show=false
+    },
+
+    ntClose(){
+      this.ntShow=false
+     
+    }
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+   
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new LivePop();
+</script>
+
+<style scoped>
+
+.live-pop{
+  width: 100%;
+  min-height: 650cpx;
+  position: relative;
+ 
+
+}
+
+.live-icon{
+   margin: 0 auto;
+ margin-top:20cpx;
+  display: flex;
+  flex-direction:row;
+  justify-content: center;
+  align-items: center;
+  width: 100cpx;
+  height: 100cpx;
+  background: #000;
+  border-radius: 50%;
+  opacity: 0.9;
+ 
+}
+
+
+.live-ani{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 64cpx;
+}
+
+.ani {
+  width: 10cpx;
+  height: 32cpx;
+  background-color: #3cefff;
+}
+
+.ani:nth-of-type(1) {
+  animation: grow 1s -0.45s ease-in-out infinite;
+}
+
+.ani:nth-of-type(2) {
+  animation: grow 1s -0.3s ease-in-out infinite;
+}
+
+.ani:nth-of-type(3) {
+  animation: grow 1s -0.15s ease-in-out infinite;
+}
+
+.ani:nth-of-type(4) {
+  animation: grow 1s ease-in-out infinite;
+}
+
+@keyframes grow {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(2);
+  }
+}
+
+.live-img{
+  margin-top:15cpx;
+}
+
+.live-msg{
+  margin-top:15cpx;
+  padding-left:15cpx;
+}
+
+.live-text{
+  color: #1c2438;
+  letter-spacing: 2cpx;
+
+}
+
+.live-btn{
+  margin-top:15cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.close-icon{
+  position: absolute;
+  top: 8cpx;
+  right: 8cpx;
+  background: #1c2438;
+  width: 50cpx;
+  height: 50cpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+
+.share-btn{
+ width: 150cpx;
+ height:80cpx;
+position: absolute;
+bottom:0cpx;
+opacity: 0;
+
+
+
+
+}
+
+.live-pop{
+
+     animation:bounceInDown 2s;
+
+}
+
+
+@keyframes bounceInDown {
+  from,
+  60%,
+  75%,
+  90%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0) scaleY(3);
+    transform: translate3d(0, -3000px, 0) scaleY(3);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25px, 0) scaleY(0.9);
+    transform: translate3d(0, 25px, 0) scaleY(0.9);
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, -10px, 0) scaleY(0.95);
+    transform: translate3d(0, -10px, 0) scaleY(0.95);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, 5px, 0) scaleY(0.985);
+    transform: translate3d(0, 5px, 0) scaleY(0.985);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* 客户脑瘫弹框 */
+.nt-pop{
+  width: 650cpx;
+  min-height: 500cpx;
+  position: fixed;
+  top:50%;
+  left: 50%;
+  z-index: 999;
+  transform: translate(-50%,-50%);
+}
+
+
+
+
+
+.nt-icon{
+  width: 100%;
+  min-height: 50cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-end;
+  align-items: center;
+}
+
+
+
+
+.nt-icon-close{
+  width:70cpx;
+  height: 70cpx;
+  border:1cpx solid #1c2438;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
+
+  
+}
+
+
+.nt-btn{
+  width: 100%;
+  margin-top:15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+
+.nt-btn2{
+  position: relative;
+
+}
+
+
+.share-nt-btn{
+  width:200cpx;
+  height:80cpx; 
+  position: absolute;
+  top:0;
+  right:0;
+  opacity: 0;
+}
+
+
+
+.nt-bigImg{
+
+   animation: switch 2s ease-out infinite;
+
+
+}
+
+
+@keyframes switch {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.8);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-dialog": "/vant/dialog/index",
+        "van-button": "/vant/button/index",
+        "van-icon": "/vant/icon/index"
+    }
+  }
+}
+</script>

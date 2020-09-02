@@ -1,0 +1,802 @@
+<template>
+  <view class="container">
+  <!--<head title="{{title}}"></head>-->
+  <head-ver2 title="购物车"></head-ver2>
+
+  <view class="car-show" c-if="{{!cartList.length}}">
+   <image src="{{noCarImg}}" style="width:301cpx;height:301cpx"></image>
+   <view class="cart-tip" style="margin-top:36cpx;font-size:24
+   cpx;color: #BFBFBF;">购物车空空的哦，快去选购商品吧</view>
+  </view>
+  <!-- head end-->
+   <list
+      bottom-offset="{{bottomOffset}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+      c-if="{{false}}"
+    >
+     <cell
+          class="cell"
+          c-for="{{ cartList }}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+  <view class="store-card"  c-if="{{false}}">
+  <view class="check-box">
+  <van-checkbox value="{{ item.selected }}"
+  icon-size="14px"
+   checked-color="#f4211a" bind:change="onChange" data-id="{{item.id}}">
+  </van-checkbox>
+  </view>
+<!--check-box end-->
+
+<view class="store-img">
+ <image src="{{item.thumb}}" style="width:120cpx;height:120cpx;border-radius:20cpx;"></image>
+</view>
+
+<!-- store-img end-->
+<view class="description">
+<view class="store-name" style="width:480cpx;">
+<text class="spec-text-cart"> {{item.name}}</text>
+ <text c-if="{{item.attr}}" 
+ style="color:#e0e0e0;font-size:28cpx;margin:10cpx 0;">{{item.attr}}</text>
+</view>
+<view class="calculator">
+<view><text class="spec-text">￥{{item.price}}</text></view>
+<view class="count">
+<van-stepper value="{{ item.count }}" integer  disable-input bind:plus="onChangeStep" bind:minus="reduce" data-id="{{item.id}}"/>
+ </view>
+</view>
+<!-- calculator end-->
+</view>
+
+<!-- description end-->
+
+<view class="delete">
+<van-icon name="delete" size="25" bind:click="deleteCart" data-id="{{item.id}}"/>
+</view>
+
+  
+  
+  </view>
+  <!-- store-card end-->
+ </cell>
+
+  </list>
+
+  <view class="swipeout-wrap"  c-for="{{ cartList }}"
+          c-for-index="i"
+          c-for-item="item"
+          ref='refTest'
+         c-key="id">
+    <i-action-sheet visible="{{ visible2 }}" actions="{{ actions2 }}" 
+    i-class-mask="show-opacity"
+     bind:cancel="handleCancel2" bind:click="handleClickItem2" mask-closable="{{ true }}">
+        <view slot="header" style="padding: 16px" class="tip-center">
+            <view style="color: #444;font-size: 16px">确定吗？</view>
+            <text>删除后无法恢复哦</text>
+        </view>
+    </i-action-sheet>
+    <i-swipeout  i-class="spec-swipeout" operateWidth="{{100}}"
+    show-cancel
+    unclosable="{{true}}" toggle="{{toggle}}">
+        <view slot="content">
+         <view class="store-card">
+  <view class="check-box">
+  <van-checkbox value="{{ item.selected }}" checked-color="#f4211a" bind:change="onChange" data-id="{{item.id}}">
+  </van-checkbox>
+  </view>
+<!--check-box end-->
+
+<view class="store-img">
+ <image src="{{item.thumb}}" style="width:180cpx;height:180cpx;border-radius:10cpx;"></image>
+</view>
+
+<!-- store-img end-->
+<view class="description">
+<view class="store-name" style="max-width:470cpx;">
+<text class="spec-text-cart" style="margin-right:50cpx;"> {{item.name}}</text>
+ <text c-if="{{item.attr}}" 
+ style="color:#e0e0e0;font-size:28cpx;margin:10cpx 0;">{{item.attr}}</text>
+</view>
+<view class="calculator">
+<text class="spec-text">￥{{item.price}}</text>
+<view class="count" style="margin-right:50cpx;">
+<van-stepper value="{{ item.count }}" integer  disable-input bind:plus="onChangeStep" 
+ input-width="25px" button-size="18px" bind:minus="reduce" data-id="{{item.id}}" />
+ </view>
+</view>
+<!-- calculator end-->
+</view>
+
+<!-- description end-->
+  
+  </view>
+  <!-- store-card end-->
+        </view>
+
+<!--content end-->
+
+
+        <view slot="button" class="i-swipeout-demo-button-group" >
+            <view class="i-swipeout-demo-button1"  style="height:{{btnHeight}}px;"   bindtap="actionsTap1" data-item="{{item}}">
+            <text class="swipeout" >{{item.isCollect?'已关注':'关注'}}</text>
+            </view>
+            <view class="i-swipeout-demo-button2" 
+            style="height:{{btnHeight}}px;"  bindtap="actionsTap2" data-id="{{item.id}}"> 
+            <text class="swipeout" >删除</text>
+            </view>
+        </view>
+    </i-swipeout>
+
+  </view>
+
+  <!-- swipeout-wrap end-->
+
+
+
+
+
+<view class="submit">
+<van-submit-bar
+  price="{{ total }}"
+  button-text="{{'结算('+num+')'}}"
+  bind:submit="yesCart"
+  tip="{{ true }}"
+  custom-class="add-height"
+  loading="{{false}}"
+  button-class="submit-btn"
+>
+<view style="margin-left:20px;">
+<van-checkbox value="{{ checked }}" checked-color="#f4211a"  bind:change="onChangeAll">全选</van-checkbox>
+</view>
+
+  
+</van-submit-bar>
+
+</view>
+<!-- submit end-->
+<view class="spec-column"></view>
+<view c-if="{{loading}}" class="loading">
+<van-loading   type="spinner" />
+</view>
+
+<van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+
+  
+
+ 
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import {getCartLIstData,sureCartSingleData, sureCartData ,deleteCart,AllCartData,modifyCart,CollectiongGoods} from '../../api/index'
+// import {  totalCart } from '../../untils/processData'
+import Dialog from '../../vant/dialog/dialog'
+import {tip} from '../../untils/processData'
+
+
+class ShoppingCart implements ShoppingCartInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+   toggle:false,
+   visible2: false,
+   btnHeight:0,
+  actions2: [
+            {
+                name: '删除',
+                color: '#ed3f14'
+            },
+             {
+                name: '取消',
+                color: '#80848f'
+            },
+             {
+                name: '',
+                color: '#fff'
+            }
+        ],
+   checked:false,
+   imageSp2:require('../../assets/images/sp2.png'),
+   value:1,
+   lists:[1,2,3,4,5,6,7],
+   cartList:[],
+   total:0,
+   num:0,
+  loading:false,
+  deletedata:{
+    uname:'',
+    goodsId:''
+  },
+  AllCartData:{
+    uname:'',
+    selected:''
+  },
+  dleetCartData:{
+    uname:'',
+    goodsId:'',
+    count:'',
+    selected:''
+  },
+
+id:'',//商品id
+noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png'
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+    deleteCart(e){
+      let id=e.currentTarget.dataset.id
+      this.pop(id)
+    },
+//删除购物车物品
+  delete(id){
+    this.deletedata.goodsId=id
+    cml.getStorage("uname").then(value => {
+      this.deletedata.uname=value
+      deleteCart(this.deletedata).then(res=>{
+        if(res.code==1){
+            cml.showToast({
+              message: "删除成功",
+              duration: 1000
+            })
+          this.getCartData()
+        }
+      }).catch(err=>{})
+    })
+  },
+
+    tip(msg){
+       cml.showToast({
+        message: msg,
+        duration:1000
+    })
+
+    },
+
+  pop(id){
+    let self=this
+    cml.confirm({
+    message:'你确定删除当前商品?',
+    confirmTitle:"确定",
+    cancelTitle: "取消"
+    }).then(function(value){
+      if(value==='确定'){
+        self.delete(id)
+      }
+      
+    })
+
+  },
+//勾选
+  onChange(e){
+    let id=e.target.dataset.id
+    cml.getStorage("uname").then(value => {
+      this.dleetCartData.uname=value
+      this.dleetCartData.goodsId=id
+      this.cartList.forEach((value)=>{
+        if(value.id==id){
+          this.dleetCartData.count=Number(value.count)
+          if(value.selected==true){
+            this.dleetCartData.selected=false
+          }else{
+            this.dleetCartData.selected=true
+          }
+        }
+      });
+      //转换成json格式
+      this.dleetCartData=JSON.stringify(this.dleetCartData)
+      modifyCart(this.dleetCartData).then(res=>{
+        console.log(res)
+        this.getCartData()
+          //转换回对象
+        this.dleetCartData=JSON.parse(this.dleetCartData)
+      }).catch(err=>{})
+    })
+  },
+    //获取购物车列表
+  getCartData(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    getCartLIstData({uname:uname}).then(res=>{
+      console.log("购物车",res)
+      if(!store.state.isCancelLogin){
+        if(res.code==403){
+          cml.redirectTo({
+            path: '/pages/login/login'
+          })
+          cml.showToast({
+            message: "登录失效",
+            duration: 2000
+          })
+        }
+      }
+      if(res.code==0){
+        res.data.forEach((val)=>{
+        val.thumb='http://'+val.thumb
+        });
+        this.cartList=res.data
+        //设置列表高度
+        this.setHeight()
+        this.pricenum()
+      }
+    }).catch(err=>{})
+    })
+  },
+  //计算价格
+  pricenum(){
+    this.total=0
+    this.num=0
+    for(var i=0;i<this.cartList.length;i++){
+      if(this.cartList[i].selected==true){
+        let nums=Number(this.cartList[i].price)*Number(this.cartList[i].count)
+        this.total=Number(this.total) + (Number(nums)*100)
+        this.num=Number(this.num)+Number(this.cartList[i].count)
+        
+      }
+    }
+  },
+  //步进器
+  onChangeStep(e){
+    console.log("增加")
+    let id=e.target.dataset.id
+    cml.getStorage("uname").then(value => {
+      this.dleetCartData.uname=value
+      this.dleetCartData.goodsId=id
+      this.cartList.forEach((value)=>{
+        if(value.id==id){
+          this.dleetCartData.count=Number(value.count)+1
+          this.dleetCartData.selected=value.selected
+        }
+      });
+      //转换成json格式
+      this.dleetCartData=JSON.stringify(this.dleetCartData)
+      modifyCart(this.dleetCartData).then(res=>{
+        this.getCartData()
+          //转换回对象
+        this.dleetCartData=JSON.parse(this.dleetCartData)
+      }).catch(err=>{})
+    })
+
+  },
+  reduce(e){
+    let id=e.target.dataset.id
+    cml.getStorage("uname").then(value => {
+      this.dleetCartData.uname=value
+      this.dleetCartData.goodsId=id
+      this.cartList.forEach((value)=>{
+        if(value.id==id){
+          this.dleetCartData.count=Number(value.count)-1
+          this.dleetCartData.selected=value.selected
+        }
+      });
+      //转换成json格式
+      this.dleetCartData=JSON.stringify(this.dleetCartData)
+      modifyCart(this.dleetCartData).then(res=>{
+        this.getCartData()
+          //转换回对象
+        this.dleetCartData=JSON.parse(this.dleetCartData)
+      }).catch(err=>{})
+    })
+  },
+
+  //全选
+  onChangeAll(){
+    if(this.checked==false){
+      this.checked=true
+      cml.getStorage("uname").then(value => {
+        this.AllCartData.uname=value
+        this.AllCartData.selected=true
+        //转换成json格式
+        this.AllCartData=JSON.stringify(this.AllCartData)
+        AllCartData(this.AllCartData).then(res=>{
+          console.log("全选购物车")
+          this.getCartData()
+          //转换回对象
+          this.AllCartData=JSON.parse(this.AllCartData)
+        }).catch(err=>{})
+      })
+    }else{
+      this.checked=false
+      cml.getStorage("uname").then(value => {
+        this.AllCartData.uname=value
+        this.AllCartData.selected=false
+        this.AllCartData=JSON.stringify(this.AllCartData)
+        AllCartData(this.AllCartData).then(res=>{
+          console.log("取消全选")
+          this.getCartData()
+          this.AllCartData=JSON.parse(this.AllCartData)
+        }).catch(err=>{})
+      })     
+    }
+  },
+    dealCheckarr(arr,status){
+        this.cartList=arr.map(d=>{
+        d.flag=status
+        return d
+      })
+
+    },
+//结算
+  yesCart(){
+    let arr=[]
+    this.cartList.map(d=>{
+      if(d.selected==true){
+        arr.push(d.id)
+      }
+      return d
+    })
+    if(this.num==0){
+        cml.showToast({
+      message: "请选择商品",
+      duration: 1000
+    })
+    }else{
+      let str=arr.join(',')
+      console.log("代传递",str)
+      cml.navigateTo({
+        path: '/pages/sure-cart/sure-cart',
+        query:{str:str}
+      })
+    }
+
+  },
+  dialog(){
+
+     Dialog.confirm({
+  title: '提示',
+  context:this,
+  message: '你需要登录才能正常使用,去登录？'
+}).then(() => {
+   cml.redirectTo({
+  path: '/pages/login/login'
+}) 
+ 
+}).catch(() => { 
+
+
+});
+
+
+   },
+
+//检查是否未登陆
+   check(){
+     if(store.state.isCancelLogin){
+        this.dialog() 
+     }
+   },
+
+     actionsTap1({currentTarget}){
+       const item=currentTarget.dataset.item
+       if(item.isCollect){
+          tip('你已关注')
+          this.toggle=this.toggle ? false : true
+          this.getCartData()
+
+       }else{
+         CollectiongGoods(JSON.stringify({goodsId:item.id})).then(res=>{
+           if(res.code){
+              this.toggle=this.toggle ? false : true
+                tip('关注成功')
+               this.getCartData()
+           }
+
+         }).catch(err=>{})
+        
+       }
+           
+
+
+    },
+
+
+
+    actionsTap2({currentTarget}){
+       this.id=currentTarget.dataset.id
+            this.visible2=true
+    },
+
+
+      handleClickItem2 ({ detail }) {
+        if(detail.index===1){
+          //表示点击了取消
+          this.handleCancel2()
+          return
+        }
+        const action = [...this.actions2];
+        action[0].loading = true;    
+            this.actions2=action
+        setTimeout(() => {
+            action[0].loading = false;
+            this.visible2=false
+            this.actions2=action
+            this.toggle=this.toggle ? false : true
+            this.delete(this.id)
+        }, 1500);
+    },
+
+
+    handleCancel2(){
+            this.visible2=false,
+            this.toggle=this.data.toggle ? false : true
+    },
+    //设置高度
+    setHeight(){
+      cml.getRect('refTest', this).then(res => {
+         this.btnHeight=Number(res.height/2)
+})
+    }
+
+    
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+this.getCartData()
+this.check()
+
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ShoppingCart();
+</script>
+
+<style scoped>
+
+.container{
+  width: 750cpx;
+ 
+}
+.car-show{
+  width: 750cpx;
+  position: fixed;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
+.head{
+  width: 750cpx;
+  height: 150cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+}
+
+.swipeout-wrap{
+  margin-top:20cpx;
+  width: 750cpx;
+
+
+}
+.swipeout{
+  color: #fff;
+}
+
+.store-card{
+  width:100%;
+  background: #fff;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+  min-height:250cpx;
+  padding:0 20cpx;
+  /* border: 2cpx solid rgba(227, 227, 227, 1);
+  box-shadow: 0 3cpx 40cpx rgba(0, 0, 0, 0.24), 0 3cpx 44cpx rgba(0, 0, 0, 0.12); */
+}
+
+.description{
+width:480cpx;
+display: flex;
+height: 180cpx;
+/* align-self:baseline;  */
+justify-content:space-between;
+align-items:flex-start;
+flex-direction: column;
+margin-left:20cpx;
+}
+
+
+
+
+
+.calculator{
+  width:100%;
+display: flex;
+justify-content:space-between;
+flex-direction: row;
+align-items:flex-start;
+}
+
+.check-box{
+  max-width: 50cpx;
+  margin-left:10cpx;
+}
+
+.store-img{
+ 
+ margin-left:10cpx;
+}
+
+.store-name{
+width: 100%;
+}
+
+.spec-text-cart{
+   font-size: 24cpx;
+   line-height: 24cpx;
+}
+.spec-text{
+   font-size: 24cpx;
+  line-height: 24cpx;
+  color:#fa1706;
+}
+
+.store-name{
+  font-size: 32cpx;
+  color:#010101;
+}
+
+.submit{
+ 
+  width: 750cpx;
+}
+
+.add-height{
+  width: 750cpx;
+  margin-bottom: 120cpx;
+
+}
+
+.submit-btn{
+ min-width: 148cpx!important;
+  height: 60cpx!important;
+  border-radius: 50cpx!important;
+background: linear-gradient(269deg, #FE573F, #E61A09)!important;
+}
+
+.spec-column{
+  width: 750cpx;
+  height: 300cpx;
+}
+
+.loading{
+  position: fixed;
+  top:50%;
+  left: 60%;
+  transform: translate(-50%,-50%);
+  z-index:999;
+}
+
+.delete{
+  margin-top:10cpx;
+  align-self: flex-start;
+}
+
+
+.i-swipeout-demo-button1{
+width: 100cpx;
+background: #F7A226;
+box-shadow: 1px 5px 10px 0px rgba(183, 183, 183, 0.22);
+ display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+color:#fff;
+
+}
+
+
+.i-swipeout-demo-button2{
+width: 100cpx;
+background: #DE3A2C;
+box-shadow: 1px 5px 10px 0px rgba(183, 183, 183, 0.22);
+ display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  color:#fff;
+}
+
+
+.i-swipeout-demo-button-group{
+  width:200cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.container text,.container view{
+  letter-spacing: 2cpx;
+}
+
+.tip-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.spec-swipeout > view{
+  padding: 0 !important;
+}
+
+
+.show-opacity{
+  opacity: 0.55!important;
+}
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "van-checkbox": "/vant/checkbox/index",
+      "van-checkbox-group": "/vant/checkbox-group/index",
+       "van-stepper": "/vant/stepper/index",
+      "van-submit-bar": "/vant/submit-bar/index",
+       "van-loading": "/vant/loading/index",
+        "head-ver2": "../head-ver2/head-ver2",
+        "van-icon": "/vant/icon/index",
+        "van-dialog": "/vant/dialog/index",
+        "i-swipeout": "/iview/swipeout/index",
+        "i-action-sheet": "/iview/action-sheet/index",
+         "i-icon": "/iview/icon/index"
+
+    }
+  }
+}
+</script>

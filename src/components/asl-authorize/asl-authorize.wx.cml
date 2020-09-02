@@ -1,0 +1,92 @@
+<template>
+  <view>
+  <nav title="{{title}}"></nav>
+  <view class="btn">
+  <van-button type="primary" block open-type="getUserInfo" bindgetuserinfo="getUserInfo">获取头像昵称</van-button>
+  </view>
+   
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+class AslAuthorize implements AslAuthorizeInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+  data = {
+    title:'授权'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+  getUserInfo: function(e) {
+
+   
+    if(e.detail.errMsg==='getUserInfo:ok'){
+      cml.navigateBack(-1)
+    }
+
+  
+    }
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AslAuthorize();
+</script>
+
+<style  scoped>
+
+.btn{
+  width: 85%;
+  margin: 0 auto;
+  margin-top:100cpx;
+
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+    "nav":"/components/nav/nav",
+     "van-button": "/vant/button/index"
+
+
+    }
+  }
+}
+</script>

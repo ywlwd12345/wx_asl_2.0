@@ -1,0 +1,244 @@
+<template>
+<!--这是底部的学习中心-->
+  <view class="container">
+  <head title="{{title}}"></head>
+   
+  <!-- head end-->
+   <view class="content-all">
+   <list
+      bottom-offset="{{30}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{studayLists}}"
+          c-for-index="i"
+          c-for-item="item"
+          data-idx="{{i}}"
+        >
+          <view class="panel" c-bind:tap="goStuday" data-id="{{item.id}}">
+          <van-cell title="{{item.title}}" is-link />
+          </view>
+        </cell>
+    </list>
+  </view>
+    <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+  <view class="loading">
+    <i-spin  c-if="{{loading}}"  size="large"></i-spin>
+  </view>
+  </view>
+ 
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import Dialog from '../../vant/dialog/dialog'
+import {getNoticeList,getBaseUserInfo} from '../../api/index'
+class Leaderboard implements LeaderboardInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    studayLists:[],
+    page:1,
+    title:'学习中心',
+    loading:true
+    
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+     goStuday(e){
+       let id=e.currentTarget.dataset.id
+      cml.navigateTo({
+        path: '/pages/article-details/article-details',
+        query: {
+        id:id
+        }
+      })
+
+    
+    },
+  dialog(){
+    Dialog.confirm({
+    title: '提示',
+    context:this,
+    message: '你需要登录才能正常使用,去登录？'
+  }).then(() => {
+    cml.redirectTo({
+    path: '/pages/login/login'
+  }) 
+  
+  }).catch(() => { 
+
+
+  });
+  },
+  check(){
+  if(store.state.isCancelLogin){
+    this.dialog() 
+    }    
+   },
+  //学习中心列表
+  getStudayList(){
+    getNoticeList({pageNum:this.page}).then(res=>{
+      console.log("学习")
+      console.log(res)
+      if(!store.state.isCancelLogin){
+        if(res.code==403){
+          cml.redirectTo({
+            path: '/pages/login/login'
+          })
+          cml.showToast({
+            message: "登录失效",
+            duration: 2000
+          })
+        }
+      }
+      if(res.code==1){
+        this.studayLists=this.studayLists.concat(res.data)
+        this.loading=false
+        if(!res.data.length){
+            cml.showToast({
+            message: "没有更多数据了",
+          duration: 1000
+    })
+        }
+      }
+
+    }).catch(err=>{
+
+    })
+
+  },
+    onBottom(){
+      console.log(9999988)
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getStudayList()
+      }, 800)
+
+
+    }
+    
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    let uname
+    cml.getStorage('uname').then((value)=>{
+      uname=value
+    getBaseUserInfo({uname:uname}).then(res=>{
+      console.log('执行了吗',res)
+      if(res.data[0].levelInfo===1){
+        cml.showToast({
+          message: "该区域为店主及以上专享",
+          duration: 1500
+        })
+        setTimeout(() => {
+          cml.navigateTo({
+            path: '/pages/index/index',
+          })
+        },1500)
+      }else{
+        this.check()
+        this.getStudayList()
+      }
+  }).catch(err=>{})
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Leaderboard();
+</script>
+
+<style scoped>
+.container{
+  width: 750cpx;
+  
+}
+
+.head{
+  width: 750cpx;
+  height: 150cpx;
+background: -webkit-linear-gradient(to right, #e73827, #f85032);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #e73827, #f85032); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+color:#fff;
+font-size: 72cpx;
+font-weight: bold;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+}
+
+.content-all{
+  width: 710cpx;
+  margin:0 auto;
+  margin-top:15cpx;
+  margin-bottom:130cpx;
+}
+
+.panel{
+  width: 710cpx;
+  margin-bottom:10cpx;
+}
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+          "van-nav-bar": "/vant/nav-bar/index",
+          "van-icon": "/vant/icon/index",
+         "van-cell": "/vant/cell/index",
+        "van-cell-group": "/vant/cell-group/index",
+         "head": "../head/head",
+         "van-dialog": "/vant/dialog/index",
+         "i-spin": "/iview/spin/index"
+    }
+  }
+}
+</script>

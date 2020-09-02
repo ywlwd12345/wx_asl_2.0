@@ -1,0 +1,134 @@
+
+
+<template>
+  <view>
+  <article pid="{{pid}}" ></article>
+ 
+
+
+  </view>
+</template>
+
+
+<script>
+
+
+
+class ArticleDetails   {
+
+  data = {
+    pid:'',
+    
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+onShareAppMessage: function(res) {
+    let users = wx.getStorageSync('user');
+    if (res.from === 'button') {}
+    return {
+　　　　title: this.titles,
+　　　　path: '/pages/article-details/article-details?id='+this.pid,
+　　　　imgUrl: '', 
+　　　　success: function(res){　 // 转发成功之后的回调　　　　　
+　　　　　　if(res.errMsg == 'shareAppMessage:ok'){
+              cml.showToast({
+                message: "分享成功",
+                duration: 500
+              })
+　　　　　　}
+　　　　},
+　　　　fail: function(){　// 转发失败之后的回调
+　　　　　　if(res.errMsg == 'shareAppMessage:fail cancel'){
+　　　　　　　　cml.showToast({
+                message: "您取消了分享",
+                duration: 500
+              })
+　　　　　　}else if(res.errMsg == 'shareAppMessage:fail'){
+　　　　　　　　cml.showToast({
+                message: "分享失败",
+                duration: 500
+              })
+　　　　　　}
+　　　　}
+    }
+  },
+   
+  }
+
+  beforeCreate(query) {
+       this.pid=query.id
+  }
+
+  created(query) {
+    
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+     
+
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ArticleDetails();
+</script>
+
+<style>
+ 
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "article": "/components/article/article"
+
+    }
+  },
+  "qq": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  },
+  "wx": {
+     "navigationStyle":"custom"
+   
+  },
+  "alipay": {
+    "defaultTitle": "index",
+    "pullRefresh": false,
+    "allowsBounceVertical": "YES",
+    "titleBarColor": "#ffffff"
+  },
+  "baidu": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "index",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  }
+}
+</script>

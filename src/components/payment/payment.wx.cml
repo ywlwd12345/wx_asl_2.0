@@ -1,0 +1,538 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+  <view class="pay-price">
+  <view class="pay pay1"><text class="spec-big-text">支付金额</text></view>
+  <view class="pay pay2"><text class="spec-big-text">￥{{osn}}</text></view>
+  <view class="pay pay3"><text class="spec-small-text">商品最多可用ASL1抵现数量:{{payDatas.useAsl}}</text></view>
+  </view>
+  <!-- pay-price end-->
+  <view class="asl-alipay score-alipay" c-if="{{payDatas.goodsData[0].isScore==1}}">
+  <view class="asl">
+  <view><text class="spec-big-text">使用{{osn*100}}积分兑换</text></view>
+  <view><van-checkbox value="{{ checkedScore }}" 
+   checked-color="#f4211a"
+  bind:change="onChangeScore"></van-checkbox></view>
+  </view>
+  <view class="asl-details"><text class="spec-small-text">拥有的积分：{{payDatas.memberScore}}</text></view>
+  </view>
+
+  <!-- asl-alipay end-->
+  <view class="asl-alipay"  c-if="{{payDatas.goodsData[0].isScore==0}}">
+  <view class="asl">
+  <view><text class="spec-big-text">优先使用ASL1币</text></view>
+  <view><van-checkbox value="{{ checkedAsl }}" 
+   checked-color="#f4211a"
+  bind:change="onChangeAsl"></van-checkbox></view>
+  </view>
+  <view class="asl-details"><text class="spec-small-text">账户余额：{{payDatas.memberAsl}}</text></view>
+  </view>
+
+  <!-- asl-alipay end-->
+
+  <view class="asl3-alipay asl-alipay" c-if="{{payDatas.goodsData[0].isScore==0}}">
+  <view class="asl">
+  <view><text class="spec-big-text">ASL3</text></view>
+  <view><van-checkbox value="{{ checkedAsl3 }}" 
+  checked-color="#f4211a"
+  bind:change="onChangeAsl3"></van-checkbox></view>
+  </view>
+  <view class="asl-details"><text class="spec-small-text">账户余额：{{payDatas.memberAsl3}}</text></view>
+  </view>
+
+  <!-- asl3-alipay end-->
+  <view class="asl3-alipay asl-alipay" c-if="{{payDatas.goodsData[0].isLow==1}}">
+  <view class="asl">
+  <view><text class="spec-big-text">低消币</text></view>
+  <view><van-checkbox value="{{ checkeddixiao }}" 
+  checked-color="#f4211a"
+  bind:change="onChangeAsl3"></van-checkbox></view>
+  </view>
+  <view class="asl-details"><text class="spec-small-text">账户余额：{{payDatas.memberLowFee}}</text></view>
+  </view>
+
+
+  <view class="wx-alipay asl-alipay"  c-if="{{payDatas.goodsData[0].isScore==0}}">
+  <view class="asl">
+  <view><text class="spec-big-text">微信支付</text></view>
+  <view><van-checkbox value="{{ checkedWx }}"
+   checked-color="#f4211a"
+   bind:change="onChangeWx"></van-checkbox></view>
+  </view>
+  <view class="asl-details spec-small-text"><text>微信支付 安全  便捷</text></view>
+  </view>
+
+  <!-- wx-alipay end-->
+
+
+  <view class="alipay-details asl-alipay">
+  <view class="asl">
+  <view> <van-icon name="info-o" /> </view>
+  </view>
+  <view class="asl-details spec-small-text"><text>{{payData.tip}}</text></view>
+  </view>
+
+  <!-- wx-alipay end-->
+
+  <view class="submit" c-if="{{payDatas.goodsData[0].isScore==0}}">
+  <van-button type="primary" round 
+  color="linear-gradient(to right, #e73827, #f85032)" 
+  block bind:click="goPay">立即付款</van-button>
+  </view>
+
+<!--积分商品付款付款-->
+  <view class="submit" c-if="{{payDatas.goodsData[0].isScore==1}}">
+  <van-button type="primary" round 
+  color="linear-gradient(to right, #e73827, #f85032)" 
+  block bind:click="ScorePay">立即付款</van-button>
+  </view>
+   
+
+
+  </view>
+</template>
+
+<script>
+import {getOrderInfo,payMoney,getOpenid,appletPay,cancellationpay,preferential} from '../../api/index'
+import cml from 'chameleon-api';
+
+class Payment implements PaymentInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    },
+      osn: {
+      type: String,
+      default: ''
+    },
+
+  }
+
+  data = {
+    title:"付款",
+    radio:1,
+    checkedAsl:true,
+    checkedAsl3:true,
+    checkeddixiao:true,
+    checkedWx:true,
+    payData:{},
+    payDatas:[],
+    checkedScore:true,
+    viewPortHeight:'',
+    openid:'',
+    codes:'',
+    Submission:{
+      uname:'',
+      orderId:'',
+      asl1Status:1,
+      asl3Status:1,
+      wxpayStatus:1,
+      lowFeeStatus:1,
+      scoreStatus:0,
+      openId:''
+    }
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    onChangeAsl(e){    
+      this.checkedAsl=e.detail
+      console.log(this.checkedAsl)
+
+
+    },
+    onChangeAsl3(e){
+       this.checkedAsl3=e.detail
+       console.log(this.checkedAsl3)
+
+    },
+    onChangeWx(e){
+       this.checkedWx=e.detail
+    },
+    onChangeScore(e){
+      this.checkedScore=e.detail
+      console.log(this.checkedScore)
+
+    },
+    getOrderData(){
+      getOrderInfo({osn:this.osn}).then(res=>{
+        if(res.code){
+          res.data.is_score_goods && (res.data.money=res.data.money.split('.')[0])
+          this.payData=res.data
+        }else{
+            cml.showToast({
+        message:res.msg,
+        duration: 1500
+      })
+        }
+      })
+    },
+    // getopenids(){
+    //   wx.login({
+    //     success: function(res) {
+    //       console.log(res);//这里的返回值里面便包含code
+    //       let codes
+    //       codes=res.code
+    //       console.log("code",codes)
+    //       getOpenid({code:codes}).then(res=>{
+    //         console.log("获取openid")
+    //         console.log(res)
+    //         cml.setStorage('openId',res.openId)
+    //       }).catch(err=>{})
+    //     },
+    //     fail: function(res) {
+    //       console.log('获取错误');
+    //     },
+    //   })
+    // },
+    goPay(){
+      cml.getStorage("uname").then(value => {
+        this.Submission.uname=value
+        this.Submission.orderId=this.payDatas.orderId
+        if(this.checkedAsl==true){
+          this.Submission.asl1Status=1
+        }else{
+          this.Submission.asl1Status=0
+        }
+        if(this.checkedAsl3==true){
+          this.Submission.asl3Status=1
+        }else{
+          this.Submission.asl3Status=0
+        }
+        if(this.checkedWx==true){
+          this.Submission.wxpayStatus=1
+        }else{
+          this.Submission.wxpayStatus=0
+        }
+        if(this.checkeddixiao==true){
+          this.Submission.lowFeeStatus=1
+        }else{
+          this.Submission.lowFeeStatus=0
+        }
+        if(this.checkedWx==false&&this.checkedAsl3==false&&this.checkedAsl==false){
+          cml.showToast({
+            message:'请选择支付方式',
+            duration: 1500
+          })
+          return
+        }
+        cml.getStorage("openid").then(value => {this.Submission.openId=value})
+        if(this.payDatas.goodsData[0].isLow!=1){
+          appletPay(this.Submission).then(res=>{
+            let that=this
+            if(res.code==2){
+              wx.requestPayment({
+                timeStamp:res.data[0].timestamp,
+                nonceStr: res.data[0].nonceStr,
+                package:res.data[0].package,
+                signType: "MD5",
+                paySign:res.data[0].sign,
+                success (res) {
+                  cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+              })
+              },
+              fail (res) {
+                that.quxiao()
+                console.log(res)
+                cml.showToast({
+                    message:'取消支付',
+                    duration: 2000
+                })
+              }
+    
+              })
+            }else if(res.code==1){
+                cml.showToast({
+                    message:res.msg,
+                    duration: 2000
+                  })
+              cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+              })
+            }else{
+              cml.showToast({
+                message:res.msg,
+                duration: 2000
+              })
+            }
+            console.log(res)
+          }).catch(err=>{})
+        }else{
+          // 拼吧特惠区支付
+          preferential(this.Submission).then(res=>{
+            console.log('特惠区支付',res)
+            let that=this
+            if(res.code==2){
+              wx.requestPayment({
+                timeStamp:res.data[0].timestamp,
+                nonceStr: res.data[0].nonceStr,
+                package:res.data[0].package,
+                signType: "MD5",
+                paySign:res.data[0].sign,
+                success (res) {
+                  cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+              })
+              },
+              fail (res) {
+                that.quxiao()
+                console.log(res)
+                cml.showToast({
+                    message:'取消支付',
+                    duration: 2000
+                })
+              }
+    
+              })
+            }else if(res.code==1){
+                cml.showToast({
+                    message:res.msg,
+                    duration: 2000
+                  })
+              cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+              })
+            }else{
+              cml.showToast({
+                message:res.msg,
+                duration: 2000
+              })
+            }
+            console.log(res)
+          }).catch(err=>{})
+        }
+      })
+    },
+    quxiao(){
+      cancellationpay({orderId:this.payDatas.orderId}).then(res=>{
+        if(res.code){
+
+        }else{
+
+        }
+      })
+    },
+    // 积分付款
+    ScorePay(){
+      if(this.checkedScore==false){
+        cml.showToast({
+          message:"请选择支付方式",
+          duration: 1500
+        })
+        return
+      }
+      cml.getStorage("uname").then(value => {
+        this.Submission.uname=value
+        this.Submission.orderId=this.payDatas.orderId
+        this.Submission.scoreStatus=1
+        this.Submission.asl1Status=0
+        this.Submission.asl3Status=0
+        this.Submission.wxpayStatus=0
+        cml.getStorage("openId").then(value => {this.Submission.openId=value})
+        appletPay(this.Submission).then(res=>{
+          if(res.code==1){
+              cml.showToast({
+                  message:res.msg,
+                  duration: 2000
+                })
+            cml.redirectTo({
+              path: '/pages/pay-succeed/pay-succeed'
+            })
+          }else{
+            cml.showToast({
+              message:res.msg,
+              duration: 2000
+            })
+          }
+          console.log(res)
+        }).catch(err=>{})
+      })
+
+    },
+    payGold(data){
+      payMoney(data).then(res=>{
+      if(res.code){
+          if(data.use_fee_status || data.use_score_status ||data.asl3){
+            if(res.data.status){
+              this.tip('支付成功')
+              setTimeout(() => {
+                cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+                }) 
+              }, 2000);
+              return 
+
+            }else{
+               (data.pay_type) && (this.launchWxpay(res.data))
+               return  
+            }
+          }else{
+             (data.pay_type) && (this.launchWxpay(res.data))
+          }
+  
+      }else{
+
+          cml.showToast({
+        message: res.msg,
+        duration: 1000
+      })
+
+      }
+
+
+      }).catch(err=>{})
+
+    },
+    launchWxpay(data){
+        if (process.env.platform === 'wx') {
+          wx.requestPayment({
+              timeStamp: data.timeStamp,
+              nonceStr: data.nonceStr,
+              package:data.package,
+              signType: data.signType,
+              paySign:data.paySign,
+              success (res) {
+                cml.redirectTo({
+              path: '/pages/pay-succeed/pay-succeed'
+        })
+
+   },
+  fail (res) { 
+    cml.showToast({
+        message:'支付失败',
+        duration: 2000
+      })
+  }
+})
+
+        }
+
+    },
+
+    tip(msg){
+       cml.showToast({
+        message:msg,
+        duration: 1500
+      })
+
+    }
+    
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('payData').then((value)=>{
+    // 处理获取到的键值
+    this.payDatas=value
+    console.log("看下面")
+    console.log(this.payDatas)
+    cml.removeStorage('payData')
+})
+//  cml.getStorage('openid').then((value)=>{
+//     // 处理获取到的键值
+//     this.openid=value
+// })
+//     this.getOrderData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Payment();
+</script>
+
+<style scoped>
+.container{
+  width:750cpx;
+  background: #eee;
+
+}
+
+.spec-big-text{
+   letter-spacing: 2cpx;
+   font-size:36cpx;
+   font-weight: 600;
+   color:#212121;
+}
+
+.spec-small-text{
+   letter-spacing: 2cpx;
+   font-size:33cpx;
+   color:#bdbdbd;
+}
+
+
+.pay-price{
+  width: 750cpx;
+  background: #fff;
+  min-height: 258cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.asl{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+ 
+}
+
+.asl-alipay{
+  width: 100%;
+    display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  background:#fff;
+  min-height: 150cpx;
+  margin-top:20cpx;
+  padding:0 15cpx;
+
+}
+
+.submit{
+  width: 700cpx;
+  margin:0 auto;
+  margin-top:80cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav":"/components/nav/nav",
+        "van-checkbox": "/vant/checkbox/index",
+        "van-icon": "/vant/icon/index",
+         "van-button": "/vant/button/index"
+       
+    }
+  }
+}
+</script>

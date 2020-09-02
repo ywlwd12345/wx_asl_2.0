@@ -1,0 +1,205 @@
+<template>
+  <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+
+  <view class="wrap">
+    <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+        <cell
+          class="cell"
+          c-for="{{ pointsList }}"
+          c-for-index="i"
+          c-for-item="item"
+        >
+          <view class="panel">
+            <view class="item1">
+            <text>{{item.channel}}</text>
+            <text class="color2">{{item.fee}}</text>
+            </view>
+          <view class="item2">
+            <text>{{item.typeMsg}}</text>
+            <text>{{item.createTime}}</text>
+          </view>
+          </view>
+        </cell>
+    </list>
+  
+  </view>
+
+  <view class="loading">
+    <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
+  </view>
+
+
+   
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {  getScoreData } from '../../api/index'
+import { moment }  from '../../untils/moment.js'
+
+class Points implements PointsInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'积分明细',
+    page:1,
+    pointsList:[],
+    loading:false,
+    viewPortHeight:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+      onBottom(){
+      cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+        this.getData()
+      }, 800)
+
+   },
+    
+    getData(){
+      let uname
+      cml.getStorage('uname').then((value)=>{
+      this.loading=true
+      uname=value
+       getScoreData({pageNum:this.page,uname:uname,type:'score'}).then(res=>{
+         console.log("积分")
+          console.log(res)
+           this.loading=false
+         if(res.code){
+           this.pointsList=res.data
+           this.pointsList.forEach((value)=>{
+             //处理json时间
+            value.createTime=moment(value.createTime)
+             if(value.typeMsg==="支出"){
+               value.fee='-'+value.fee
+             }else{
+               value.fee='+'+value.fee
+             }
+           })
+           if(!res.data.length){
+              cml.showToast({
+                message: "没有更多了",
+                duration: 1000
+              })
+            return
+           }
+          //  this.pointsList=this.pointsList.concat(res.data.map(d=>{
+          //     //  d.createTime=moment(+d.createTime)
+          //    if(d.typeMsg==="收入"){
+          //     d.flag=true
+          //    }else{
+          //     d.fee='+'+d.fee
+          //     d.flag=false
+          //    }
+          //    return d
+          //  }))
+
+         }
+
+       }).catch(err=>{})
+      })
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    cml.getStorage('viewPortHeight').then((value)=>{
+    // 处理获取到的键值
+    this.viewPortHeight=value
+})
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Points();
+</script>
+
+<style scoped>
+.container{
+  width: 750cpx;
+  background: #eee;
+
+}
+
+.wrap{
+  width: 750cpx;
+
+}
+
+.panel{
+  width:750cpx;
+  padding:20cpx 20cpx;
+  background: #fff;
+  margin-top:10cpx;
+
+}
+.item1,.item2{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  margin-top:10cpx;
+}
+.color1{
+  color:#81c784;
+
+}
+.color2{
+  color:#ff410f;
+}
+
+.loading{
+  position: fixed;
+  top:35%;
+  left: 50%;
+  transform: translate(-50%);
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "i-spin": "/iview/spin/index"
+    }
+  }
+}
+</script>

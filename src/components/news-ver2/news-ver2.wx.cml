@@ -1,0 +1,154 @@
+<template>
+  <view>
+    <nav title="{{title}}" style="background: rgba(239, 239, 239, 1);"></nav>
+    <view class="test">
+      <view class="type_order">
+      <!--系统消息-->
+        <view class="systemNews" style="margin-top: 30cpx;border-bottom: 1rpx solid #F3F3F3;" c-bind:tap="gotail">
+          <view><image src="{{typeimg}}"></image></view>
+          <view class="top">
+            <view class="top_t">
+              <view style="color:rgba(34,34,34,1);">系统消息</view>
+              <view style="font-size:22cpx;color:rgba(154,154,154,1);">8-26 11:00</view>
+            </view>
+            <view class="news_text">
+              这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息
+            </view>
+          </view>
+        </view>
+
+      <!--订单消息-->
+        <view class="systemNews" style="border-radius: 0 0 20cpx 20cpx" c-bind:tap="gotailto">
+          <view><image src="{{typeimgto}}"></image></view>
+          <view class="top">
+            <view class="top_t">
+              <view style="color:rgba(34,34,34,1);">订单消息</view>
+              <view style="font-size:22cpx;color:rgba(154,154,154,1);">8-26 11:00</view>
+            </view>
+            <view class="news_text">
+              这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息
+            </view>
+          </view>
+        </view>
+
+
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+class NewsVer2 implements NewsVer2Interface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    title:'消息中心',
+    typeimg:'https://w.aishenglian.com/static/icon/ver2-icon/message/xtxx@2x.png',
+    typeimgto:'https://w.aishenglian.com/static/icon/ver2-icon/message/ddxx@2x.png',
+    orderimg:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+    gotail(){
+      cml.navigateTo({
+        path: '/pages/newsList-ver2/newsList-ver2',
+        query:{types:1}
+      })
+    },
+    gotailto(){
+      cml.navigateTo({
+        path: '/pages/newsList-ver2/newsList-ver2',
+        query:{types:2}
+      })
+    },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new NewsVer2();
+</script>
+
+<style >
+.test{
+    width: 750cpx;
+    height: 100vh;
+    background: rgba(239, 239, 239, 1);
+}
+.type_order{
+  width: 100%;
+}
+.systemNews{
+    background: #fff;
+    border-radius: 20cpx 20cpx 0 0;
+    display: flex;
+    flex-direction: row;
+    padding: 30cpx;
+}
+.systemNews image{
+  width: 62cpx;
+  height: 62cpx;
+}
+.top{
+  margin-left: 20cpx;
+  width: 90%;
+}
+.top_t{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15cpx;
+}
+.news_text{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:-webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  font-size:22cpx; 
+  color:rgba(154,154,154,1);
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav": "/components/nav-ver2/nav-ver2"
+    }
+  }
+}
+</script>

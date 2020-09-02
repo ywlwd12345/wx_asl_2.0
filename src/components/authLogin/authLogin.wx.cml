@@ -1,0 +1,150 @@
+<template>
+  <view class="container">
+  <view class="head">
+<view class='logo'>
+ <image src="" class="login-img"></image>
+</view>
+  </view>
+  <!-- head end-->
+  <view class="can-login">
+  <origin-button class='bottom-btn' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+            授权登录
+   </origin-button>
+  </view>
+
+  <view class="disable-login">
+  <button
+    width="{{350}}"
+    type="orange"
+    text="取消"
+    disabled="{{false}}"
+    c-bind:onclick="cancelClick"
+    size="small"
+    btn-style="border-radius: 10cpx;height:80cpx;font-size:32cpx;"
+  >  
+  </button>
+  
+  </view>
+   
+
+
+  </view>
+</template>
+
+<script>
+
+class AuthLogin implements AuthLoginInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+     bindGetUserInfo(e){
+       if (e.detail.userInfo) {
+         //用户授权
+        
+
+
+       }else{
+         
+       }
+
+  
+    },
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    this.$cmlEmit('onshow',{
+      value: this.name
+    })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new AuthLogin();
+</script>
+
+<style scoped >
+.head{
+  height: 350cpx;
+  background:#00e676;
+  margin-top:10cpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-img{
+  width:100cpx;
+  height: 100cpx;
+}
+
+.logo{
+   width: 150cpx;
+  height: 150cpx;
+  border-radius: 75cpx;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.bottom-btn{
+  width:350cpx;
+  text-align:center;
+  background: #00e676 !important;
+}
+
+.can-login{
+  margin-top:100cpx;
+}
+
+.disable-login{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top:15cpx;
+
+
+}
+
+
+
+</style>
+
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {}
+  }
+}
+</script>
