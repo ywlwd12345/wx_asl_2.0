@@ -387,8 +387,8 @@ class Home implements HomeInterface {
     imageStore:'https://w.aishenglian.com/static/icon/ver2-icon/index/banner@2x.png',
     imageStoreto:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/bj@3x.png',
     imageclos:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/gb@2x.png',
-    posImg:require('../../assets/images/time.png'),
-  broadcast:require('../../assets/images/border-cast.png'),
+    posImg:'',
+    broadcast:require('../../assets/images/border-cast.png'),
     bannerList:[],
     goodsList:[],
     recommendList:[],
@@ -400,7 +400,7 @@ class Home implements HomeInterface {
     userLevel:false,
     groupList:[],
     groupShare: require('../../assets/group-images/group-share.png'),
-    imageGroup:require('../../assets/group-images/pb.png'),
+    imageGroup:'',
     groupFlag:[],
     sinPopFlag:false,//签到弹框显隐
     newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png'

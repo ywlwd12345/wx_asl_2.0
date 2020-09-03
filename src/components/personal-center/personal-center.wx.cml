@@ -6,6 +6,11 @@
   <view class="person">
   <view class="img-wrap" bind:tap="uploads">
   <image src="{{avatar}}" style="width:150cpx;height:150cpx;border-radius:50%;"></image>
+
+  <view class="real-name" >
+    <image src="{{realNamed}}" style="width:113cpx;height:32cpx;"></image>
+    <text class="real-name-text">{{ isCertification?'已实名':'未实名'}}</text>
+  </view>
   </view>
   <view class="vip">
   <view class="vip-title">
@@ -14,13 +19,14 @@
     bind:click="login"
     round
     color="linear-gradient(to right, #f4c4f3, #fc67fa);">登录</van-button></view>
-  <view><van-button round type="info"
+  <!--<view><van-button round type="info"
   c-if="{{false}}"
   icon="{{icon1}}"
   custom-class="spec-btn"
    size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
    {{usersinfo.level}}</van-button>
    </view>
+   -->
     <view c-if="{{usersinfo.isRegiment}}" class="tuzhang"><van-button round type="info"
   custom-class="spec-btn"
    size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
@@ -36,13 +42,13 @@
    custom-class="spec-btn"
   round type="info" size="mini" >{{upToStandard}}</van-button>
   </view>
-  <view  style="margin-left:30cpx;"  c-if="{{false}}">
+  <!--<view  style="margin-left:30cpx;"  c-if="{{false}}">
   <van-button color="#ffffff" 
    custom-style="color:#6a6a6a;"
    custom-class="spec-btn"
     icon="{{icon2}}"
     bind:click="sign"
-  round type="info" size="mini" >{{signTitle}}</van-button></view>
+  round type="info" size="mini" >{{signTitle}}</van-button></view> -->
   </view>
   <!-- vip-member end-->
 
@@ -100,7 +106,7 @@
           c-key="text"
          >
   <van-grid-item  use-slot   class='wl-order' >
-   <view class="wl-dot" c-if="{{(item.type===1||item.type===2) && item.num}}">{{item.num}}</view>
+   <view class="wl-dot" c-if="{{(item.type===1||item.type===2||item.type===3) && item.num}}">{{item.num}}</view>
   <view  c-bind:tap="goMyOrder" data-type="{{item.type}}">
   <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
   <view class="grid-child"><text class="icon-text spec-icon-text">{{item.text}}</text></view>
@@ -308,7 +314,7 @@ const imgFunds=[
 },
 
 {
-   imageSrc: require('../../assets/images/linkIcon/JFMX.png'),
+   imageSrc:'',
    text:1  
 }
 
@@ -424,7 +430,9 @@ class PersonalCenter implements PersonalCenterInterface {
     a:'',
     b:'',
     isCertification:0,//是否实名验证
-    marginTop:''
+    marginTop:'',
+    realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png'
+
   }
 
   computed =store.mapState([
@@ -783,7 +791,7 @@ class PersonalCenter implements PersonalCenterInterface {
     setGold(count){
        $Toast({
             content: '获得金币'+count,
-            image:require('../../assets/images/gold.png'),
+            image:'',
         })
 
     },
@@ -834,8 +842,8 @@ class PersonalCenter implements PersonalCenterInterface {
       this.usersinfo=res.data[0]
       this.avatar='https://'+this.usersinfo.avatar
       //是否实名验证
-      //       const data=res.data[0]
-      //       this.isCertification=data.authentication
+            const data=res.data[0]
+            this.isCertification=data.authentication
       // this.isCertification && (this.setCertificationUi())
 
       //暂不验证
@@ -974,7 +982,6 @@ showPop(){
 
    getOrderCarousel(){
      getFootmarkInfo({}).then(res=>{
-      
        if(res.code===1){
          const data=res.data
         data.expData.map(d=>{
@@ -990,6 +997,9 @@ showPop(){
           }else if(d.type===2){
               //设置待收货角标
                d.num=data.toBeReceived
+          }else if(d.type===3){
+             d.num=data.toBePay
+
           }else{
 
           }
@@ -1073,7 +1083,32 @@ position: relative;
   width: 150cpx;
   height: 150cpx;
   border-radius: 50%;
+  opacity: 0.95;
   background: #fff;
+  border:10cpx solid #d799a9;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.real-name{
+  position: absolute;
+  bottom:-2cpx;
+}
+
+
+.real-name-text{
+  position: absolute;
+  z-index: 2;
+  font-size: 16cpx;
+  letter-spacing: 2cpx;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  color:#fff;
 }
 
 .person{
@@ -1344,6 +1379,7 @@ justify-content: center;
 align-items: center;
 position: absolute;
 top:50%;
+transform: translateY(-50%);
 right: 0;
 }
 

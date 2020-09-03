@@ -92,7 +92,6 @@ class BusinessSchool implements BusinessSchoolInterface {
          scrollDirection:'horizontal',
          listArray:[],
          lists:[],
-         imgsrc:require("../../assets/images/asl-share.jpg"),
          pageNum:1,
          loading:false,
          shareIcon:'https://w.aishenglian.com/static/icon/ver2-icon/store/fx@2x.png'

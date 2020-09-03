@@ -91,7 +91,6 @@ class News implements NewsInterface {
   }
 
   data = {
-    imageNews:require('../../assets/images/linkIcon/ld.png'),
     newsLists:[],
     page:1,
     loading:false,
@@ -128,7 +127,7 @@ class News implements NewsInterface {
              //处理json时间
              d.createTime=moment(d.createTime)
             d.color='#fc3741'
-            d.img=require('../../assets/images/linkIcon/ld.png')
+            d.img=''
             d.name=dealStoreTitleName(d.message,10)
             return d
           }))
@@ -161,7 +160,7 @@ class News implements NewsInterface {
       this.newsLists= this.newsLists.map(d=>{
         if(d.id===id){
           d.color='#313131'
-          d.img=require('../../assets/images/linkIcon/ld1.png')
+          d.img=''
         }
         return d
       })
@@ -175,7 +174,7 @@ class News implements NewsInterface {
           this.newsLists= this.newsLists.map(d=>{
             if(d.id===id){
               d.color='#313131'
-              d.img=require('../../assets/images/linkIcon/ld1.png')
+              d.img=''
             }
             return d
           })
