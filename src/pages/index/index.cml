@@ -1,15 +1,17 @@
 <template>
   <view class="container" >
     <view style="min-height:{{ viewPortHeight }};background:#eee;">
-      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}"></component>
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput"></component>
     </view>
     <!-- 分类标题-->
-    <view class="class_title"  c-if="{{ currentComp==='home'}}">
+    <view class="class_title"  c-if="{{ currentComp==='home'}}" >
+    <van-sticky offset-top="{{ stickyTop }}">
       <van-tabs active="{{ active }}" sticky bind:scroll="scrolls" bind:click="goactives" swipeable animated tab-active-class="tags">
         <view c-for="{{activeList}}" c-for-index="index" c-for-item="item">
           <van-tab title="{{item.name}}"></van-tab>
         </view>
       </van-tabs>
+     </van-sticky>
     </view>
  <!--<view class="title" c-if="{{ currentComp==='home'}}"><text class="text-store">. 全部商品 .</text></view>-->
 
@@ -124,6 +126,7 @@ class Index  {
     isShowRecommendPop:true,
     classification:0,//不同分类的覆盖还是合并
     recommends:0, //用来判断是不是为你推荐分类，因为为你推荐和其他是两个接口
+    stickyTop:0,//吸顶距离
   }
   methods={
     scrolls(){
@@ -351,6 +354,12 @@ setRecommendPop(e){
   this.isShowRecommendPop=e.detail.value
 
 
+
+},
+//搜索款的位置
+onshowInput(e){
+  
+  this.stickyTop=e.detail.value
 
 }
 
@@ -659,7 +668,8 @@ export default new Index();
       "live-pop": "/components/live-pop/live-pop",
       "recommende-pop": "/components/recommende-pop/recommende-pop",
       "van-tab": "/vant/tab/index",
-      "van-tabs": "/vant/tabs/index"
+      "van-tabs": "/vant/tabs/index",
+      "van-sticky": "/vant/sticky/index"
 
     }
   },

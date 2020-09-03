@@ -14,9 +14,14 @@
 type EventDetail = {
   value: String
 }
+
+type EventDetail1 = {
+  value: Number
+}
 interface HomeInterface {
   name: String,
   indexLoading:Boolean,
   onshow(eventDetail: EventDetail): void;
+ onshowInput(eventDetail: EventDetail1): void;
 }
 </script>
