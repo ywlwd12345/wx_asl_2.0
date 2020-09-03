@@ -134,6 +134,7 @@ export default new BrandZone();
 
 .cell{
   /* display:inline-block; */
+  text-align: center;
 }
 .panel{
   width: 320cpx;
