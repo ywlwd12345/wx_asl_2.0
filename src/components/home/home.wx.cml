@@ -6,7 +6,7 @@
   <view class="fixed-nav" style="height:{{marginTop}}px;"><text style="margin-top:{{textTop}}px;">爱生链</text></view>
  <view  style="margin-top:{{marginTop}}px;" id="container">
     <van-sticky offset-top="{{marginTop}}">
-      <view class="serach">
+      <view class="serach"   ref="search">
     <van-search
       placeholder="寻找宝贝"
       bind:focus="recordShow"
@@ -991,6 +991,8 @@ showPop(){
 
 
 
+
+
   // 拼团方法 end
 
 
@@ -1021,8 +1023,28 @@ showPop(){
      const res=wx.getMenuButtonBoundingClientRect()
       this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
       this.textTop=res.top + res.height/2-8
+      this.getSearchHeight()//获取搜索款高度
   
-  }
+  },
+  //获取搜素款的高度
+  getSearchHeight(){
+
+  const query=wx.createSelectorQuery().in(this)
+
+  query.select('.serach').boundingClientRect(res => {
+   
+
+
+     const postHeight=res.top+res.height
+   
+    // this.navHeight=res.height
+        this.$cmlEmit('onshowInput',{
+      value:postHeight
+    })
+
+}).exec()
+
+  },
 
 
   
