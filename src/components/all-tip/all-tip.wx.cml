@@ -33,7 +33,7 @@ class AllTip implements AllTipInterface {
      Dialog.confirm({
   title: '提示',
   context:this,
-  message: '你登录可能已实效,去登录？'
+  message: '你登录可能已失效,去登录？'
 }).then(() => {
    cml.redirectTo({
   path: '/pages/login/login'
