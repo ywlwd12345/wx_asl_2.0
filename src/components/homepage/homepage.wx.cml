@@ -132,6 +132,7 @@ class Homepage implements HomepageInterface {
       getGroupPeriod({}).then(res=>{
         this.loading=false
         if(res.code){
+          console.log('超值拼团',res)
           this.listArray=res.data.map((d,index)=>{
            
             d.statusTip=this.dealStatus(d.status)
