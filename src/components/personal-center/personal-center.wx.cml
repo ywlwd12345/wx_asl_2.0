@@ -314,7 +314,7 @@ const imgFunds=[
 },
 
 {
-   imageSrc: require('../../assets/images/linkIcon/JFMX.png'),
+   imageSrc:'',
    text:1  
 }
 
@@ -791,7 +791,7 @@ class PersonalCenter implements PersonalCenterInterface {
     setGold(count){
        $Toast({
             content: '获得金币'+count,
-            image:require('../../assets/images/gold.png'),
+            image:'',
         })
 
     },
@@ -982,7 +982,6 @@ showPop(){
 
    getOrderCarousel(){
      getFootmarkInfo({}).then(res=>{
-  console.log(res,'哈哈猪123456')
        if(res.code===1){
          const data=res.data
         data.expData.map(d=>{
@@ -1002,7 +1001,7 @@ showPop(){
              d.num=data.toBePay
 
           }else{
-            
+
           }
           return d
         })

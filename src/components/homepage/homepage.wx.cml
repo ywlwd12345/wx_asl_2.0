@@ -108,7 +108,7 @@ class Homepage implements HomepageInterface {
   data = {
     lists:[],
      viewPortHeight:'',
-     avatar:require('../../assets/group-images/ceshi.jpg'),
+     avatar:'',
      scrollDirection:'horizontal',
      listArray:[],
      listArray:[],
