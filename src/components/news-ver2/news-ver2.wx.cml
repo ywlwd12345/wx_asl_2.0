@@ -9,10 +9,10 @@
           <view class="top">
             <view class="top_t">
               <view style="color:rgba(34,34,34,1);">系统消息</view>
-              <view style="font-size:22cpx;color:rgba(154,154,154,1);">8-26 11:00</view>
+              <view style="font-size:22cpx;color:rgba(154,154,154,1);">{{systemtime}}</view>
             </view>
             <view class="news_text">
-              这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息
+              {{systemmessage}}
             </view>
           </view>
         </view>
@@ -23,10 +23,10 @@
           <view class="top">
             <view class="top_t">
               <view style="color:rgba(34,34,34,1);">订单消息</view>
-              <view style="font-size:22cpx;color:rgba(154,154,154,1);">8-26 11:00</view>
+              <view style="font-size:22cpx;color:rgba(154,154,154,1);">{{ordertime}}</view>
             </view>
             <view class="news_text">
-              这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息这是一条新的系统消息
+              {{ordermmessage}}
             </view>
           </view>
         </view>
@@ -39,6 +39,8 @@
 
 <script>
 import cml from 'chameleon-api';
+import {getUserNews,readsNews,delNews} from '../../api/index'
+import { moment }  from '../../untils/moment.js'
 class NewsVer2 implements NewsVer2Interface {
   props = {
     name: {
@@ -51,7 +53,11 @@ class NewsVer2 implements NewsVer2Interface {
     title:'消息中心',
     typeimg:'https://w.aishenglian.com/static/icon/ver2-icon/message/xtxx@2x.png',
     typeimgto:'https://w.aishenglian.com/static/icon/ver2-icon/message/ddxx@2x.png',
-    orderimg:''
+    orderimg:'',
+    systemtime:'',
+    systemmessage:'',
+    ordertime:'',
+    ordermmessage:''
   }
 
   computed = {
@@ -61,6 +67,30 @@ class NewsVer2 implements NewsVer2Interface {
   }
 
   methods = {
+    getdata(){
+      getUserNews({pageNum:1,type:1}).then(res=>{
+        if(res.code==1){
+          this.systemtime=moment(res.data[0].createTime)
+          this.systemmessage=res.data[0].message
+        }else if(res.code==0){
+          cml.showToast({
+            message: "没有更多了",
+            duration: 1000
+          })
+        }
+      }).catch(err=>{})
+      getUserNews({pageNum:1,type:2}).then(res=>{
+        if(res.code==1){
+          this.ordertime=moment(res.data[0].createTime)
+          this.ordermmessage=res.data[0].message
+        }else if(res.code==0){
+          cml.showToast({
+            message: "没有更多了",
+            duration: 1000
+          })
+        }
+      }).catch(err=>{})
+    },
     gotail(){
       cml.navigateTo({
         path: '/pages/newsList-ver2/newsList-ver2',
@@ -85,9 +115,7 @@ class NewsVer2 implements NewsVer2Interface {
   }
 
   mounted() {
-    this.$cmlEmit('onshow',{
-      value: this.name
-    })
+    this.getdata()
   }
 
   beforeDestroy() {
