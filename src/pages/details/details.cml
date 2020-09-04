@@ -2,7 +2,7 @@
   <view>
   <details gid="{{gid}}" c-bind:onshow="setShartTitle"></details>
     <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" >
-    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+    <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
 
   </view>
   </view>
@@ -16,7 +16,7 @@ class Details   {
     gid:'',
     title:'' ,
     backTopFlag:true,
-    backTop:require("../../assets/images/back-top.png")
+    backTop:require("../../assets/images/hddc@2x.png")
   }
 
   computed = {
@@ -122,8 +122,8 @@ export default new Details();
 <style scoped>
 
 .back-top{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   background: #fff;
   border-radius: 50%;
   opacity: 0;
@@ -141,8 +141,8 @@ export default new Details();
 
 
 .back-top1{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0.6;

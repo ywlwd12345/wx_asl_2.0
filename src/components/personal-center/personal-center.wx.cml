@@ -1168,8 +1168,13 @@ padding:0 20cpx!important;
 
 .order-management,.personal-funds,.personal-information,.personal-more{
   width:710cpx;
-  border-radius: 20cpx;
+  /* border-radius: 20cpx; */
+  padding:10cpx;
   margin-top:20cpx;
+  background: #fff;
+box-shadow: 1cpx 5cpx 16cpx 1cpx rgba(183, 183, 183, 0.39);
+border-radius: 10cpx;
+
 }
 
 .head-section{
@@ -1177,7 +1182,10 @@ padding:0 20cpx!important;
   min-height: 120cpx;
   background: #fff;
   width: 710cpx;
-  border-radius: 20cpx;
+
+box-shadow: 1cpx 5cpx 16cpx 1cpx rgba(183, 183, 183, 0.39);
+border-radius: 10cpx;
+
   position: absolute;
   left: 50%;
   transform: translate(-50%);
@@ -1315,6 +1323,7 @@ padding:0 20cpx!important;
 
 .grid{
   width: 710cpx;
+  padding:10cpx;
   
 }
 .cml-btn{
