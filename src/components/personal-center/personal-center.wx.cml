@@ -35,7 +35,7 @@
   </view>
   <!-- vip-title end-->
   <view class="vip-member">
-  <view class="level-2">{{usersinfo.level}}</view>
+  <view class="level-2" c-if="{{specLevel}}">{{specLevel}}</view>
   <view c-if="{{standard}}" >
    <van-button color="linear-gradient(to right, #f4c4f3, #fc67fa);" 
    custom-style="color:#fff;"
@@ -421,7 +421,7 @@ class PersonalCenter implements PersonalCenterInterface {
     upToStandard:'',
     standard:false,
     signTitle:'今日签到',
-    usersinfo:[],
+    usersinfo:{},
     token:'',
     username:'',
     OrderCarousel:{},//物流信息
@@ -431,7 +431,8 @@ class PersonalCenter implements PersonalCenterInterface {
     b:'',
     isCertification:0,//是否实名验证
     marginTop:'',
-    realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png'
+    realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png',
+    specLevel:''
 
   }
 
@@ -840,6 +841,7 @@ class PersonalCenter implements PersonalCenterInterface {
         }
       }
       this.usersinfo=res.data[0]
+      this.specLevel=res.data[0].level
       this.avatar='https://'+this.usersinfo.avatar
       //是否实名验证
             const data=res.data[0]
