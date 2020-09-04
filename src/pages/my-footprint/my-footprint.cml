@@ -2,7 +2,7 @@
   <view>
   <my-footprint></my-footprint>
     <view class="back-top1" c-bind:tap="goTop" >
-    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+    <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
   </view>
   
   
@@ -14,7 +14,7 @@
 class MyFootprint   {
 
   data = {
-  backTop:require("../../assets/images/back-top.png")
+  backTop:require("../../assets/images/hddc@2x.png")
   }
 
   computed = {
@@ -74,8 +74,8 @@ export default new MyFootprint();
 
 
 .back-top1{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0.6;

@@ -37,7 +37,7 @@
   
   </view>
   <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" c-if="{{ currentComp==='home'}}">
-    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+    <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
   </view>
 
  <!-- c-if="{{ currentComp==='home' && indexLoading===false}}" 以后备用-->
@@ -120,7 +120,7 @@ class Index  {
     title:'',
     newsuser:'',
     indexLoading:true,
-    backTop:require("../../assets/images/back-top.png"),
+    backTop:require("../../assets/images/hddc@2x.png"),
     backTopFlag:true,
     liveCard:require("../../assets/images/live-img.png"),
     isShowRecommendPop:true,
@@ -356,7 +356,7 @@ setRecommendPop(e){
 
 
 },
-//搜索款的位置
+//搜索框的位置
 onshowInput(e){
   
   this.stickyTop=e.detail.value
@@ -549,8 +549,8 @@ export default new Index();
 }
 
 .back-top{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   background: #fff;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
   opacity: 0;
@@ -569,8 +569,8 @@ export default new Index();
 
 
 .back-top1{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0.6;
