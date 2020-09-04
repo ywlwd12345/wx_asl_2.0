@@ -42,7 +42,7 @@
 </view>
 <view class="right">
 <view class="right-1">{{item.title}}</view>
-<view class="right-2"> {{item.introduce}}</view>
+<view class="right-2">{{item.introduce}}</view>
 <view class="right-3" >
 <view class="right-3-l">{{item.createTime}}</view>
 <view class="right-3-r" style="margin-right:35cpx;"  c-catch:click="goShare($event)">
@@ -138,9 +138,12 @@ listData(){
           d.icon&&(d.icon="https://"+d.icon)
          return d
        }))
-       if(!res.data.length){
-         tip('没有数据')
-       }
+      //  if(!res.data.length){
+      //    tip('没有数据')
+      //  }
+    }else{
+       tip('没有数据了')
+
     }
 
 
@@ -153,6 +156,7 @@ chooseCategory({currentTarget}){
 const id=currentTarget.dataset.pid
 this.id=id
 this.lists=[]
+this.pageNum=1
 this.listData()
 },
     onBottom(){
