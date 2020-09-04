@@ -36,6 +36,9 @@
   </block>
   
   </view>
+<view style="height:120cpx"></view>
+
+
   <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" c-if="{{ currentComp==='home'}}">
     <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
   </view>

@@ -37,7 +37,7 @@
     <view style="display: flex;flex-direction:row;align-items: center;width: 100%;">
       <view class="seckill_s">
         <view class="seckill_t">
-          <view class="seckill" c-for="{{killsList}}" c-for-index="index" c-for-item="item" c-bind:tap="goDetails(item.goodsId)">
+          <view class="seckill" c-for="{{killsList}}" c-for-index="index" c-for-item="item" c-bind:tap="killslist">
             <image src='{{item.thumb}}'></image>
             <view class="seckill_title">{{item.goodsName}}</view>
             <view class="price_original">

@@ -17,7 +17,7 @@
             <view class="imgs">
               <image src="{{item.poster}}" c-bind:click="goClassify(item.id,item.pid)"></image>
             </view>
-            <cell c-for="{{item.goodsData}}" c-for-index="indexs" c-for-item="items" style="display:inline-block;">
+            <cell c-for="{{item.goodsData}}" c-for-index="indexs" c-for-item="items" style="display:inline-block;margin-left:12cpx;">
               <view class="panel" data-gid="{{items.id}}" c-bind:tap="goDetails(items.id)">
                 <view class="goods-img"><image src="{{items.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
                 <view class="goods-name"><text class="spec-text-name" >{{items.name}}</text></view>
@@ -133,8 +133,7 @@ export default new BrandZone();
 }
 
 .cell{
-  /* display:inline-block; */
-  text-align: center;
+
 }
 .panel{
   width: 320cpx;
