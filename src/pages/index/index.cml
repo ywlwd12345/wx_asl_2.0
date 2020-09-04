@@ -27,7 +27,7 @@
   <image src="{{item.thumb}}" style="width:340cpx;height:340cpx;border-radius:20cpx;"></image>
   </view>
   <view class="bot-area">
-   <view class="list-name"><text class="spec-name">{{item.name}}</text></view>
+   <view class="list-name" style="height: 80cpx;"><text class="spec-name">{{item.name}}</text></view>
     <view class="list-price"><text class="now-price">￥{{item.price}}</text>
     <text class="original-price" style="margin-left:20cpx;">￥{{item.marketPrice}}</text></view>
     <view class="asl-count"><text class="count">可获得ASL3数量:{{item.getAsl3}}</text></view>

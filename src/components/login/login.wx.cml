@@ -197,8 +197,10 @@ class Login implements LoginInterface {
     code:'',
     password:'',
     show:false,
-    valueArea:'',
-    transitObj:{},
+    valueArea:'北京市东城区',
+    transitObj:{
+
+    },
     isFlag:false,
     areaList:areaData,
     verification:'获取验证码',
