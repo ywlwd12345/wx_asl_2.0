@@ -72,6 +72,8 @@
     <i-spin  c-if="{{loading}}"  size="large"></i-spin>
   </view>
 
+  <all-tip></all-tip>
+
   </view>
 </template>
 
@@ -396,7 +398,8 @@ line-height: 35cpx;
   "base": {
     "usingComponents": {
         "head-ver2":"/components/head-ver2/head-ver2",
-         "i-spin": "/iview/spin/index"
+         "i-spin": "/iview/spin/index",
+          "all-tip": "../all-tip/all-tip"
     
 
 
