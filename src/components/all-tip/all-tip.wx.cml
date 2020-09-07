@@ -36,7 +36,7 @@ class AllTip implements AllTipInterface {
   message: '你登录可能已失效,去登录？'
 }).then(() => {
    cml.redirectTo({
-  path: '/pages/login/login'
+  path: '/pages/account-login/account-login'
 }) 
  
 }).catch(() => { 

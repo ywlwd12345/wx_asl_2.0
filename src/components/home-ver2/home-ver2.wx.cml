@@ -11,7 +11,7 @@
         <view class="newsupper" c-for="{{newList}}" c-for-index="index" c-for-item="item" c-if="{{index<=2}}" c-bind:tap="goDetails(item.id)">
           <image src='{{item.thumb}}'></image>
           <view class="newsuper_title">{{item.name}}</view>
-          <view class="newsuper_price">¥:{{item.price}}</view>
+          <view class="newsuper_price">¥ {{item.price}}</view>
           <view class="newsuper_asl3">可获得ASL3数量:{{item.getAsl3}}</view>
         </view>
       </view>
@@ -35,14 +35,14 @@
       </view>
     </view>
     <view style="display: flex;flex-direction:row;align-items: center;width: 100%;">
-      <view class="seckill_s">
+      <view class="seckill_s" c-bind:tap="killslist">
         <view class="seckill_t">
-          <view class="seckill" c-for="{{killsList}}" c-for-index="index" c-for-item="item" c-bind:tap="killslist">
+          <view class="seckill" c-for="{{killsList}}" c-for-index="index" c-for-item="item">
             <image src='{{item.thumb}}'></image>
             <view class="seckill_title">{{item.goodsName}}</view>
             <view class="price_original">
-              <view class="seckill_price">¥:{{item.price}}</view>
-              <view class="seckill_original">¥:{{item.original}}</view>
+              <view class="seckill_price">¥ {{item.price}}</view>
+              <view class="seckill_original">¥ {{item.original}}</view>
             </view>
           </view>
         </view>
@@ -285,7 +285,6 @@ export default new HomeVer2();
 .seckill_t{
   display: flex;
   flex-direction:row;
-  justify-content:space-around;
   align-items: center;
   margin: 10rpx 0;
 }
