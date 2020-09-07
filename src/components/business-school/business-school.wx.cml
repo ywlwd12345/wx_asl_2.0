@@ -15,7 +15,7 @@
         >
   <view class="panels" style="background:{{item.bgColor}}" c-bind:tap="chooseCategory" data-pid="{{item.id}}">
   <view class="school-name"><text class="school-name-text">{{item.name}}</text></view>
-  <view class="school-img"><image src="{{item.icon}}" style="width:272cpx;height:183cpx;border-radius:10cpx;"></image></view>
+  <view class="school-img"><image src="{{item.icon}}" style="width:272cpx;height:183cpx;border-radius:10cpx;" class="ani-img"></image></view>
   </view>
   </block>
   </scroller>
@@ -114,13 +114,13 @@ getData(){
     this.id=d.id
     this.listData()
   }
-        if(key%2===0){
-          d.bgColor='linear-gradient(132deg, #7FEBD2, #6AD0CB);'
-        }else if(key%3===0){
-          d.bgColor='linear-gradient(135deg, #65B1F8, #5088F7);'
-        }else{
-           d.bgColor='linear-gradient(135deg, #F7D256, #EFAB4C);'
-        }
+        // if(key%2===0){
+        //   d.bgColor='linear-gradient(132deg, #7FEBD2, #6AD0CB);'
+        // }else if(key%3===0){
+        //   d.bgColor='linear-gradient(135deg, #65B1F8, #5088F7);'
+        // }else{
+        //    d.bgColor='linear-gradient(135deg, #F7D256, #EFAB4C);'
+        // }
          return d
        })
     }
@@ -138,10 +138,11 @@ listData(){
           d.icon&&(d.icon="https://"+d.icon)
          return d
        }))
-       if(!res.data.length){
-         tip('没有数据')
+      
+    }else{ 
+         tip('没有数据了')
+
        }
-    }
 
 
 
@@ -236,22 +237,6 @@ export default new BusinessSchool();
 }
 
 
-.school-img{
-  width:272cpx;
-  height:183cpx;
-  top:0;
-  position: absolute;
-  z-index: 2;
-}
-
-
-.school-name{
-  position: absolute;
-  left:20cpx;
-  top:20cpx;
-  z-index: 9;
-
-}
 
 
 .business-wrap{
@@ -331,17 +316,11 @@ line-height: 35cpx;
 
 
 .panels {
-  z-index: 1;
+
   position: relative;
-  font-size: inherit;
-  font-family: inherit;
   color: white;
   /* padding: 0.5em 1em; */
-  outline: none;
-  border: none;
-  background-color: hsl(236, 32%, 26%);
-  overflow: hidden;
-  cursor: pointer;
+
    min-width:272cpx;
   min-height:183cpx;
   /* padding:20cpx; */
@@ -352,22 +331,67 @@ line-height: 35cpx;
   margin-right: 20cpx; 
 }
 
-.panels::after {
-  content: '';
-  z-index: -1;
-  background-color: hsla(0, 0%, 100%, 0.2);
+
+
+
+.school-name{
   position: absolute;
-  top: -50%;
-  bottom: -50%;
-  width: 1.25em;
-  transform: translate3d(-525%, 0, 0) rotate(35deg);
+  left:20cpx;
+  top:20cpx;
+  z-index: 9;
+
 }
 
-.panels:hover::after {
+.school-img{
+  width:272cpx;
+  height:183cpx;
+  top:0;
+  position: absolute;
+  z-index: 1;
+}
+
+
+
+
+.ani-img {
+  z-index: 1;
+  position: relative;
+  font-size: inherit;
+  font-family: inherit;
+  color: white;
+  /* padding: 0.5em 1em; */
+  outline: none;
+  border: none;
+  background-color: hsl(236, 32%, 26%);
+  overflow: hidden;
+  transition: color 0.4s ease-in-out;
+}
+
+.ani-img::before {
+  content: '';
+  z-index: 3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background-color: #3cefff;
+  transform-origin: center;
+  transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 0);
   transition: transform 0.45s ease-in-out;
-  transform: translate3d(200%, 0, 0) rotate(35deg);
 }
 
+.ani-img:hover {
+  cursor: pointer;
+  color: #161616;
+  opacity: 0.65
+}
+
+.ani-img:hover::before {
+  transform: translate3d(-50%, -50%, 0) scale3d(15, 15, 15);
+  opacity: 0.55;
+}
 
 .loading{
   position: fixed;
