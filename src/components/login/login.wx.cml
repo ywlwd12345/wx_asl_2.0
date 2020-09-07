@@ -199,7 +199,6 @@ class Login implements LoginInterface {
     show:false,
     valueArea:'北京市东城区',
     transitObj:{
-
     },
     isFlag:false,
     areaList:areaData,
