@@ -133,11 +133,18 @@ class Serach implements SerachInterface {
           duration: 1000
         })
         }else{
-          for(var i=0;i<res.data.length;i++){
-            res.data[i].thumb='http://'+res.data[i].thumb
-            this.goodsLists.push(res.data[i])
-          }
+          this.goodsLists= this.goodsLists.concat(res.data.map(d=>{
+              d.thumb='http://'+d.thumb
+              d.name=dealStoreTitleName(d.name,15)
+              return d
+            }))
+          // for(var i=0;i<res.data.length;i++){
+          //   res.data[i].thumb='http://'+res.data[i].thumb
+          //   this.goodsLists.push(res.data[i])
+          // }
         }
+    }else{
+
     }
    
 
@@ -213,6 +220,7 @@ export default new Serach();
 
 .goods-name{
   margin:10cpx;
+  height: 70cpx;
 }
 
 .container{

@@ -206,12 +206,11 @@ class Index  {
             })
           }
           console.log(this.goodsLists)
-          if(this.goodsLists.length==0){
-                  cml.showToast({
+        }else{
+          cml.showToast({
             message: "没有更多",
             duration: 1000
           })
-          }
         }
       }).catch(err=>{})
     },
