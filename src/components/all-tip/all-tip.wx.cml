@@ -52,10 +52,6 @@ sureIsLogin(){
     if(res.code===403|| res.code===0){
         this.dialog()
     }
-
-
-
-
   }).catch(err=>{})
   
 

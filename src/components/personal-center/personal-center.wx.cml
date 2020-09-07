@@ -171,7 +171,7 @@
            c-key="text"
          >
    <van-grid-item  use-slot bind:click="goFunds" data-name="{{item.text}}" >
-  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" class="{{item.text===1 || item.text===2 || item.text===3?'pb-flag':'pb-flag1'}}"></image>
+  <image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" class="{{item.text===1 || item.text===2 || item.text===3?'pb-flag':'pb-flag1'}}"></image>
   <view><text class="icon-text" style="{{item.text===1||item.text===2 || item.text===3?'opacity:0;':'opacity:1'}}">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -190,7 +190,7 @@
            c-key="text"
          >
   <van-grid-item  use-slot bind:click="goPersonInfo" data-text="{{item.text}}">
-  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
+  <image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
 <view><text class="icon-text">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -1329,10 +1329,9 @@ border-radius: 10cpx;
   
 }
 .cml-btn{
-  width: 580cpx;
-  height: 250cpx;
-  margin:0 auto;
-  margin-top:20cpx;
+  width: 580cpx; 
+  margin:20cpx auto;
+
 }
 
 .head-wrap{
