@@ -15,13 +15,11 @@
         >
   <view class="panels" style="background:{{item.bgColor}}" c-bind:tap="chooseCategory" data-pid="{{item.id}}">
   <view class="school-name"><text class="school-name-text">{{item.name}}</text></view>
-  <view class="school-img"><image src="{{item.icon}}" style="width:82cpx;height:82cpx;border-radius:10cpx;"></image></view>
+  <view class="school-img"><image src="{{item.icon}}" style="width:272cpx;height:183cpx;border-radius:10cpx;"></image></view>
   </view>
   </block>
   </scroller>
 
- 
- 
 
      <view class="business-wrap">
     <list
@@ -42,7 +40,7 @@
 </view>
 <view class="right">
 <view class="right-1">{{item.title}}</view>
-<view class="right-2">{{item.introduce}}</view>
+<view class="right-2"> {{item.introduce}}</view>
 <view class="right-3" >
 <view class="right-3-l">{{item.createTime}}</view>
 <view class="right-3-r" style="margin-right:35cpx;"  c-catch:click="goShare($event)">
@@ -72,7 +70,7 @@
     <i-spin  c-if="{{loading}}"  size="large"></i-spin>
   </view>
 
-  <all-tip></all-tip>
+<all-tip></all-tip>
 
   </view>
 </template>
@@ -140,12 +138,9 @@ listData(){
           d.icon&&(d.icon="https://"+d.icon)
          return d
        }))
-      //  if(!res.data.length){
-      //    tip('没有数据')
-      //  }
-    }else{
-       tip('没有数据了')
-
+       if(!res.data.length){
+         tip('没有数据')
+       }
     }
 
 
@@ -155,10 +150,10 @@ listData(){
 },
 
 chooseCategory({currentTarget}){
+this.pageNum=1
 const id=currentTarget.dataset.pid
 this.id=id
 this.lists=[]
-this.pageNum=1
 this.listData()
 },
     onBottom(){
@@ -217,19 +212,8 @@ export default new BusinessSchool();
 </script>
 
 <style scoped>
-.panels{
-  min-width:272cpx;
-  min-height:183cpx;
-  padding:20cpx;
-  display: inline-block;
-  /* background:linear-gradient(132deg,rgba(127,235,210,1),rgba(106,208,203,1)); */
-  border-radius:10px;
-  margin-right: 20cpx; 
-}
 
-.panels > view{
-  margin-top:30cpx;
-}
+
 
 
 .part{
@@ -253,11 +237,19 @@ export default new BusinessSchool();
 
 
 .school-img{
-  width:100%;
-   display: flex;
-  flex-direction: row;
-  justify-content:flex-end;
-  align-items: center;
+  width:272cpx;
+  height:183cpx;
+  top:0;
+  position: absolute;
+  z-index: 2;
+}
+
+
+.school-name{
+  position: absolute;
+  left:20cpx;
+  top:20cpx;
+  z-index: 9;
 
 }
 
@@ -344,12 +336,20 @@ line-height: 35cpx;
   font-size: inherit;
   font-family: inherit;
   color: white;
-  padding: 0.5em 1em;
+  /* padding: 0.5em 1em; */
   outline: none;
   border: none;
   background-color: hsl(236, 32%, 26%);
   overflow: hidden;
   cursor: pointer;
+   min-width:272cpx;
+  min-height:183cpx;
+  /* padding:20cpx; */
+  display: inline-block;
+  position: relative;
+  /* background:linear-gradient(132deg,rgba(127,235,210,1),rgba(106,208,203,1)); */
+  border-radius:10px;
+  margin-right: 20cpx; 
 }
 
 .panels::after {
@@ -398,8 +398,8 @@ line-height: 35cpx;
   "base": {
     "usingComponents": {
         "head-ver2":"/components/head-ver2/head-ver2",
-         "i-spin": "/iview/spin/index",
-          "all-tip": "../all-tip/all-tip"
+        "all-tip":"/components/all-tip/all-tip",
+         "i-spin": "/iview/spin/index"
     
 
 
