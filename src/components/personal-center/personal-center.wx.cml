@@ -183,14 +183,14 @@
     <i-cell title="更多"   i-class="order-group"></i-cell>
   </i-cell-group>
    <view class="grid">
-    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" square>
+    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" >
     <block  c-for="{{ imgInfo }}"
           c-for-index="i"
           c-for-item="item"
            c-key="text"
          >
   <van-grid-item  use-slot bind:click="goPersonInfo" data-text="{{item.text}}">
-  <image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
+<image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
 <view><text class="icon-text">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -350,10 +350,10 @@ const imgFunds=[
    text:'支付密码'  
 },
 
-{
-   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
-   text:'商学院'  
-},
+// {
+//    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
+//    text:'商学院'  
+// },
 
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/yssm@2x.png',
@@ -367,10 +367,8 @@ const imgFunds=[
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/gywm@2x.png',
    text:'关于我们'  
-},
-{},
-{},
-{}
+}
+
  ]
 
  const imgMore=[
