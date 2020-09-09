@@ -1,0 +1,270 @@
+<template>
+  <view class="wrap-2">
+   <nav-ver2  title="{{'商品评价'}}"></nav-ver2>
+
+
+   <view class="content">
+   <view class="search-column">
+   <view class="view-btn"   c-for="{{searchArray }}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="id" >
+   <text class="desc">{{item.desc}}</text>
+   </view>
+   </view>
+   <!-- search-column end-->
+   <view class="review-wrap">
+
+   <view class="panel" c-for-index="i"
+          c-for="{{ 8 }}"
+          c-for-item="item"
+        c-key="i" >
+   <view class="desc-top">
+   <view class="desc-img">
+    <image src="{{avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+    <view class="desc-level">
+   <text>123456</text>
+      <van-rate
+  value="{{ value }}"
+  size="{{ 13 }}"
+  color="#ee0a24"
+  void-color="#eee"
+  void-icon="star"
+  bind:change="onChange"
+/>
+   </view>
+   </view>
+   <view class="desc-time">2017-01-01</view>   
+   </view>
+
+   <!-- desc-top end-->
+   <view class="desc-middle">
+   <text>收到了，非常好，已经试用，推荐！</text>
+   <view class="desc-mid-img">
+   <view class="panel-img"  c-for-index="i"
+        c-for="{{ 8 }}"
+          c-for-item="item"
+        c-key="i" ></view>
+   
+   
+   </view>
+  <!-- desc-middle end-->
+
+   
+   
+   </view>
+   <view class="desc-bottom">
+   <view class="like"> 
+   
+   <text class="like-text">5</text>
+   </view>
+   
+   </view>
+  
+   </view>
+   
+   
+   
+   </view>
+   </view>
+   <!-- content end-->
+  </view>
+</template>
+
+<script>
+
+class ProductReview   {
+
+  data = {
+    searchArray:[
+      {id:1,desc:'全部'},
+      {id:2,desc:'最新'},
+      {id:3,desc:'带图评价'},
+      {id:4,desc:'好评'},
+      {id:5,desc:'差评'}
+    ],
+    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfk@2x.png',
+    value:2
+
+
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new ProductReview();
+</script>
+
+<style scoped>
+
+.content{
+  margin-top:20cpx;
+
+}
+
+.search-column{
+  width: 750cpx;
+height: 91cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+display: flex;
+flex-direction: row;
+justify-content: space-around;
+align-items: center
+}
+
+.view-btn{
+min-width: 104cpx;
+height: 42cpx;
+background: #FFD1CC;
+border-radius: 21cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+.desc{
+font-size: 19cpx;
+font-weight: 400;
+color: #222222;
+}
+
+.panel{
+width: 750cpx;
+background: #FFFFFF;
+padding:20cpx;
+border-radius: 20cpx;
+border-bottom: 4cpx solid  #EFEFEF;
+}
+
+.review-wrap{
+  margin-top:20cpx;
+  
+
+}
+
+.wrap-2 text view{
+  letter-spacing: 2cpx;
+}
+
+.desc-img{
+   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+ 
+
+}
+
+.desc-top{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.desc-middle{
+  margin-top:24cpx;
+}
+
+.desc-mid-img{
+  margin-top:13cpx;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+
+.panel-img{
+width: 155cpx;
+height: 155cpx;
+background:pink;
+border-radius: 8cpx;
+margin-bottom:10cpx;
+}
+
+.like{
+width: 101cpx;
+height: 40cpx;
+background: linear-gradient(89deg, #F59626, #FDC227);
+border-radius: 20cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+.like-text{
+font-size: 26cpx;
+font-weight: 400;
+color: #FFFFFF;
+
+}
+
+.desc-bottom{
+display: flex;
+justify-content: flex-end;
+align-items: center;
+flex-direction: row;
+
+}
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav-ver2":"/components/nav-ver2/nav-ver2",
+      "van-rate": "/vant/rate/index"
+
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>
