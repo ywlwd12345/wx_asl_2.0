@@ -137,6 +137,7 @@
   </view>
   </view>
   </block>
+  <view style="height:60cpx;"></view>
 
   <!-- spec-size end-->
   <view class="btn"><van-button type="primary"

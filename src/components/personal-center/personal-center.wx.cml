@@ -6,6 +6,11 @@
   <view class="person">
   <view class="img-wrap" bind:tap="uploads">
   <image src="{{avatar}}" style="width:150cpx;height:150cpx;border-radius:50%;"></image>
+
+  <view class="real-name" >
+    <image src="{{realNamed}}" style="width:113cpx;height:32cpx;"></image>
+    <text class="real-name-text">{{ isCertification?'已实名':'未实名'}}</text>
+  </view>
   </view>
   <view class="vip">
   <view class="vip-title">
@@ -14,13 +19,14 @@
     bind:click="login"
     round
     color="linear-gradient(to right, #f4c4f3, #fc67fa);">登录</van-button></view>
-  <view><van-button round type="info"
+  <!--<view><van-button round type="info"
   c-if="{{false}}"
   icon="{{icon1}}"
   custom-class="spec-btn"
    size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
    {{usersinfo.level}}</van-button>
    </view>
+   -->
     <view c-if="{{usersinfo.isRegiment}}" class="tuzhang"><van-button round type="info"
   custom-class="spec-btn"
    size="mini" color="#ffffff" custom-style="color:#6a6a6a;padding:10cpx;">
@@ -29,20 +35,20 @@
   </view>
   <!-- vip-title end-->
   <view class="vip-member">
-  <view class="level-2">{{usersinfo.level}}</view>
+  <view class="level-2" c-if="{{specLevel}}">{{specLevel}}</view>
   <view c-if="{{standard}}" >
    <van-button color="linear-gradient(to right, #f4c4f3, #fc67fa);" 
    custom-style="color:#fff;"
    custom-class="spec-btn"
   round type="info" size="mini" >{{upToStandard}}</van-button>
   </view>
-  <view  style="margin-left:30cpx;"  c-if="{{false}}">
+  <!--<view  style="margin-left:30cpx;"  c-if="{{false}}">
   <van-button color="#ffffff" 
    custom-style="color:#6a6a6a;"
    custom-class="spec-btn"
     icon="{{icon2}}"
     bind:click="sign"
-  round type="info" size="mini" >{{signTitle}}</van-button></view>
+  round type="info" size="mini" >{{signTitle}}</van-button></view> -->
   </view>
   <!-- vip-member end-->
 
@@ -100,7 +106,7 @@
           c-key="text"
          >
   <van-grid-item  use-slot   class='wl-order' >
-   <view class="wl-dot" c-if="{{(item.type===1||item.type===2) && item.num}}">{{item.num}}</view>
+   <view class="wl-dot" c-if="{{(item.type===1||item.type===2||item.type===3) && item.num}}">{{item.num}}</view>
   <view  c-bind:tap="goMyOrder" data-type="{{item.type}}">
   <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
   <view class="grid-child"><text class="icon-text spec-icon-text">{{item.text}}</text></view>
@@ -165,7 +171,7 @@
            c-key="text"
          >
    <van-grid-item  use-slot bind:click="goFunds" data-name="{{item.text}}" >
-  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" class="{{item.text===1 || item.text===2 || item.text===3?'pb-flag':'pb-flag1'}}"></image>
+  <image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" class="{{item.text===1 || item.text===2 || item.text===3?'pb-flag':'pb-flag1'}}"></image>
   <view><text class="icon-text" style="{{item.text===1||item.text===2 || item.text===3?'opacity:0;':'opacity:1'}}">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -177,14 +183,14 @@
     <i-cell title="更多"   i-class="order-group"></i-cell>
   </i-cell-group>
    <view class="grid">
-    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" square>
+    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" >
     <block  c-for="{{ imgInfo }}"
           c-for-index="i"
           c-for-item="item"
            c-key="text"
          >
   <van-grid-item  use-slot bind:click="goPersonInfo" data-text="{{item.text}}">
-  <image src="{{item.imageSrc}}" style="width:52cpx;height:52cpx;" ></image>
+<image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
 <view><text class="icon-text">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -308,7 +314,7 @@ const imgFunds=[
 },
 
 {
-   imageSrc: require('../../assets/images/linkIcon/JFMX.png'),
+   imageSrc:'',
    text:1  
 }
 
@@ -344,10 +350,10 @@ const imgFunds=[
    text:'支付密码'  
 },
 
-{
-   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
-   text:'商学院'  
-},
+// {
+//    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
+//    text:'商学院'  
+// },
 
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/yssm@2x.png',
@@ -361,10 +367,8 @@ const imgFunds=[
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/gywm@2x.png',
    text:'关于我们'  
-},
-{},
-{},
-{}
+}
+
  ]
 
  const imgMore=[
@@ -392,6 +396,7 @@ const imgFunds=[
 import cml from 'chameleon-api';
 import store from '../../store'
 import { quitWX,sign} from '../../api/index'
+import {tip} from '../../untils/processData'
 class PersonalCenter implements PersonalCenterInterface {
   props = {
     name: {
@@ -415,7 +420,7 @@ class PersonalCenter implements PersonalCenterInterface {
     upToStandard:'',
     standard:false,
     signTitle:'今日签到',
-    usersinfo:[],
+    usersinfo:{},
     token:'',
     username:'',
     OrderCarousel:{},//物流信息
@@ -424,7 +429,11 @@ class PersonalCenter implements PersonalCenterInterface {
     a:'',
     b:'',
     isCertification:0,//是否实名验证
-    marginTop:''
+    marginTop:'',
+    realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png',
+    specLevel:'',
+    levelInfo:'',//店主等级判断字段
+
   }
 
   computed =store.mapState([
@@ -614,7 +623,11 @@ class PersonalCenter implements PersonalCenterInterface {
       })
         break;
         case "实名认证":
+        if(this.levelInfo<2){
+          tip('店主及以上才能实名认证',2000)
+        }else{
             cml.navigateTo({path: '/pages/verified-page/verified-page'})
+        }
         break;
         case "商学院":
           this.xuexi()
@@ -783,7 +796,7 @@ class PersonalCenter implements PersonalCenterInterface {
     setGold(count){
        $Toast({
             content: '获得金币'+count,
-            image:require('../../assets/images/gold.png'),
+            image:'',
         })
 
     },
@@ -832,10 +845,13 @@ class PersonalCenter implements PersonalCenterInterface {
         }
       }
       this.usersinfo=res.data[0]
+      this.specLevel=res.data[0].level
       this.avatar='https://'+this.usersinfo.avatar
       //是否实名验证
-      //       const data=res.data[0]
-      //       this.isCertification=data.authentication
+            const data=res.data[0]
+            console.log(res.data[0],'草包')
+            this.isCertification=data.authentication
+            this.levelInfo=res.data[0].levelInfo
       // this.isCertification && (this.setCertificationUi())
 
       //暂不验证
@@ -974,7 +990,6 @@ showPop(){
 
    getOrderCarousel(){
      getFootmarkInfo({}).then(res=>{
-      
        if(res.code===1){
          const data=res.data
         data.expData.map(d=>{
@@ -990,6 +1005,9 @@ showPop(){
           }else if(d.type===2){
               //设置待收货角标
                d.num=data.toBeReceived
+          }else if(d.type===3){
+             d.num=data.toBePay
+
           }else{
 
           }
@@ -1073,7 +1091,32 @@ position: relative;
   width: 150cpx;
   height: 150cpx;
   border-radius: 50%;
+  opacity: 0.95;
   background: #fff;
+  border:10cpx solid #d799a9;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.real-name{
+  position: absolute;
+  bottom:-2cpx;
+}
+
+
+.real-name-text{
+  position: absolute;
+  z-index: 2;
+  font-size: 16cpx;
+  letter-spacing: 2cpx;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  color:#fff;
 }
 
 .person{
@@ -1133,8 +1176,13 @@ padding:0 20cpx!important;
 
 .order-management,.personal-funds,.personal-information,.personal-more{
   width:710cpx;
-  border-radius: 20cpx;
+  /* border-radius: 20cpx; */
+  padding:10cpx;
   margin-top:20cpx;
+  background: #fff;
+box-shadow: 1cpx 5cpx 16cpx 1cpx rgba(183, 183, 183, 0.39);
+border-radius: 10cpx;
+
 }
 
 .head-section{
@@ -1142,7 +1190,10 @@ padding:0 20cpx!important;
   min-height: 120cpx;
   background: #fff;
   width: 710cpx;
-  border-radius: 20cpx;
+
+box-shadow: 1cpx 5cpx 16cpx 1cpx rgba(183, 183, 183, 0.39);
+border-radius: 10cpx;
+
   position: absolute;
   left: 50%;
   transform: translate(-50%);
@@ -1280,13 +1331,13 @@ padding:0 20cpx!important;
 
 .grid{
   width: 710cpx;
+  padding:10cpx;
   
 }
 .cml-btn{
-  width: 580cpx;
-  height: 250cpx;
-  margin:0 auto;
-  margin-top:20cpx;
+  width: 580cpx; 
+  margin:20cpx auto;
+
 }
 
 .head-wrap{
@@ -1344,6 +1395,7 @@ justify-content: center;
 align-items: center;
 position: absolute;
 top:50%;
+transform: translateY(-50%);
 right: 0;
 }
 

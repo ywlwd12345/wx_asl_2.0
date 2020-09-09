@@ -2,8 +2,7 @@
   <view>
   <goroup-goods-details gid="{{id}}" c-bind:onshow="setShartTitle"></goroup-goods-details>
    <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" >
-    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
-
+    <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
   </view>
   </view>
 </template>
@@ -16,7 +15,7 @@ class GoroupGoodsDetails   {
     id:'',
     title:'',
     backTopFlag:true,
-    backTop:require("../../assets/images/back-top.png")
+    backTop:require("../../assets/images/hddc@2x.png")
   }
 
   computed = {
@@ -98,8 +97,8 @@ export default new GoroupGoodsDetails();
 <style scoped>
 
 .back-top{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0;
@@ -117,8 +116,8 @@ export default new GoroupGoodsDetails();
 
 
 .back-top1{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0.6;

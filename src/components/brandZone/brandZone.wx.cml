@@ -1,9 +1,6 @@
 <template>
   <view>
     <nav title="{{title}}"></nav>
-    <view class="imgs">
-      <image src="{{imgto}}"></image>
-    </view>
     <view class="goods-detais">
       <list
           bottom-offset="{{20}}"
@@ -17,14 +14,19 @@
               c-for-item="item"
               data-idx="{{i}}"
             >
-              <view class="panel" c-bind:click="goDetails" data-gid="{{item.id}}">
-              <view class="goods-img"><image src="{{item.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
-              <view class="goods-name"><text class="spec-text-name" >{{item.name}}</text></view>
-              <view class="price">
-              <view class="price-left"><text class="spec-text">￥{{item.price}}</text></view>
-              <view class="price-right" style="margin-left:15cpx;"><text>￥{{item.marketPrice}}</text></view>
+            <view class="imgs">
+              <image src="{{item.poster}}" c-bind:click="goClassify(item.id,item.pid)"></image>
+            </view>
+            <cell c-for="{{item.goodsData}}" c-for-index="indexs" c-for-item="items" style="display:inline-block;margin-left:12cpx;">
+              <view class="panel" data-gid="{{items.id}}" c-bind:tap="goDetails(items.id)">
+                <view class="goods-img"><image src="{{items.thumb}}" style="width:320cpx;height:320cpx; border-radius:20cpx;"></image></view>
+                <view class="goods-name"><text class="spec-text-name" >{{items.name}}</text></view>
+                <view class="price">
+                  <view class="price-left"><text class="spec-text">￥{{items.price}}</text></view>
+                  <view class="price-right" style="margin-left:15cpx;"><text>￥{{items.marketPrice}}</text></view>
+                </view>
               </view>
-              </view>
+            </cell>
             </cell>  
       </list>
       </view>
@@ -61,22 +63,35 @@ class BrandZone implements BrandZoneInterface {
   }
 
   methods = {
+//去分类
+  goClassify(id,pid){
+    let sort=10
+    cml.navigateTo({
+      path: '/pages/classify/classify',
+      query:{pid:pid,name:id,sort:sort}
+    })
+},
+    //查看详情
+    goDetails(id){
+      console.log(id)
+    cml.navigateTo({
+    path: '/pages/details/details',
+    query:{gid:id}
+    })
+    },
   getIndexGoodsData(){
     console.log('id',this.ids)
       getActivityIndex().then(res=>{
         if(res.code){
           console.log('品牌专区',res)
-         res.data.map(c=>{
-          if(this.ids==c.id){
-            this.goodsLists= this.goodsLists.concat(c.goodsData.map(d=>{
-              d.thumb='http://'+d.thumb
-              d.name=dealStoreTitleName(d.name,15)
+            this.goodsLists= this.goodsLists.concat(res.data.map(d=>{
+              d.poster='http://'+d.poster
+              d.goodsData.map(c=>{
+                c.thumb='http://'+c.thumb
+                c.name=dealStoreTitleName(c.name,15)
+              })
               return d
             }))
-            this.imgto='http://'+c.poster
-          }
-            return c
-          })
          
         }
 
@@ -113,15 +128,12 @@ export default new BrandZone();
   margin-top:20cpx;
 }
 .goods-detais{
-  width: 720cpx;
+  width: 750cpx;
   margin:0 auto;
-  margin-top: 15cpx;
-  position: relative;
-  margin-top: 40cpx;
 }
 
 .cell{
-  display:inline-block;
+
 }
 .panel{
   width: 320cpx;
@@ -165,7 +177,8 @@ export default new BrandZone();
 }
 .imgs image{
   width: 100%;
-  height: 300cpx;
+  height: 260cpx;
+  margin-bottom: 30cpx
 }
 </style>
 

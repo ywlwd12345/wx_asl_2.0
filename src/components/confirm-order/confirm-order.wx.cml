@@ -145,6 +145,7 @@ class ConfirmOrder implements ConfirmOrderInterface {
   methods = {
     newAddress(){
       cml.getStorage('address').then((value)=>{
+        console.log('更改的地址信息',value)
         if(value){
           this.address.receiver=value.receiver
           this.address.mobile=value.mobile
@@ -152,6 +153,7 @@ class ConfirmOrder implements ConfirmOrderInterface {
           this.address.city=value.city
           this.address.district=value.district
           this.address.place=value.place
+          this.address.id=value.id
           cml.removeStorage('payData')
         }
       })
@@ -204,7 +206,6 @@ class ConfirmOrder implements ConfirmOrderInterface {
     },
     onClickButton(){
       //没设置地址
-      console.log('提交',this.address.length)
       if(this.address.province){
         this.createNum()
       }else{

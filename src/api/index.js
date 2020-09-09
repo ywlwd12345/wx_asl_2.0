@@ -197,7 +197,7 @@ export function sousuogoods(data) {
     return request({
         method: "GET",
         data,
-        url: "/app/search/goods"
+        url: "/app/es/search/goods"
     });
 }
 

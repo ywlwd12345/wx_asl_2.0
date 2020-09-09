@@ -79,7 +79,7 @@ class SeckilZone implements SeckilZoneInterface {
     status:'',
     statusindex:'',
     purchase:1,
-    purchasetime:0
+    purchasetime:1
   }
 
   computed = {
@@ -100,24 +100,21 @@ class SeckilZone implements SeckilZoneInterface {
       secondkilltime({}).then(res=>{
         if(res.code){
           this.listArray=res.data.map((d,index)=>{
-           
+            d.status=this.dealStatus(d.status)
             d.name=dealStoreTitleName(d.name,14)
             d.time=this.dealTimePeriod(d.time)
             d.flag=false
-            if(d.status==1){
+            if(d.status=='进行中'){
               d.flag=true
               this.statusindex=index
-              this.specTime=this.setTime(d.time)
-              this.getClassifiyData(d.time)
+              this.getClassifiyData(d.time,index,d.status)
             }
-            d.status=this.dealStatus(d.status)
             return d
           })
+          console.log(res.data)
           // 防止空数据时间段
           if(!this.listArray.find(d=>d.status===1)){
             this.listArray[0].flag=true
-            this.specTime=this.setTime(this.listArray[0].time)
-            // this.getClassifiyData(this.listArray[0].id)
           }
         }
       }).catch(err=>{})
@@ -168,29 +165,6 @@ class SeckilZone implements SeckilZoneInterface {
 
 
     },
-    setTime(tm){
-    let num
-     if(parseInt(tm.split(":")[0])===0){
-      tm='24:00:00'
-    }
-
-    const  newDate = new Date();
-  
-
-    const startTime= momentTime(newDate)+`${tm}`
-
-  //获取整点开奖的时间戳
-    let timestamp1= new Date(startTime).getTime()
-
-    let timestamp2= new Date().getTime()
-    
-    
-    num=timestamp1-timestamp2
-
-    return num
-
-    
-  },
   }
 
   beforeCreate() {

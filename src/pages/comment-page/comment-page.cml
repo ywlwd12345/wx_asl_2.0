@@ -1,0 +1,239 @@
+<template>
+  <view class="wrap-2">
+   <nav-ver2  title="{{'发表评论'}}"></nav-ver2>
+   <view class="content">
+   <view class="goods-detail">
+   <view class="top">
+   <view class="top-img">这是一张图片</view>
+   <text class="top-text">逩腾剃须刀电动刮胡刀男士迷你小巧便携双刀头水 洗车载USB充电式</text>
+   </view>
+   <!-- top end-->
+   <view class="bottom">
+   <text class="desc-text">描述相符:</text>
+   <van-rate
+  value="{{ value }}"
+  size="{{ 25 }}"
+  color="#ee0a24"
+  void-color="#eee"
+  void-icon="star"
+  bind:change="onChange"
+/>
+   </view>
+
+   </view>
+   <!-- goods-detail end-->
+  <view class="comment">
+  <van-cell-group>
+  <van-field
+    value="{{ message }}"
+    type="textarea"
+    placeholder="请输入留言"
+    input-class="text-area"
+    border="{{ false }}"
+  />
+</van-cell-group>
+
+<view class="file-upload">
+
+<van-uploader file-list="{{ fileList }}" bind:after-read="afterRead" />
+
+
+
+
+</view>
+
+<!-- file-upload end -->
+  
+  
+  
+  </view>
+  <!-- comment end -->
+
+
+   </view>
+   <view class="btn-custom">
+
+   发表评论
+
+   </view>
+
+ 
+
+  </view>
+</template>
+
+<script>
+
+class CommentPage  {
+
+  data = {
+    value: 3,
+    fileList: [{url:'https://w.aishenglian.com/static/icon/ver2-icon/my/tx@2x.png'}],
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+      afterRead(event) {
+    const { file } = event.detail;
+    // 当设置 mutiple 为 true 时, file 为数组格式，否则为对象格式
+    wx.uploadFile({
+      url: 'https://example.weixin.qq.com/upload', // 仅为示例，非真实的接口地址
+      filePath: file.path,
+      name: 'file',
+      formData: { user: 'test' },
+      success(res) {
+        // 上传完成需要更新 fileList
+        const { fileList = [] } = this.data;
+        fileList.push({ ...file, url: res.data });
+        this.setData({ fileList });
+      },
+    });
+  }
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new CommentPage();
+</script>
+
+<style>
+
+.content{
+  margin-top:21cpx;
+
+}
+
+.goods-detail{
+padding: 20cpx;
+ width: 750cpx;
+min-height: 267cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+
+
+}
+
+.top-img{
+width: 130cpx;
+height: 130cpx;
+background: pink;
+
+}
+
+.top{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom:30cpx;
+  border-bottom:2cpx solid #EFEFEF;
+}
+
+.top-text{
+  flex:0.95;
+}
+
+.wrap-2 text view{
+  letter-spacing: 2cpx;
+}
+
+.bottom{
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+  margin-top:25cpx;
+}
+
+
+.desc-text{
+font-size: 30cpx;
+font-weight: 500;
+color: #222222;
+line-height: 46cpx;
+}
+
+
+.comment{
+padding: 20cpx;
+margin-top:18cpx;
+width: 750cpx;
+height: 517cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+}
+
+
+.text-area{
+  height: 200cpx!important;
+  padding-top:20cpx!important;
+}
+
+
+.btn-custom{
+margin:0 auto;
+width: 581cpx;
+height: 80cpx;
+background: #E9210F;
+box-shadow: 0cpx 0cpx 25cpx 0cpx rgba(205, 26, 10, 0.3);
+border-radius: 40cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 30cpx;
+font-weight: 500;
+color: #FFFFFF;
+margin-top:92cpx;
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "nav-ver2":"/components/nav-ver2/nav-ver2",
+        "van-rate": "/vant/rate/index",
+         "van-field": "/vant/field/index",
+         "van-uploader": "/vant/uploader/index"
+    }
+  },
+  "wx": {
+     "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

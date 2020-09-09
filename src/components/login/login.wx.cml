@@ -53,7 +53,7 @@
     <view class="submit">
       <van-button block type="info"
         color="{{logincolor===1?'linear-gradient(to right, #e65245, #e43a15)':'#E7E7E7'}}" 
-        custom-style="border-radius:20rpx;" bind:click="login">登录
+        custom-style="border-radius:45rpx;" bind:click="login">登录
       </van-button>
     </view>
 
@@ -139,7 +139,7 @@
     <view class="submit" style="margin-bottom:40cpx;">
       <van-button block type="info"
         color="{{Registercolor===1?'linear-gradient(to right, #e65245, #e43a15)':'#E7E7E7'}}" 
-        custom-style="border-radius:20rpx;" bind:click="goRegister">注册
+        custom-style="border-radius:45rpx;" bind:click="goRegister">注册
       </van-button>
     </view>
   </view>
@@ -197,8 +197,9 @@ class Login implements LoginInterface {
     code:'',
     password:'',
     show:false,
-    valueArea:'',
-    transitObj:{},
+    valueArea:'北京市东城区',
+    transitObj:{
+    },
     isFlag:false,
     areaList:areaData,
     verification:'获取验证码',
@@ -593,7 +594,7 @@ margin:20cpx 0;
     background: #FAFAFA;
     padding: 10cpx 20cpx;
     height: 80cpx;
-    border-radius: 35cpx;
+    border-radius: 45cpx;
 }
 .code{
   position: relative;

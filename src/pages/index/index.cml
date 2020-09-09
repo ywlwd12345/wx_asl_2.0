@@ -1,15 +1,17 @@
 <template>
   <view class="container" >
     <view style="min-height:{{ viewPortHeight }};background:#eee;">
-      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}"></component>
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput"></component>
     </view>
     <!-- 分类标题-->
-    <view class="class_title"  c-if="{{ currentComp==='home'}}">
+    <view class="class_title"  c-if="{{ currentComp==='home'}}" >
+    <van-sticky offset-top="{{ stickyTop }}">
       <van-tabs active="{{ active }}" sticky bind:scroll="scrolls" bind:click="goactives" swipeable animated tab-active-class="tags">
         <view c-for="{{activeList}}" c-for-index="index" c-for-item="item">
           <van-tab title="{{item.name}}"></van-tab>
         </view>
       </van-tabs>
+     </van-sticky>
     </view>
  <!--<view class="title" c-if="{{ currentComp==='home'}}"><text class="text-store">. 全部商品 .</text></view>-->
 
@@ -25,7 +27,7 @@
   <image src="{{item.thumb}}" style="width:340cpx;height:340cpx;border-radius:20cpx;"></image>
   </view>
   <view class="bot-area">
-   <view class="list-name"><text class="spec-name">{{item.name}}</text></view>
+   <view class="list-name" style="height: 80cpx;"><text class="spec-name">{{item.name}}</text></view>
     <view class="list-price"><text class="now-price">￥{{item.price}}</text>
     <text class="original-price" style="margin-left:20cpx;">￥{{item.marketPrice}}</text></view>
     <view class="asl-count"><text class="count">可获得ASL3数量:{{item.getAsl3}}</text></view>
@@ -34,8 +36,11 @@
   </block>
   
   </view>
+<view style="height:120cpx"></view>
+
+
   <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" c-if="{{ currentComp==='home'}}">
-    <image src="{{backTop}}" style="width:64cpx;height:64cpx;"></image>
+    <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
   </view>
 
  <!-- c-if="{{ currentComp==='home' && indexLoading===false}}" 以后备用-->
@@ -118,12 +123,13 @@ class Index  {
     title:'',
     newsuser:'',
     indexLoading:true,
-    backTop:require("../../assets/images/back-top.png"),
+    backTop:require("../../assets/images/hddc@2x.png"),
     backTopFlag:true,
     liveCard:require("../../assets/images/live-img.png"),
     isShowRecommendPop:true,
     classification:0,//不同分类的覆盖还是合并
     recommends:0, //用来判断是不是为你推荐分类，因为为你推荐和其他是两个接口
+    stickyTop:0,//吸顶距离
   }
   methods={
     scrolls(){
@@ -200,12 +206,11 @@ class Index  {
             })
           }
           console.log(this.goodsLists)
-          if(this.goodsLists.length==0){
-                  cml.showToast({
+        }else{
+          cml.showToast({
             message: "没有更多",
             duration: 1000
           })
-          }
         }
       }).catch(err=>{})
     },
@@ -351,6 +356,12 @@ setRecommendPop(e){
   this.isShowRecommendPop=e.detail.value
 
 
+
+},
+//搜索框的位置
+onshowInput(e){
+  
+  this.stickyTop=e.detail.value
 
 }
 
@@ -540,8 +551,8 @@ export default new Index();
 }
 
 .back-top{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   background: #fff;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
   opacity: 0;
@@ -560,8 +571,8 @@ export default new Index();
 
 
 .back-top1{
-  width: 80cpx;
-  height: 80cpx;
+  width: 81cpx;
+  height: 81cpx;
   border-radius: 50%;
   background: #fff;
   opacity: 0.6;
@@ -659,7 +670,8 @@ export default new Index();
       "live-pop": "/components/live-pop/live-pop",
       "recommende-pop": "/components/recommende-pop/recommende-pop",
       "van-tab": "/vant/tab/index",
-      "van-tabs": "/vant/tabs/index"
+      "van-tabs": "/vant/tabs/index",
+      "van-sticky": "/vant/sticky/index"
 
     }
   },
