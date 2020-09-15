@@ -44,7 +44,6 @@
 
      <view class="desc">
       <view class="price">
-
       <view class="price-desc">
       <text class="now-price">￥{{allDetails.price}}</text>
       <text class="original-price">￥{{allDetails.marketPrice}}</text>
@@ -99,36 +98,36 @@
   <view class="eval-title">
   <view class="eval-title-left">
   <view class="divider"></view>
-  <text style="margin-left:10cpx;">评价 1000+</text>
+  <text style="margin-left:10cpx;">评价 {{commentData.count}}</text>
   </view>
-  <view class="eval-title-right">好评率99%</view>
+  <view class="eval-title-right">好评率 {{commentData.favorableComments}}</view>
   </view>
-  <block  c-for="{{3}}"
+  <block  c-for="{{commentsArray}}"
           c-for-index="i"
           c-for-item="item"
           c-key="i">
   <view class="eval-user">
-  <image src="{{evalUserImg}}" style="width:100cpx;height:100cpx;border-raius:50%;"></image>
+  <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-raius:50%;"></image>
   <view class="rate">
-  <text>123456</text>
-  <van-rate value="{{ 2 }}" bind:change="onChangeRate" />
+  <text>{{item.uname}}</text>
+  <van-rate value="{{item.star}}" bind:change="onChangeRate" />
   </view>
   </view>
   <!-- eval-user end-->
   <view class="eval-user-desc">
-  <view class="eval-desc-say">收到了，非常好，已经试用，推荐！</view>
+  <view class="eval-desc-say">{{item.comment}}</view>
   <view class="eval-img-wrap">
   <view class="img-wrap-one"  
-          c-for="{{ 8}}"
+          c-for="{{item.imgs}}"
           c-for-index="i"
-          c-for-item="item"
-          c-key="i" >{{item}}</view>
+          c-for-item="img"
+          c-key="i" >{{img}}</view>
   </view>
   <!-- eval-img-wrap end-->
 
   <view class="eval-desc-like">
   <view class="like-btn">
-  <text>5</text>
+  <text>{{item.like}}</text>
   </view>
   </view>
   <!-- eval-desc-like end-->
@@ -151,7 +150,6 @@
   <text style="margin-left:10cpx;">商品介绍</text>
   </view>
   </view>
-
     <origin-rich-text nodes="{{ allDetails.content }}" style="margin-top:10cpx;"></origin-rich-text>
   </view>
 
@@ -275,7 +273,7 @@
 import cml from 'chameleon-api';
 import {getGoodDetails,getStyle,addCartData,getBaseUserInfo,CollectiongGoods,deletesGoods} from '../../api/index'
 
-import {getErWeiData} from '../../api/grouping.js' //引入拼团模块接口
+import {getErWeiData,comments} from '../../api/grouping.js' //引入拼团模块接口
 
 import { dealDetailsStrData,arrayChangeObj,dealImg,dealDetailsStyle} from '../../untils/processData'
 import store from '../../store'
@@ -360,7 +358,9 @@ class Details implements DetailsInterface {
     passObj:{},// 传送给分享弹框的对象
     objFlag:false, // 为了传异步的值给弹框组件
     popStyle:'',
-    erWeiMaUrl:''
+    erWeiMaUrl:'',
+    commentsArray:[],//评价数组
+    commentData:{} // 评价数据
   }
 
   computed = {
@@ -382,8 +382,7 @@ class Details implements DetailsInterface {
 
      return getErWeiData(data).then(res=>{
 
-       
-       
+      
         if(res.code){
           this.erWeiMaUrl='https://'+res.data
         }
@@ -734,7 +733,33 @@ return flag
 
   goBack(){
     cml.navigateBack(-1)
-  }
+  },
+
+  // 获取评论
+
+  getComments(){
+    comments({goodsId:this.gid}).then(res=>{
+      console.log(res,'商品评论')
+      if(res.code){
+          this.commentData=res.data
+          this.commentsArray=res.data.commentData.map(d=>{
+          d.avatar='https://'+d.avatar
+          return  d
+        })
+      }    
+    }).catch(err=>{})
+
+
+  },
+
+
+
+  init(){
+     this.getCapluse() //获取胶囊按钮的一些数据
+     this.getDetailsData({id:this.gid})//获取商品详细数据
+     this.getComments()//获取商品评论
+
+  },
 
   
     }
@@ -756,8 +781,7 @@ return flag
   }
 
   mounted() {
-      this.getCapluse()
-     this.getDetailsData({id:this.gid})
+    this.init()
     //  setTimeout(() => {
     //    this.objFlag=true
     //  }, 1000);
@@ -1132,6 +1156,7 @@ color: #ED422A;
   bottom: 0;
   z-index: 99;
   display: flex;
+  overflow: hidden;
   justify-content: space-around;
   align-items: center;
   flex-direction: row;

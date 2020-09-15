@@ -514,3 +514,20 @@ export function isLogin(data) {
         url: "/app/islogin"
     });
 }
+
+
+
+/**
+ * @desc 商品页评论信息api
+ * @url /app/goods/page/comments
+ * @method GET
+ * @param { goodsId }
+ * @author ywl
+ */
+export function comments(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/goods/page/comments"
+    });
+}
