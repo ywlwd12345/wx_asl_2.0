@@ -1,5 +1,6 @@
 <template>
   <view class="container">
+  <nav title="{{title}}"></nav>
     <!-- <view class="nav">
    <van-nav-bar
   title="{{title}}"
@@ -14,44 +15,35 @@
   </view>-->
   <!--nav end-->
 
-  <view class="top-wrap">
-  <image src="{{marketUrl}}" style="width:750cpx;height:350cpx;border-radius:0 0 100cpx 100cpx;" ></image>
-  <view class="nav"><van-icon name="arrow-left" color="#ffffff" size="30px" bind:click="goBefore"/> <text class="spec-nav">个人市场</text></view>
-  </view>
-
   <view class="panel">
 
    <image src="{{imgBg}}" style="width:710cpx;height:350cpx;" ></image>
    <view class="panel-wrap">
   <view class="item item1">
-  <view class="img">
-  <image src="{{lists.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
-  </view>
+    <view class="img">
+      <image src="{{lists.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+      <view class="name">
+        <text class="weight-color">{{lists.uname}}</text>
+        <text class="slow-color" style="font-weight:bold;">{{lists.level}}</text>
+      </view>
+    </view>
 
-  <view class="name"> 
-  <text class="weight-color">{{lists.uname}}</text>
-  <text class="slow-color" style="font-weight:bold;">{{lists.level}}</text>
-  </view>
-<view class="logo">
-<view class="icon" c-if="{{false}}">
-<van-icon name="fire-o" />
-</view>
+    <view class="logo">
+      <view class="icon" c-if="{{false}}">
+        <van-icon name="fire-o" />
+      </view>
 
-<view class="go-btn">
-<van-button round type="info"
-color="#ffffff;" 
-custom-style="color:#713e2b;"
-custom-class="spec-btn-up"
-hairline="{{true}}"
-size="mini" bind:tap="goUp">我要升级</van-button>
-</view>
-
-
-
-</view>
+      <view class="go-btn">
+        <van-button round type="info"
+        color="#ffffff;" 
+        custom-style="color:#713e2b;"
+        custom-class="spec-btn-up"
+        hairline="{{true}}"
+        size="mini" bind:tap="goUp">我要升级
+        </van-button>
+      </view>
+    </view>
 <!--logo end-->
-  
-
   </view>
   <!-- item1 end-->
 
@@ -467,7 +459,7 @@ background: #eee;
    width: 710cpx;
    margin: 0 auto;
    background:red;
-   margin-top:180cpx;
+   margin-top:430cpx;
    min-height:500cpx;
    position: relative;
    background: #fff;
@@ -535,6 +527,7 @@ background: #eee;
 {
   "base": {
     "usingComponents": {
+      "nav":"/components/nav-ver2/nav-ver2",
         "van-nav-bar": "/vant/nav-bar/index",
         "van-icon": "/vant/icon/index",
          "van-button": "/vant/button/index",

@@ -136,7 +136,11 @@ class ShareRegistration implements ShareRegistrationInterface {
    city:'',
    county:'',
    valueArea:'',
-   transitObj:{},
+   transitObj:{
+     province:'北京市',
+     city:'北京市',
+     county:'东城区'
+   },
    uname:'',
    password:'',
    code:'',
@@ -493,10 +497,6 @@ getPhoneNumber (e) {
   }
 
   mounted() {
-        cml.showToast({
-            message: this.uid,
-            duration: 1000
-          })
     // this.$cmlEmit('onshow',{
     //   value: this.name
     // })

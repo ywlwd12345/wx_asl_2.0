@@ -25,46 +25,54 @@
         >
       <view class="panel">
       <view class="items items1">
-      <view class="order-number"><text style="color:#ff410f;" class="spec-order-text">{{item.orderId}}</text></view>
-      <view class="status"><text class="spec-order-text">{{item.statusMsg}}</text></view>
+      <view class="order-number"><text class="order-textid">订单编号:{{item.orderId}}</text></view>
+      <view class="status"><text class="spec-order-status">{{item.statusMsg}}</text></view>
       </view>
 
       <cell c-for="{{item.goodsInfo}}"
           c-for-index="j"
           c-for-item="items"
           data-idx="{{j}}">
-        <view class="items items2"  data-orderid="{{items.id}}"  c-bind:tap="goOrderDetails(item.orderId)" >
-        <view>
-          <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
-        </view>
-        <view style="width:300cpx;"><text class="spec-order-text" style="font-size:22cpx;">{{items.goodsName}}</text> 
-        <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text></view>
-        <view ><text class="spec-order-text">￥{{items.price}}</text> <text class="spec-order-text">x{{items.totalCount}}</text>
-        </view>
+        <view class="items2"  data-orderid="{{items.id}}"  c-bind:tap="goOrderDetails(item.orderId)" >
+          <view class="items">
+            <view>
+              <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;"></image>
+            </view>
+            <view style="width:300cpx;">
+              <text class="spec-order-goodsName">{{items.goodsName}}</text> 
+              <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
+            </view>
+            <view >
+              <text class="spec-order-price">￥{{items.price}}</text> 
+              <text class="spec-order-totalCount">x{{items.totalCount}}</text>
+            </view>
+          </view>
+          <view class="items3">
+            <view class="top">
+              <text class="spec-total">总价￥{{item.totalMoney}}</text>
+              <text style="margin-left:10cpx;" class="spec-order-text" ></text>
+              <text class="now-price">应付款:￥{{item.totalMoney}}</text>
+            </view>
+            <view class="bottom"  c-if="{{item.pay_status}}">
+              <text class="spec-order-text">实付总额:</text>
+              <text class="now-price">{{item.real_money}}</text>
+            </view>
+          </view>
         </view>
       </cell>
 
-      <view class="items3">
-      <view class="top">
-      <text class="spec-order-text">共{{item.totalCount}}件</text>
-      <text style="margin-left:10cpx;" class="spec-order-text" >应付总额:</text>
-      <text class="now-price">￥{{item.totalMoney}}</text>
-      </view>
-      <view class="bottom"  c-if="{{item.pay_status}}">
-      <text class="spec-order-text">实付总额:</text>
-      <text class="now-price">{{item.real_money}}</text>
-      </view>
-      </view>
 
-      <view class="items items1">
+
+      <view class="items items1" style="align-items: center;border-top: 2cpx solid #eee;">
 
       <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
       data-id="{{item.id}}"
-      ><van-icon name="delete" size="20" color="#f5222d"/></view>
+      ><van-icon name="delete" size="18" color="#999999"/></view>
 
       <view class="items5">
       <view class="btn" c-if="{{item.statusMsg==='待支付'}}" c-bind:tap="canceldialog(item.orderId,item.statusMsg)">
       <van-button round type="default" size="small"
+      custom-class="buttons"
        data-tip="{{item.statusMsg}}"
        data-btntip="{{setBtnName}}"
       data-id="{{item.id}}">
@@ -82,7 +90,7 @@
       </view>
       
       <view style="margin-left:10cpx;" c-if="{{item.status==1}}" c-bind:tap="getNumber(item.orderId)" data-id="{{item.id}}" >
-      <van-button round type="info" size="small" color="#f44336">立即付款</van-button></view>
+      <van-button round type="info" size="small" custom-class="button_payment">付款</van-button></view>
 <!--
       <view style="margin-left:10cpx;" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
       <van-button round type="info" size="small" color="#fff">查看物流</van-button></view>
@@ -616,8 +624,6 @@ export default new MyOrder();
 
 
 .panel-list{
-  position: absolute;
-  top: 250cpx;
   left: 0;
   right: 0;
   bottom: 0;
@@ -628,17 +634,17 @@ export default new MyOrder();
   width:750cpx;
   min-height: 250cpx;
   background: #fff;
-  padding:10cpx;
+  padding: 10cpx 30cpx;
+  border-radius: 20cpx;
 }
 
 .items{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  margin-top:10cpx;
+  margin-top:20cpx;
   padding-bottom:5cpx;
-  border-bottom:2cpx solid #eee;
+  padding-top: 10cpx;
 }
 .items5{
   display: flex;
@@ -647,7 +653,6 @@ export default new MyOrder();
   align-items: center;
   margin-top:10cpx;
   padding-bottom:5cpx;
-  border-bottom:2cpx solid #eee;
 }
 
 .items3{
@@ -657,7 +662,7 @@ export default new MyOrder();
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  border-bottom:2cpx solid #eee;
+  margin-top: -40cpx;
 
 }
 .top{
@@ -707,10 +712,10 @@ view.items4{
 }
 
 .now-price{
-  color:#ff0000;
   display: inline-block;
   letter-spacing: 2cpx;
-  font-size:26cpx;
+  font-size: 23cpx;
+  color: #222222;
 }
 
 .tab{
@@ -719,10 +724,50 @@ view.items4{
 
 .spec-order-text{
    letter-spacing: 2cpx;
-   font-size: 26cpx;
+   font-size: 24cpx;
 
 }
-
+.order-textid{
+  font-size: 24cpx;
+  color: #9A9A9A;
+}
+.spec-order-status{
+  
+font-size: 24cpx;
+color: #ED4229;
+}
+.spec-order-goodsName{
+  font-size: 26rpx;
+  color: #222222;
+}
+.spec-order-price{
+  font-size: 33.8cpx;
+  color: #ED4229;
+}
+.spec-order-totalCount{
+  font-size: 23cpx;
+  color: #D2D2D2;
+  text-align: right;
+  padding-top: 5cpx;
+}
+.spec-total{
+  font-size: 23cpx;
+  color: #D2D2D2;
+  margin-right: 20cpx;
+}
+.buttons{
+  font-size: 26cpx;
+  color: #999999;
+  padding: 0 40cpx;
+  border: 1cpx solid #CACACA;
+}
+.button_payment{
+  border: 1cpx solid #DD3A2C;
+  font-size: 26cpx;
+  color: #ED4229;
+  padding: 0 20cpx;
+  background: none!important;
+}
 </style>
 
 <script cml-type="json">

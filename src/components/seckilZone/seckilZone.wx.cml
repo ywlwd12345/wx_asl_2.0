@@ -135,7 +135,7 @@ class SeckilZone implements SeckilZoneInterface {
             this.list=res.data.map((d,index)=>{
            
             d.thumb='https://'+d.thumb
-            d.goodsName=dealStoreTitleName(d.goodsName,14)
+            d.goodsName=dealStoreTitleName(d.goodsName,25)
             return d
           })
           if(this.list.length==0){
