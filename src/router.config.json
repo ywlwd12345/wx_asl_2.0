@@ -317,6 +317,18 @@
             "url": "/cml/h5/asl-authorize",
             "path": "/pages/brandZone/brandZone",
             "name": "品牌专区"
+        },
+
+        {
+            "url": "/cml/h5/comment-page",
+            "path": "/pages/comment-page/comment-page",
+            "name": "评论页面"
+        },
+
+        {
+            "url": "/cml/h5/product-review",
+            "path": "/pages/product-review/product-review",
+            "name": "商品评价"
         }
 
     ]

@@ -183,14 +183,14 @@
     <i-cell title="更多"   i-class="order-group"></i-cell>
   </i-cell-group>
    <view class="grid">
-    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" square>
+    <van-grid gutter="{{ 0 }}" border="{{false}}"  column-num="{{4}}" >
     <block  c-for="{{ imgInfo }}"
           c-for-index="i"
           c-for-item="item"
            c-key="text"
          >
   <van-grid-item  use-slot bind:click="goPersonInfo" data-text="{{item.text}}">
-  <image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
+<image src="{{item.imageSrc}}" style="width:77cpx;height:77cpx;" ></image>
 <view><text class="icon-text">{{item.text}}</text></view>
   </van-grid-item>
   </block>
@@ -350,10 +350,10 @@ const imgFunds=[
    text:'支付密码'  
 },
 
-{
-   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
-   text:'商学院'  
-},
+// {
+//    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/sxy@2x.png',
+//    text:'商学院'  
+// },
 
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/yssm@2x.png',
@@ -367,10 +367,8 @@ const imgFunds=[
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/gywm@2x.png',
    text:'关于我们'  
-},
-{},
-{},
-{}
+}
+
  ]
 
  const imgMore=[
@@ -398,6 +396,7 @@ const imgFunds=[
 import cml from 'chameleon-api';
 import store from '../../store'
 import { quitWX,sign} from '../../api/index'
+import {tip} from '../../untils/processData'
 class PersonalCenter implements PersonalCenterInterface {
   props = {
     name: {
@@ -432,7 +431,8 @@ class PersonalCenter implements PersonalCenterInterface {
     isCertification:0,//是否实名验证
     marginTop:'',
     realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png',
-    specLevel:''
+    specLevel:'',
+    levelInfo:'',//店主等级判断字段
 
   }
 
@@ -623,7 +623,11 @@ class PersonalCenter implements PersonalCenterInterface {
       })
         break;
         case "实名认证":
+        if(this.levelInfo<2){
+          tip('店主及以上才能实名认证',2000)
+        }else{
             cml.navigateTo({path: '/pages/verified-page/verified-page'})
+        }
         break;
         case "商学院":
           this.xuexi()
@@ -845,7 +849,9 @@ class PersonalCenter implements PersonalCenterInterface {
       this.avatar='https://'+this.usersinfo.avatar
       //是否实名验证
             const data=res.data[0]
+            console.log(res.data[0],'草包')
             this.isCertification=data.authentication
+            this.levelInfo=res.data[0].levelInfo
       // this.isCertification && (this.setCertificationUi())
 
       //暂不验证
