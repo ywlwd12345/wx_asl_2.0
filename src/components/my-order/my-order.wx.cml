@@ -58,8 +58,16 @@
               <text class="now-price">{{item.real_money}}</text>
             </view>
           </view>
+
+           <view class="btn" c-if="{{item.statusMsg==='已完成'}}">
+      <van-button round type="default" size="small"  
+      data-orderid="{{item.orderId}}"
+      data-id="{{items.goodsId}}" bind:click="goComment">去评价</van-button>
+      </view>
         </view>
       </cell>
+
+
 
 
 
@@ -95,6 +103,11 @@
       <view style="margin-left:10cpx;" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
       <van-button round type="info" size="small" color="#fff">查看物流</van-button></view>
 -->
+     
+
+
+
+
 
       <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
       <van-button round type="default" size="small">查看物流</van-button>
@@ -280,8 +293,7 @@ class MyOrder implements MyOrderInterface {
      default:
       
 } 
-        
-
+      
       },
        onBottom(){
        cml.showToast({
@@ -563,7 +575,16 @@ class MyOrder implements MyOrderInterface {
         duration: 1500
       })
 
+    },
+//去评价
+    goComment({currentTarget}){
+      store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
+      store.commit('changeGlobalId',{key:'orderId',value:currentTarget.dataset.orderid})
+      cml.navigateTo({
+            path: '/pages/comment-page/comment-page'
+          })     
     }
+    
 
 
   }
@@ -607,10 +628,6 @@ export default new MyOrder();
 
 .container{
   width:750cpx;
- 
-  
-
-
 }
 
 .items2{

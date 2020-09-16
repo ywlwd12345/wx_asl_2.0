@@ -531,3 +531,53 @@ export function comments(data) {
         url: "/app/goods/page/comments"
     });
 }
+
+
+
+/**
+ * @desc 发表评论api
+ * @url app/goods/comment
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function newComments(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/goods/comment"
+    });
+}
+
+
+/**
+ * @desc  商品评论上传图片视频
+ * @url  app/oss/upload
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function commentsImg(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/oss/upload"
+    });
+}
+
+
+
+/**
+ * @desc  获取商品评论api	
+ * @url  /app/goods/comment
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function goodsComments(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/goods/comment"
+    });
+}

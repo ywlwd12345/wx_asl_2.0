@@ -5,10 +5,16 @@ const state = {
     isSign: '今日签到', //没用
     isCancelLogin: true,
     Cancels: true,
-    address:true,
-    newaddress:true,
+    address: true,
+    newaddress: true,
     indexAnmationFlag: false,
-    singNum: 1 //
+    singNum: 1, //
+    globalId: {
+        goodsId: '', //商品id
+        orderId: '' //, 订单id
+    },
+    navOpacity: 0, //导航栏透明度
+    detailTop: 0, //详情页面距顶部的高度
 }
 
 export default state
