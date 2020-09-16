@@ -1028,7 +1028,19 @@ background: #eee;
 .favorites-text{
   font-size:18cpx;
   color: #666666;
+  
 }
+
+
+.favorites{
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction:column;
+}
+
+
+
 
 
 .price-desc{
