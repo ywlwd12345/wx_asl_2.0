@@ -1,6 +1,8 @@
 <template>
   <view>
-  <details gid="{{gid}}" c-bind:onshow="setShartTitle"></details>
+  <details gid="{{gid}}" c-bind:onshow="setShartTitle" 
+   c-bind:setScrollTop="setScrollTop"
+   c-bind:onshowCarouselH="setCarouselH" ></details>
     <view class="{{backTopFlag?'back-top':'back-top1'}}" c-bind:tap="goTop" >
     <image src="{{backTop}}" style="width:81cpx;height:81cpx;"></image>
 
@@ -9,6 +11,7 @@
 </template>
 
 <script>
+import store from '../../store'
 
 class Details   {
 
@@ -16,7 +19,8 @@ class Details   {
     gid:'',
     title:'' ,
     backTopFlag:true,
-    backTop:require("../../assets/images/hddc@2x.png")
+    backTop:require("../../assets/images/hddc@2x.png"),
+    carouselH:'',//组件内轮播图高度 单位px
   }
 
   computed = {
@@ -56,13 +60,34 @@ class Details   {
      
   },
   //监听小程序页面滚动
-        onPageScroll:function(e){
+    onPageScroll:function(e){
     if(e.scrollTop>800){
        this.backTopFlag=false
-       
     }else{
         this.backTopFlag=true 
     }
+    if(e.scrollTop>this.carouselH*0.25 && e.scrollTop<this.carouselH*0.5){
+      store.commit('navOpacity',0.5)
+    }else if(e.scrollTop>this.carouselH*0.5 && e.scrollTop<this.carouselH*0.75){
+      store.commit('navOpacity',0.75)
+    }else if(e.scrollTop>this.carouselH){
+        store.commit('navOpacity',1)
+    }
+    if(e.scrollTop===0){
+       store.commit('navOpacity',0)
+    }
+
+       store.commit('detailTop',e.scrollTop)
+
+
+
+
+
+
+    // console.log(e,'哈哈猪123')
+
+
+
         },
 
         //小程序页面回到顶部
@@ -70,6 +95,24 @@ goTop(){
    wx.pageScrollTo({
       scrollTop: 0,
       duration: 2000
+    })
+
+},
+
+//获取组件内轮播图的高度
+setCarouselH({detail}){
+  this.carouselH=detail.value
+ 
+},
+
+setScrollTop({detail}){
+  const TopH=detail.value
+  this.toTop(TopH)
+},
+toTop(num){
+   wx.pageScrollTo({
+      scrollTop: num,
+      duration: 1000
     })
 
 }

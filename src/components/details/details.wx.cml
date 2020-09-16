@@ -1,20 +1,23 @@
 <template>
    <view class="container">
    <!--<nav title="{{title}}"></nav>-->
-   <view class="fixed-list" style="padding-top:{{marginTop}}px;height:{{fixListH}}px;">
-   <view class="arrow" style="margin-left:32cpx;"><image src="{{fixListImg}}" style="width:47cpx;height:47cpx;"></image></view>
+   <view class="fixed-list" style="padding-top:{{marginTop}}px;height:{{fixListH}}px;opacity:{{navOpacity}};">
+   <view class="arrow" style="margin-left:32cpx;" c-bind:tap="goBack"><image src="{{fixListImg}}" 
+   style="width:47cpx;height:47cpx;"></image></view>
      <block
          c-for="{{ fixeList}}"
           c-for-index="i"
           c-for-item="item"
           c-key="value"
       >
-   <view class="fix-list-goods">{{item.label}}</view>
+   <view class="fix-list-goods" c-bind:tap="selectSlide" data-id="{{item.value}}">
+   <text>{{item.label}}</text>
+   <view class="{{item.flag?'fix-border-bottom':'fix-border-bottom1'}}"></view>
+   </view>
   </block>
    </view>
   <!--nav end-->
   <view class="store-detail">
-
   <view class="carousel-wrap">
   <carousel class="wrap-img" indicator-dots="{{true}}"  current="{{0}}" circular="{{true}}" autoplay="{{true}}">
       <block
@@ -29,13 +32,11 @@
       </carousel-item>
       </block>
       </carousel>
-      <view class="pos-img" style="top:{{marginTop}}px;" c-bind:tap="goBack">
-        <image src="{{posImg}}" style="width:58cpx;height:58cpx;"></image>
+      <view class="pos-img" style="top:{{marginTop}}px;opacity:{{1-navOpacity}};" c-bind:tap="goBack">
+        <image src="{{posImg}}" style="width:58cpx;height:58cpx;opacity:{{1-navOpacity}};"></image>
       </view>
 </view>
 <!-- carousel-wrap end-->
-
-   
   </view>
 
   <!-- store-detail end-->
@@ -44,15 +45,14 @@
 
      <view class="desc">
       <view class="price">
-
       <view class="price-desc">
       <text class="now-price">￥{{allDetails.price}}</text>
       <text class="original-price">￥{{allDetails.marketPrice}}</text>
       </view>
 
-      <view class="favorites">
+      <view class="favorites"  c-bind:tap="coolect_p">
       <van-icon name="{{iconss}}" color="{{colors}}" size="20px"/>
-      <text class="favorites-text">收藏</text>
+      <text class="favorites-text" >收藏</text>
       </view>
       <!-- favorites end-->
 
@@ -99,36 +99,37 @@
   <view class="eval-title">
   <view class="eval-title-left">
   <view class="divider"></view>
-  <text style="margin-left:10cpx;">评价 1000+</text>
+  <text style="margin-left:10cpx;">评价 {{commentData.count}}</text>
   </view>
-  <view class="eval-title-right">好评率99%</view>
+  <view class="eval-title-right">好评率 {{commentData.favorableComments}}</view>
   </view>
-  <block  c-for="{{3}}"
+  <block  c-for="{{commentsArray}}"
           c-for-index="i"
           c-for-item="item"
           c-key="i">
   <view class="eval-user">
-  <image src="{{evalUserImg}}" style="width:100cpx;height:100cpx;border-raius:50%;"></image>
+  <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-raius:50%;"></image>
   <view class="rate">
-  <text>123456</text>
-  <van-rate value="{{ 2 }}" bind:change="onChangeRate" />
+  <text>{{item.uname}}</text>
+  <van-rate value="{{item.star}}"  readonly />
   </view>
   </view>
   <!-- eval-user end-->
   <view class="eval-user-desc">
-  <view class="eval-desc-say">收到了，非常好，已经试用，推荐！</view>
+  <view class="eval-desc-say">{{item.comment}}</view>
   <view class="eval-img-wrap">
   <view class="img-wrap-one"  
-          c-for="{{ 8}}"
+          c-for="{{item.imgs}}"
           c-for-index="i"
-          c-for-item="item"
-          c-key="i" >{{item}}</view>
+          c-for-item="img"
+          c-key="i" >{{img}}</view>
   </view>
   <!-- eval-img-wrap end-->
 
   <view class="eval-desc-like">
   <view class="like-btn">
-  <text>5</text>
+  <image src="{{likeImg}}" style="width:22cpx;height:21cpx;margin-right:8cpx;" ></image>
+  <text>{{item.like}}</text>
   </view>
   </view>
   <!-- eval-desc-like end-->
@@ -137,7 +138,7 @@
 
   </block>
 
-  <view class="more-eval-btn"> 查看更多评价</view>
+  <view class="more-eval-btn"  c-bind:tap="moreComment" data-id="{{gid}}"> 查看更多评价</view>
 
 
 
@@ -151,7 +152,6 @@
   <text style="margin-left:10cpx;">商品介绍</text>
   </view>
   </view>
-
     <origin-rich-text nodes="{{ allDetails.content }}" style="margin-top:10cpx;"></origin-rich-text>
   </view>
 
@@ -274,9 +274,7 @@
 <script>
 import cml from 'chameleon-api';
 import {getGoodDetails,getStyle,addCartData,getBaseUserInfo,CollectiongGoods,deletesGoods} from '../../api/index'
-
-import {getErWeiData} from '../../api/grouping.js' //引入拼团模块接口
-
+import {getErWeiData,comments} from '../../api/grouping.js' //引入拼团模块接口
 import { dealDetailsStrData,arrayChangeObj,dealImg,dealDetailsStyle} from '../../untils/processData'
 import store from '../../store'
 import Dialog from '../../vant/dialog/dialog'
@@ -285,7 +283,7 @@ const fixeList=[
   {
   value:1,
   label:'商品',
-  flag:false,
+  flag:true,
 },
   {
   value:2,
@@ -315,13 +313,14 @@ class Details implements DetailsInterface {
     fixeList:fixeList,
     marginTop:'',
     iconss:'star-o',
-    colors:'rgb(100,101,102)',
+    colors:'#666666',
     purchase:0,//判断是加入购物车还是直接购买  直接购买为1
     login:'',
     guige_price:'',
     guige:'100',
     ceshi:[1,2,3,4,5],
     title:"详情",
+    likeImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/dz/dz@2x.png',
     iconSpec:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/dg@2x.png',
     cartImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/kf@2x.png',
     posImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/fh@2x.png',
@@ -360,17 +359,59 @@ class Details implements DetailsInterface {
     passObj:{},// 传送给分享弹框的对象
     objFlag:false, // 为了传异步的值给弹框组件
     popStyle:'',
-    erWeiMaUrl:''
+    erWeiMaUrl:'',
+    commentsArray:[],//评价数组
+    commentData:{}, // 评价数据
+    goodsTp:'',
+    commentTp:'',
+    detailsTp:'',
+    tapFlag:true
   }
 
-  computed = {
+  computed =  store.mapState({
+    // 箭头函数可使代码更简练
+   navOpacity: state => state.navOpacity,
+   detailTop(state){
+     const distance= state.detailTop
+     return state.detailTop
+
+   }
+
+     // 传字符串参数 'count' 等同于 `state => state.count`
+    // countAlias: 'count',
+
+     // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+    // countPlusLocalState (state) {
+    //   return state.count + this.localCount
+    // }
+  })
+
+
+  watch ={
+     detailTop:function(newV,oldV){
+
+      //  console.log(668899)
+       this.tapFlag && (this.setDis(newV))
+     }
+
   }
 
-  watch = {
-  }
 
   methods = {
     //分享弹框之后设置背景颜色
+
+    setDis(distance){
+       if(distance<this.goodsTp){
+       this.setSlectScroll(1)
+     }else if(this.goodsTp<distance && distance<  this.commentTp){
+    this.setSlectScroll(2)
+     }else  if(distance>this.detailsTp){
+       this.setSlectScroll(3)
+     }else{
+
+     }
+      
+    },
     setBackground(e){
       this.popStyle=e.detail.value
 
@@ -382,8 +423,7 @@ class Details implements DetailsInterface {
 
      return getErWeiData(data).then(res=>{
 
-       
-       
+      
         if(res.code){
           this.erWeiMaUrl='https://'+res.data
         }
@@ -399,8 +439,8 @@ class Details implements DetailsInterface {
         deletesGoods({goodsId:this.allDetails.goodsId}).then(res=>{
           console.log("取消",res)
           if(res.code==1){
-            this.iconss='like-o'
-            this.colors='rgb(100,101,102)'
+            this.iconss='star-o'
+            this.colors='#666666'
             this.allDetails.isCollect=0
             cml.showToast({
               message: "取消成功",
@@ -418,7 +458,7 @@ class Details implements DetailsInterface {
         CollectiongGoods(data).then(res=>{
           console.log("收藏",res)
           if(res.code==1){
-            this.iconss='like'
+            this.iconss='star'
             this.colors='red'
             this.allDetails.isCollect=1
             cml.showToast({
@@ -450,10 +490,6 @@ class Details implements DetailsInterface {
           this.allDetails=res.data[0]
           // this.allDetails.getAsl1=Number(this.allDetails.getAsl1)
           // console.log( this.allDetails.getAsl1,335566)
-
-         
-
-
           this.allDetails.thumb='https://'+this.allDetails.thumb
           const passObj={id:this.allDetails.goodsId,thumb:this.allDetails.thumb,
           title:this.allDetails.name,erWeiMa:this.erWeiMaUrl,price:this.allDetails.price}
@@ -462,7 +498,7 @@ class Details implements DetailsInterface {
           this.objFlag=true //让数据传输到弹框组件 通过组件的显隐
         
           if(this.allDetails.isCollect===1){
-            this.iconss='like'
+            this.iconss='star'
             this.colors='red'
           }
           this.$cmlEmit('onshow',{
@@ -728,13 +764,145 @@ return flag
      const res=wx.getMenuButtonBoundingClientRect()
       this.marginTop=res.top + res.height/2-14// 让搜索框位于离胶囊按钮的中间
       this.fixListH=res.top+res.height+10
-   
-  
   },
+
+
+  
 
   goBack(){
     cml.navigateBack(-1)
+  },
+
+  // 获取评论
+
+  getComments(){
+    comments({goodsId:this.gid}).then(res=>{
+      console.log(res,'商品评论')
+      if(res.code){
+          this.commentData=res.data
+          this.commentsArray=res.data.commentData.map(d=>{
+          d.avatar='https://'+d.avatar
+          return  d
+        })
+      }    
+    }).catch(err=>{})
+
+
+  },
+  moreComment({currentTarget}){
+      store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
+      cml.navigateTo({
+            path: '/pages/product-review/product-review'
+          })
+  },
+
+    // 获取轮播图高度
+  getCarouselHeight(){
+  const query=wx.createSelectorQuery().in(this)
+  query.select('.carousel-wrap').boundingClientRect(res => {
+    console.log(res,'轮播图高度')
+    // this.navHeight=res.height
+    const H=res.height
+    this.goodsTp=H
+
+        this.$cmlEmit('onshowCarouselH',{
+      value:H
+    })
+
+}).exec()
+
+ 
+
+  },
+  //选择滑动
+  selectSlide({currentTarget}){
+    this.tapFlag=false
+    setTimeout(() => {
+      this.tapFlag=true
+    }, 1500);
+const value=currentTarget.dataset.id
+if(this.fixeList.find(d=>d.value===value).flag){
+  return 
+}
+this.fixeList=this.fixeList.map(d=>{
+  if(d.value===value){
+    d.flag=true
+  }else{
+    d.flag=false
   }
+    return d
+    })
+    if(value===1){
+         this.$cmlEmit('setScrollTop',{value:0})
+    }else if(value===2){
+      this.setScrollH('.evaluation')
+    }else{
+       this.setScrollH('.details-content')
+
+    }
+
+  },
+
+    // 设置 滚动高度
+   setScrollH(str){
+  const query=wx.createSelectorQuery().in(this)
+ query.select(str).boundingClientRect(res => {
+      const Tp=res.top
+      this.$cmlEmit('setScrollTop',{value:Tp+10})
+}).exec()
+  },
+
+
+//页面滚动的时候 选择条目
+  setSlectScroll(value){
+    this.fixeList=this.fixeList.map(d=>{
+  if(d.value===value){
+    d.flag=true
+  }else{
+    d.flag=false
+  }
+   return d
+  })
+  },
+
+  //获取相关距顶部参数
+
+  gteTopDistance(str,name){
+     const query=wx.createSelectorQuery().in(this)
+ query.select(str).boundingClientRect(res => {
+      const Tp=res.top
+      this[name]=Tp
+}).exec()
+
+  },
+
+//设置自身实列参数
+
+  setSelfArug(){
+    const arr=[
+      {str:'.evaluation',name:'commentTp'},
+      {str:'.details-content',name:'detailsTp'},
+    ]
+    arr.map(d=>{
+       this.gteTopDistance(d.str,d.name)
+       return d
+    })
+
+   
+
+  },
+
+
+
+
+  init(){
+     this.getCapluse() //获取胶囊按钮的一些数据
+     this.getDetailsData({id:this.gid})//获取商品详细数据
+     this.getComments()//获取商品评论
+     this.getCarouselHeight()//获取轮播图高度
+     this.setSelfArug()
+
+  },
 
   
     }
@@ -756,8 +924,7 @@ return flag
   }
 
   mounted() {
-      this.getCapluse()
-     this.getDetailsData({id:this.gid})
+    this.init()
     //  setTimeout(() => {
     //    this.objFlag=true
     //  }, 1000);
@@ -920,7 +1087,7 @@ align-items: center;
   padding: 0 10cpx;
  min-width: 185cpx;
 min-height: 40cpx;
-border: 4cpx solid #ED422A;
+border: 2cpx solid #ED422A;
 border-radius: 8cpx;
 font-size: 21cpx;
 font-weight: 500;
@@ -998,6 +1165,7 @@ color: #222222;
   margin-bottom:15cpx;
   letter-spacing: 2cpx;
   font-size: 20cpx;
+ 
 }
 
 
@@ -1132,6 +1300,7 @@ color: #ED422A;
   bottom: 0;
   z-index: 99;
   display: flex;
+  overflow: hidden;
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
@@ -1216,6 +1385,7 @@ margin-top:5cpx;
   position: absolute;
   left:30cpx;
   z-index: 2;
+  transition: all 0.6s
 }
 
 .pos-img > image{
@@ -1240,6 +1410,7 @@ margin-top:5cpx;
   flex-direction: row;
   background: #FFFFFF;
   border-radius:0 0 20cpx 20cpx;
+  transition: all 0.6s;
 }
 
 
@@ -1252,6 +1423,27 @@ margin-top:5cpx;
 font-size: 30cpx;
 font-weight: 400;
 }
+
+
+.fix-border-bottom{
+  width:100%;
+height: 6cpx;
+background: linear-gradient(90deg, #D62B1D, #F8715D);
+border-radius: 1cpx;
+transition: all 0.6s;
+opacity: 1;
+}
+
+
+.fix-border-bottom1{
+  width:100%;
+height: 6cpx;
+background: linear-gradient(90deg, #D62B1D, #F8715D);
+border-radius: 1cpx;
+opacity: 0;
+transition: all 0.6s;
+}
+
 
 
 .introduce-2{
