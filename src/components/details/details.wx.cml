@@ -498,7 +498,7 @@ class Details implements DetailsInterface {
           this.objFlag=true //让数据传输到弹框组件 通过组件的显隐
         
           if(this.allDetails.isCollect===1){
-            this.iconss='like'
+            this.iconss='star'
             this.colors='red'
           }
           this.$cmlEmit('onshow',{
@@ -1087,7 +1087,7 @@ align-items: center;
   padding: 0 10cpx;
  min-width: 185cpx;
 min-height: 40cpx;
-border: 4cpx solid #ED422A;
+border: 2cpx solid #ED422A;
 border-radius: 8cpx;
 font-size: 21cpx;
 font-weight: 500;

@@ -92,7 +92,7 @@ class CommentPage  {
   methods = {
       afterRead(event) {
     const { file } = event.detail;
-    console.log(event,555)
+ 
     // 当设置 mutiple 为 true 时, file 为数组格式，否则为对象格式
       wx.showToast({
             title: '上传中...',
@@ -151,7 +151,7 @@ class CommentPage  {
 
   getData(){
 getGoodDetails({id:this.formData.goodsId}).then(res=>{
-  console.log(res,'哈哈猪123654')
+ 
   if(res.code){
     this.goodsData=res.data[0]
   }

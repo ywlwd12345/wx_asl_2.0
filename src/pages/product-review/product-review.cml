@@ -127,7 +127,6 @@ class ProductReview   {
         });
       goodsComments(this.formData).then(res=>{
         wx.hideToast();
-        console.log(res,668899)
         if(res.code && res.data.length){
           this.listData=this.listData.concat(res.data)
         }else{
