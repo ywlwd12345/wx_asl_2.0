@@ -59,10 +59,9 @@
             </view>
           </view>
 
-           <view class="btn" c-if="{{item.statusMsg==='已完成'}}">
-      <van-button round type="default" size="small"  
-      data-orderid="{{item.orderId}}"
-      data-id="{{items.goodsId}}" bind:click="goComment">去评价</van-button>
+           <view class="btn" c-if="{{item.statusMsg==='已完成'}}"  data-orderid="{{item.orderId}}"
+      data-id="{{items.goodsId}}" c-catch:click="goComment($event)">
+      <van-button round type="default" size="small" >去评价</van-button>
       </view>
         </view>
       </cell>
@@ -600,6 +599,7 @@ class MyOrder implements MyOrderInterface {
     },
 //去评价
     goComment({currentTarget}){
+      console.log(5,6,7)
       store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
       store.commit('changeGlobalId',{key:'orderId',value:currentTarget.dataset.orderid})
       cml.navigateTo({
