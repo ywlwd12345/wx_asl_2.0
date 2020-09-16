@@ -80,8 +80,30 @@
       </van-button>
       </view>
 
+      <view class="btn" c-if="{{item.statusMsg==='待发货'}}" c-bind:tap="reminddialog(item.orderId,item.statusMsg)">
+      <van-button round type="default" size="small"
+      custom-class="buttonsto"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       提醒发货
+      </van-button>
+      </view>
+
+
+      <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
+      <van-button round type="default" size="small"
+      custom-class="buttons"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       查看物流
+      </van-button>
+      </view>
+
       <view class="btn" c-if="{{item.statusMsg==='已发货' }}" c-bind:tap="confirmReceipts(item.orderId,item.statusMsg)">
       <van-button round type="default" size="small"
+      custom-class="buttonsto"
        data-tip="{{item.statusMsg}}"
        data-btntip="{{setBtnName}}"
       data-id="{{item.id}}">
@@ -95,10 +117,6 @@
       <view style="margin-left:10cpx;" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
       <van-button round type="info" size="small" color="#fff">查看物流</van-button></view>
 -->
-
-      <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
-      <van-button round type="default" size="small">查看物流</van-button>
-      </view>
 
 
       <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
@@ -389,6 +407,10 @@ class MyOrder implements MyOrderInterface {
       this.cancelOeder(orderId,stats)
     }).catch(() => { 
     });
+   },
+   //提醒发货
+   reminddialog(id,stats){
+     console.log('提醒发货',id,stats)
    },
     //取消订单
     cancelOeder(orderId,stats){
@@ -760,6 +782,13 @@ color: #ED4229;
   color: #999999;
   padding: 0 40cpx;
   border: 1cpx solid #CACACA;
+  margin-right: 20cpx;
+}
+.buttonsto{
+  font-size: 26cpx;
+  color: #ED4229;
+  padding: 0 40cpx;
+  border: 1cpx solid #ED4229;
 }
 .button_payment{
   border: 1cpx solid #DD3A2C;
