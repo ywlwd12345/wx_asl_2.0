@@ -1,6 +1,6 @@
 <template>
-  <view>
-  <walle-Purse></walle-Purse>
+  <view class="container">
+  <walle-Purse ></walle-Purse>
   </view>
 </template>
 
@@ -48,7 +48,14 @@ class WallePurse   {
 export default new WallePurse();
 </script>
 
-<style>
+<style scoped>
+
+.container{
+  width: 750cpx;
+  min-height: 100vh;
+  background: #eee;
+
+}
 
 </style>
 

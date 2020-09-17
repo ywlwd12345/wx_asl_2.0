@@ -69,8 +69,8 @@ export default new Agreements();
   },
   "wx": {
       "backgroundTextStyle":"light",
-      "navigationBarBackgroundColor": "#ff410f",
-      "navigationBarTextStyle":"white"
+      "navigationBarBackgroundColor": "#fff",
+      "navigationBarTextStyle":"black"
   },
   "alipay": {
     "defaultTitle": "index",
