@@ -55,6 +55,22 @@
       </view>
     </view>
     </view>
+  <!-- 限时活动-->
+    <view class="day_news">
+      <view class="title">
+        <view class="title_1">限时活动</view>
+        <view class="title_2" c-bind:tap="moresto">更多></view>
+      </view>
+      <view class="list">
+        <view class="newsupper" c-for="{{newListto}}" c-for-index="index" c-for-item="item" c-if="{{index<=2}}" c-bind:tap="goDetails(item.id)">
+          <image src='{{item.thumb}}'></image>
+          <view class="newsuper_title">{{item.name}}</view>
+          <view class="newsuper_price">¥ {{item.price}}</view>
+          <view class="newsuper_asl3">可获得ASL3数量:{{item.getAsl3}}</view>
+        </view>
+      </view>
+    </view>
+  
   </view>
 
 
@@ -84,6 +100,7 @@ class HomeVer2 implements HomeVer2Interface {
     activeList:[],
     loading:false,
     goodsLists:[],
+    newListto:[],
     page:1,
     specTime:0
   }
@@ -101,6 +118,23 @@ class HomeVer2 implements HomeVer2Interface {
       getIndexgoods({isActivity:0,isActive:0,isRef:0,isScore:0,pageNum:1,isNew:1}).then(res=>{
         if(res.code==1){
           this.newList= this.newList.concat(res.data.map(d=>{
+            d.thumb='http://'+d.thumb
+            // d.name=dealStoreTitleName(d.name,10)
+            return d
+          }))
+        }
+      }).catch(err=>{
+
+      })
+
+    },
+
+    //限时活动
+    gethuodongData(){
+      getIndexgoods({isActivity:1,isActive:0,isRef:0,isScore:0,pageNum:1,isNew:0}).then(res=>{
+        console.log('限时活动',res)
+        if(res.code==1){
+          this.newListto= this.newListto.concat(res.data.map(d=>{
             d.thumb='http://'+d.thumb
             // d.name=dealStoreTitleName(d.name,10)
             return d
@@ -146,6 +180,12 @@ class HomeVer2 implements HomeVer2Interface {
         path: '/pages/everydayList/everydayList',
       })
     },
+    //限时活动点击更多
+    moresto(){
+      cml.navigateTo({
+        path: '/pages/timeactivities/timeactivities',
+      })
+    },
     //秒杀专区
     killslist(){
       cml.navigateTo({
@@ -188,6 +228,7 @@ class HomeVer2 implements HomeVer2Interface {
   mounted() {
     this.getActiviGoodsData()
     this.getindexkill()
+    this.gethuodongData()
   }
 
   beforeDestroy() {
