@@ -11,14 +11,14 @@
   bind:click-right="onClickRight"
   safe-area-inset-top="{{true}}"
 >
-<van-icon name="arrow-left"  slot="left" color="#fff" size="64rpx" custom-class="icon-nav"/>
+<van-icon name="arrow-left"  slot="left" color="#000" size="64rpx" custom-class="icon-nav"/>
 <text slot="right" class="slot-text">提现日志</text>
 </van-nav-bar>
   </view>
   <!--nav end-->
 
 
-<view class="panel">
+<!--<view class="panel">
 <view class="item1">
 <text class="coin1">{{coinData.fee1}}</text>
 <text class="coin2">现金币</text>
@@ -53,7 +53,7 @@
 </view>
 </view>
 
-<!-- put-end-->
+
 <view
 class="transfer"
 >
@@ -73,13 +73,87 @@ class="transfer"
 </view>
 </view>
 
-<!-- transfer end-->
+
 <view class="btn">
 <van-button type="primary" round
 color="linear-gradient(to right, #e73827, #f85032)"
 block bind:click="submit">提交</van-button>
+</view>-->
+<view  style="height:410cpx;">
+  <view class="top">
+    <view class="curs">
+      <view class="title_left">
+        <view></view>
+        <view class="value_title">现金币</view> 
+      </view>
+      <view class="values">{{coinData.fee1}}</view>
+    </view>
+
+    <view class="curs">
+      <view class="title_left">
+        <view></view>
+        <view class="value_title">ASL2</view> 
+      </view>
+      <view class="values">{{coinData.asl2}}</view>
+    </view>
+
+    <view class="curs">
+      <view class="title_left">
+        <view></view>
+        <view class="value_title">ASL5</view> 
+      </view>
+      <view class="values">{{coinData.asl5}}</view>
+    </view>
+    <view class="{{add==0?'addsto':'adds'}}"> 
+      <view class="curs">
+        <view class="title_left">
+          <view></view>
+          <view class="withdrawal_title">提现币种</view>
+          <view class="withdrawal_title" style="padding-left:30cpx;">{{aslName}}</view>
+        </view>
+        <view c-bind:click="xuanzhong">></view>
+      </view>
+      <view class="classification">
+        <van-radio-group value="{{ radio }}" bind:change="onChange">
+          <van-radio name="1" checked-color="#DD392B" icon-size="15" label-class="radio_text">现金币</van-radio>
+        </van-radio-group>
+        <van-radio-group value="{{ radio }}" bind:change="onChange">
+          <van-radio name="2" checked-color="#DD392B" icon-size="15" label-class="radio_text">ASL2</van-radio>
+        </van-radio-group>
+        <van-radio-group value="{{ radio }}" bind:change="onChange">
+          <van-radio name="3" checked-color="#DD392B" icon-size="15" label-class="radio_text">ASL5</van-radio>
+        </van-radio-group>
+      </view>
+    </view>
+  </view>
 </view>
 
+<view style="margin-top: 20cpx;">
+  <view
+  class="transfer"
+  >
+    <view class="total"><text class="tip">提现金额</text></view>
+    <view class="input-icon">
+      <van-cell-group>
+        <van-field
+          border="{{ false }}"
+          bind:change="onChangeCoin"
+          input-class="spec-input"
+        />
+      </van-cell-group>
+    </view>
+    <view class="servicefee">
+      <text style="color:#ED4129;font-size:22cpx;">*提现扣除手续费{{coinData.serverFee}}%</text>
+    </view>
+  </view>
+</view>
+
+<view class="btn">
+  <van-button type="primary" round
+  color="linear-gradient(to right, #e73827, #f85032)"
+  block bind:click="submit">提交
+  </van-button>
+</view>
 
 
 
@@ -101,11 +175,14 @@ class PutCoin implements PutCoinInterface {
   }
 
   data = {
+    radio:1,
     title:'提现',
     radio: '1',
     coin:'',
     coinData:{},
-    viewPortHeight:''
+    viewPortHeight:'',
+    aslName:'现金币',
+    add:0
   }
 
   computed = {
@@ -115,10 +192,23 @@ class PutCoin implements PutCoinInterface {
   }
 
   methods = {
-
+  xuanzhong(){
+    if(this.add==0){
+      this.add=1
+    }else{
+      this.add=0
+    }
+  },
     onChange(e){
       this.radio=e.detail
-      console.log(this.radio,555)
+      console.log(this.radio)
+      if(this.radio==1){
+        this.aslName='现金币'
+      }else if(this.radio==2){
+        this.aslName='ASL2'
+      }else{
+        this.aslName='ASL5'
+      }
     },
     onChangeCoin(e){
       this.coin=e.detail
@@ -223,6 +313,58 @@ export default new PutCoin();
 </script>
 
 <style scoped >
+.top{
+  background: #fff;
+  margin: 20cpx 0;
+  border-radius: 20cpx;
+  padding: 30cpx;
+}
+.curs{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1cpx solid #EFEFEF;
+  padding: 20cpx 0;
+}
+.title_left{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.value_title{
+  font-size: 28cpx;
+  color: #999999;
+}
+.values{
+  font-size: 28cpx;
+  color: #212121;
+}
+.withdrawal_title{
+  font-size: 28cpx;
+  color: #212121;
+}
+.radio_text{
+  font-size: 22cpx;
+  color: #999999;
+}
+.classification{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 20cpx;
+}
+.adds{
+    height: 130rpx;
+    overflow: hidden;
+}
+.addsto{
+    height: 75rpx;
+    overflow: hidden;
+}
+
+
 .container{
   width:750cpx;
   background: #eee;
@@ -230,13 +372,13 @@ export default new PutCoin();
 }
 
 .nav-root{
- background: linear-gradient(to right, #e73827, #f85032);
+ background: #fff;
 padding-bottom: 60cpx;
 }
 
 .title-style{
   margin-top:55cpx;
-  color:#fff;
+  color:#000;
 }
 
 .icon-nav{
@@ -245,7 +387,7 @@ padding-bottom: 60cpx;
 
 
 .slot-text{
-  color: #fff;
+  color: #999999;
 }
 
 
@@ -294,7 +436,7 @@ border-radius: 10cpx;
 }
 
 .transfer{
-   width:710cpx;
+   width:100%;
   margin:20cpx auto;
   display: flex;
   justify-content:center;
@@ -303,6 +445,7 @@ border-radius: 10cpx;
   background: #fff;
   padding:10cpx 20cpx;
   border-radius: 10cpx;
+  padding: 20cpx;
 
 }
 
@@ -313,6 +456,9 @@ border-radius: 10cpx;
 .spec-input{
   width: 100%;
  border-bottom: 2cpx solid #000;
+ font-size: 58cpx;
+ color: #212121;
+ height: 100cpx;
 }
 
 
@@ -321,8 +467,8 @@ border-radius: 10cpx;
 }
 
 .tip{
-  color:#f44336;
-  font-size: 24cpx;
+    font-size:28rpx;
+    color: #999999;
 }
 .btn{
   width: 710cpx;
@@ -336,7 +482,7 @@ border-radius: 10cpx;
 {
   "base": {
     "usingComponents": {
-          "nav":"/components/nav/nav",
+          "nav":"/components/nav-ver2/nav-ver2",
            "van-radio": "/vant/radio/index",
             "van-radio-group": "/vant/radio-group/index",
             "van-field": "/vant/field/index",
