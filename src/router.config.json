@@ -329,6 +329,11 @@
             "url": "/cml/h5/product-review",
             "path": "/pages/product-review/product-review",
             "name": "商品评价"
+        },
+        {
+            "url": "/cml/h5/timeactivities",
+            "path": "/pages/timeactivities/timeactivities",
+            "name": "限时活动"
         }
 
     ]

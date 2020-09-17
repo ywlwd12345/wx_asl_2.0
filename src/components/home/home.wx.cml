@@ -599,7 +599,7 @@ goSpecifiedContent(name){
          case '积分专区':
           this.goRebateCredits(name)
         break;
-         case '拼吧特惠区':
+         case '特惠区':
           this.goRegionClassify(name)
         break;
          case '一键分享':
@@ -619,8 +619,9 @@ goSpecifiedContent(name){
 },
 //去分类
 goRegionClassify(name){
-  // console.log(name)
-  // let pid=this.categoriesList.find(d=>d.name===name).id
+  if(name=='特惠区'){
+    name='拼吧特惠区'
+  }
   let sort='' 
    cml.navigateTo({
   path: '/pages/classify/classify',
