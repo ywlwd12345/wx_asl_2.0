@@ -1040,9 +1040,6 @@ background: #eee;
 }
 
 
-
-
-
 .price-desc{
   display: flex;
   justify-content:flex-start;
