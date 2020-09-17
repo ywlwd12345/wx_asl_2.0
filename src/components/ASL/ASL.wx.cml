@@ -263,7 +263,7 @@ color: #AEAEAE;
 {
   "base": {
     "usingComponents": {
-      "nav":"/components/nav/nav",
+      "nav":"/components/nav-ver2/nav-ver2",
       "van-nav-bar": "/vant/nav-bar/index",
        "van-icon": "/vant/icon/index",
         "i-spin": "/iview/spin/index"

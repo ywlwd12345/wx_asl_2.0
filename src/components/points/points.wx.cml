@@ -214,7 +214,7 @@ color: #ADADAD;
 {
   "base": {
     "usingComponents": {
-        "nav":"/components/nav/nav",
+        "nav":"/components/nav-ver2/nav-ver2",
         "i-spin": "/iview/spin/index"
     }
   }
