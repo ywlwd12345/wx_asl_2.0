@@ -18,17 +18,16 @@
         <image src="{{item.thumb}}"></image>
       </view>
       <view class="right">
-        <view style="font-size: 29rpx">{{item.goodsName}}</view>
+        <view style="font-size: 29rpx">{{item.name}}</view>
         <view class="price">
           <view class="price_s">
             <view class="price_s">
               <view class="rmb">¥</view>
               <view class="rmb_p">{{item.price}}</view>
             </view>
-            <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.original}}</view>
+            <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.marketPrice}}</view>
           </view>
-          <view class="purchase" c-if="{{purchase==purchasetime}}">立即抢购</view>
-          <view class="purchase" c-else style="background: linear-gradient(89deg, #F59626, #FDC227);color:#fff;">提醒我</view>
+          <view class="purchase">立即抢购</view>
         </view>
       </view>
     </view>
@@ -79,7 +78,7 @@ class Timeactivities   {
         if(res.code==1){
           this.list= this.list.concat(res.data.map(d=>{
             d.thumb='https://'+d.thumb
-            d.goodsName=dealStoreTitleName(d.goodsName,25)
+            d.name=dealStoreTitleName(d.name,25)
             return d
           }))
           if(this.list.length==0){

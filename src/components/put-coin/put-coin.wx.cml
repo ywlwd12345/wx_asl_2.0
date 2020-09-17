@@ -83,7 +83,7 @@ block bind:click="submit">提交</van-button>
   <view class="top">
     <view class="curs">
       <view class="title_left">
-        <view></view>
+        <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/xjb@2x.png"/></view>
         <view class="value_title">现金币</view> 
       </view>
       <view class="values">{{coinData.fee1}}</view>
@@ -91,7 +91,7 @@ block bind:click="submit">提交</van-button>
 
     <view class="curs">
       <view class="title_left">
-        <view></view>
+        <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/asl2@2x.png"/></view>
         <view class="value_title">ASL2</view> 
       </view>
       <view class="values">{{coinData.asl2}}</view>
@@ -99,7 +99,7 @@ block bind:click="submit">提交</van-button>
 
     <view class="curs">
       <view class="title_left">
-        <view></view>
+        <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/asl5@2x.png"/></view>
         <view class="value_title">ASL5</view> 
       </view>
       <view class="values">{{coinData.asl5}}</view>
@@ -107,7 +107,7 @@ block bind:click="submit">提交</van-button>
     <view class="{{add==0?'addsto':'adds'}}"> 
       <view class="curs">
         <view class="title_left">
-          <view></view>
+          <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
           <view class="withdrawal_title">提现币种</view>
           <view class="withdrawal_title" style="padding-left:30cpx;">{{aslName}}</view>
         </view>
@@ -362,6 +362,11 @@ export default new PutCoin();
 .addsto{
     height: 75rpx;
     overflow: hidden;
+}
+.icons image{
+    width: 31rpx;
+    height: 31rpx;
+    margin-right: 10rpx;
 }
 
 
