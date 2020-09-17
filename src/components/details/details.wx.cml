@@ -122,7 +122,14 @@
           c-for="{{item.imgs}}"
           c-for-index="i"
           c-for-item="img"
-          c-key="i" >{{img}}</view>
+          c-key="i" >
+          
+
+          <image src="{{img}}" style="width:150cpx;height:150cpx;border-raius:8cpx;"></image>
+          
+          
+          
+          </view>
   </view>
   <!-- eval-img-wrap end-->
 
