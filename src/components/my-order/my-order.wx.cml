@@ -820,7 +820,7 @@ color: #ED4229;
 {
   "base": {
     "usingComponents": {
-          "nav":"/components/nav/nav",
+          "nav":"/components/nav-ver2/nav-ver2",
            "van-tab": "/vant//tab/index",
             "van-tabs": "/vant/tabs/index",
             "details-panel":"/components/details-panel/details-panel",
