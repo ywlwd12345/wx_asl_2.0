@@ -370,6 +370,7 @@ padding:0 10cpx;
   
 }
 
+
 /* .cell{
    width: 33.33%;
 display:inline-block ;
@@ -477,7 +478,7 @@ margin-bottom:20cpx;
 {
   "base": {
     "usingComponents": {
-       "nav":"/components/nav/nav",
+       "nav":"/components/nav-ver2/nav-ver2",
        "calendar":"/rl/calendar/index",
         "van-icon": "/vant/icon/index",
         "van-submit-bar":"/vant/submit-bar/index",
