@@ -340,11 +340,9 @@ dealStatusText(status){
           this.otherLoading=false
           this.tip(res.msg)
           if(res.code){
-
           this.detailsList=this.detailsList.filter(d=>d.order_no!==this.orderId)
           this.isShow=false
-         
-
+        
           }
 
       

@@ -89,7 +89,9 @@
 </block>
 
 </view>
- <image src="{{vipImg}}" style="width:710cpx;height:125cpx;"  class="my-vip"></image>
+ <image src="{{vipImg}}" style="width:710cpx;height:125cpx;"  class="my-vip" c-bind:tap="goMyVip"></image>
+
+
   <view class="set-person">
   <view class="order-management">
    <view >  
@@ -951,6 +953,8 @@ showPop(){
 
   },
 
+
+
  
 
 
@@ -1027,6 +1031,14 @@ showPop(){
      const res=wx.getMenuButtonBoundingClientRect()
       this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
     
+  },
+  //去我的会员页面
+  goMyVip(){
+    cml.navigateTo({
+            path: '/pages/my-vip-asl/my-vip-asl',
+          }) 
+
+
   }
 
 

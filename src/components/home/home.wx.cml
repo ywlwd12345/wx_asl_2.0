@@ -1022,6 +1022,7 @@ showPop(){
   //获取胶囊按钮数据
   getCapluse(){
      const res=wx.getMenuButtonBoundingClientRect()
+      store.commit('menuButton',res)
       this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
       this.textTop=res.top + res.height/2-8
       this.getSearchHeight()//获取搜索款高度

@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view  class="container">
   <change-phone></change-phone>
   </view>
 </template>
@@ -48,7 +48,13 @@ class ChangePhone   {
 export default new ChangePhone();
 </script>
 
-<style>
+<style scoped>
+
+.container{
+  background: #eee;
+  width: 750cpx;
+  min-height: 100vh;
+}
 
 </style>
 
