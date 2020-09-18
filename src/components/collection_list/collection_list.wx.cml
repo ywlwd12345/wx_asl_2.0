@@ -89,7 +89,7 @@ class Collection_list implements  Collection_listInterface {
   }
 
   data = {
-    title:"收藏列表", 
+    title:"商品关注", 
     loading:false,
     detailsList:[],
     collectionList:[],
