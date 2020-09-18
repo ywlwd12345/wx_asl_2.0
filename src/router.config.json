@@ -269,7 +269,7 @@
         {
             "url": "/cml/h5/collection_list",
             "path": "/pages/collection_list/collection_list",
-            "name": "收藏夹"
+            "name": "商品关注"
         },
         {
             "url": "/cml/h5/logistics_details",
