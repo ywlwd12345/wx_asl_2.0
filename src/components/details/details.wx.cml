@@ -72,8 +72,8 @@
       <view class="introduce-2">
   <view class="js1">
   <view class="ms"><view>销量：</view><view class="js-color">999+</view></view>
-  <view class="ms"><view>销量：</view><view class="js-color">999+</view></view>
-  <view class="ms"><view>销量：</view><view class="js-color">999+</view></view>
+  <view class="ms"><view>收藏：</view><view class="js-color">999+</view></view>
+  <view class="ms"><view>库存：</view><view class="js-color">999+</view></view>
   </view>
    <view class="js2">
   <view class="ms"><image src="{{iconSpec}}"
