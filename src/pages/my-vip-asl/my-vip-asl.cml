@@ -1,0 +1,91 @@
+<template>
+  <view class="container">
+
+  <view class="head"></view>
+
+
+  
+  
+  
+  
+  </view>
+</template>
+
+<script>
+
+class MyVipAsl   {
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new MyVipAsl();
+</script>
+
+<style scoped>
+.container{
+  width:750cpx;
+  height: 100vh;
+  background: #eee;
+}
+
+.head{
+  width: 750cpx;
+min-height: 476cpx;
+background: linear-gradient(90deg, #454653, #444452);
+}
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {}
+  },
+  "wx": {
+     "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

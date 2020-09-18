@@ -44,7 +44,12 @@ export default {
     //详情页面距离顶部的高度
     detailTop(state, value) {
         state.detailTop = value
+    },
+    //胶囊按钮的信息
+    menuButton(state, obj) {
+        state.menuButton = obj
     }
+
 
 
 }

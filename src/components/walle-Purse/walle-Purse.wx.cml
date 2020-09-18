@@ -89,7 +89,6 @@
 import cml from 'chameleon-api';
 import {getWalletInfo} from '../../api/grouping.js' //引入拼团模块接口
 import store from '../../store'
-
 const objList=[
   {
   text:'拼吧币',
@@ -166,7 +165,6 @@ class WallePurse implements WallePurseInterface {
         break;
       case '抵消币':
       this.goRecord(2)
-          
         break;
      default:
       

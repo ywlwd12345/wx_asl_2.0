@@ -334,7 +334,14 @@
             "url": "/cml/h5/timeactivities",
             "path": "/pages/timeactivities/timeactivities",
             "name": "限时活动"
+        },
+
+        {
+            "url": "/cml/h5/my-vip-asl",
+            "path": "/pages/my-vip-asl/my-vip-asl",
+            "name": "我的asl会员"
         }
+
 
     ]
 }

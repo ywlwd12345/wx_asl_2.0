@@ -15,6 +15,8 @@ const state = {
     },
     navOpacity: 0, //导航栏透明度
     detailTop: 0, //详情页面距顶部的高度
+    menuButton: {} //胶囊按钮信息
+
 }
 
 export default state
