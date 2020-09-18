@@ -1,11 +1,6 @@
 <template>
   <view class="container">
     <nav title="{{title}}"></nav>
-    <!-- 顶部海报-->
-    <view class="poster">
-      <image src="{{skillimg}}"></image>
-    </view>
-
   <!-- 列表-->
   <view class="list">
     <list
@@ -13,25 +8,33 @@
       c-bind:scrolltobottom="onBottom"
       height="{{-1}}"
     >
-    <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.goodsId)">
-      <view class="lift">
-        <image src="{{item.thumb}}"></image>
-      </view>
-      <view class="right">
-        <view style="font-size: 29rpx">{{item.name}}</view>
-        <view class="price">
-          <view class="price_s">
+    <!-- 顶部海报-->
+    <view class="poster">
+      <image src="{{skillimg}}"></image>
+    </view>
+
+    <view style="padding:0 30cpx;margin-top: -100cpx;">
+      <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.goodsId)">
+        <view class="lift">
+          <image src="{{item.thumb}}"></image>
+        </view>
+        <view class="right">
+          <view style="font-size: 29rpx">{{item.name}}</view>
+          <view class="price">
             <view class="price_s">
-              <view class="rmb">¥</view>
-              <view class="rmb_p">{{item.price}}</view>
+              <view class="price_s">
+                <view class="rmb">¥</view>
+                <view class="rmb_p">{{item.price}}</view>
+              </view>
+              <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.marketPrice}}</view>
             </view>
-            <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.marketPrice}}</view>
+            <view class="purchase">立即抢购</view>
           </view>
-          <view class="purchase">立即抢购</view>
         </view>
       </view>
     </view>
     </list>
+
   </view>
 
   </view>
@@ -144,6 +147,7 @@ height: 100vh;
 }
 .poster{
   /* padding: 30cpx; */
+  margin-top: 100cpx;
 }
 .poster image{
   width: 100%;
@@ -191,7 +195,6 @@ height: 100vh;
     padding: 2rpx 0;
 }
 .list{
-  padding: 0 30cpx;
   margin-top: -100cpx;
 }
 .list_num{

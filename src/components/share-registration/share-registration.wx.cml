@@ -135,7 +135,7 @@ class ShareRegistration implements ShareRegistrationInterface {
    referrer:'',
    city:'',
    county:'',
-   valueArea:'',
+   valueArea:'北京市东城区',
    transitObj:{
      province:'北京市',
      city:'北京市',

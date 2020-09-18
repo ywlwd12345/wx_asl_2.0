@@ -14,8 +14,8 @@
           <view class="neirong">{{item.message}}</view>
         </view>
           <view class="operation">
-            <view class="looks" c-if="{{item.status==0}}" c-bind:tap="readmessage(item.id,index)">已读</view>
-            <view class="looks" c-else style="color:#999999;border: 3cpx solid #999999;">已读</view>
+            <view class="looks" c-if="{{item.status==0}}" c-bind:tap="readmessage(item.id,index)" style="background: #DD3A2C;color: #fff;">已读</view>
+            <view class="looks" c-else>已读</view>
             <view class="delete" c-bind:tap="delet(item.id)">删除</view>
           </view>
         </view>
@@ -76,6 +76,10 @@ class NewsListVer2 implements NewsListVer2Interface {
       readsNews({id:id}).then(res=>{
         if(res.code==1){
           this.newList[index].status=1
+          cml.showToast({
+            message: "已读成功",
+            duration: 1000
+          })
         }else{
           cml.showToast({
             message: "已读失败",
@@ -176,6 +180,7 @@ export default new NewsListVer2();
     padding-left: 10cpx;
 }
 .looks{
+
     border: 3cpx solid #DD3A2C;
     border-radius: 22cpx;
     width: 15%;

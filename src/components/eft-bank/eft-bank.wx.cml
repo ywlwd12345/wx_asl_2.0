@@ -410,9 +410,9 @@ color: #9A9A9A;
 }
 
 .btn{
-  width: 710cpx;
+  width: 581cpx;
   margin:0 auto;
-  margin-top:50cpx;
+  margin-top:80cpx;
 }
 .adds{
     height: 150rpx;

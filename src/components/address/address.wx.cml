@@ -65,7 +65,7 @@
           c-for-index="i"
           c-for-item="item"
       >
-<view class="list">
+<view class="list" c-bind:tap="Changeadd(item)">
   <view class="name_phone">
       <view class="name">{{item.receiver}}</view>
       <view class="phone">{{item.mobile}}</view>

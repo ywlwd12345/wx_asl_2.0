@@ -370,7 +370,7 @@ export default new PutCoin();
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  padding-top: 20cpx;
+  margin:20cpx 0;
 }
 .adds{
     height: 130rpx;
@@ -496,9 +496,9 @@ border-radius: 10cpx;
     color: #999999;
 }
 .btn{
-  width: 710cpx;
+  width: 581cpx;
   margin:0 auto;
-  margin-top:20cpx;
+  margin-top:80cpx;
 }
 
 </style>

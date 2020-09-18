@@ -24,9 +24,9 @@
           data-idx="{{i}}"
         >
       <view class="panel">
-      <view class="items items1">
-      <view class="order-number"><text class="order-textid">订单编号:{{item.orderId}}</text></view>
-      <view class="status"><text class="spec-order-status">{{item.statusMsg}}</text></view>
+      <view class="items items1" style="border-bottom: 1cpx solid #eee;padding-bottom: 10cpx;">
+        <view class="order-number"><text class="order-textid">订单编号:{{item.orderId}}</text></view>
+        <view class="status"><text class="spec-order-status">{{item.statusMsg}}</text></view>
       </view>
 
       <cell c-for="{{item.goodsInfo}}"
@@ -653,7 +653,7 @@ export default new MyOrder();
 }
 
 .items2{
-  padding:10cpx!important;
+  padding:0 10cpx 10cpx 10cpx!important;
 }
 
 .num-posi{
@@ -682,8 +682,9 @@ export default new MyOrder();
   flex-direction: row;
   justify-content: space-between;
   margin-top:20cpx;
-  padding-bottom:5cpx;
   padding-top: 10cpx;
+  padding-bottom: 5cpx;
+
 }
 .items5{
   display: flex;
