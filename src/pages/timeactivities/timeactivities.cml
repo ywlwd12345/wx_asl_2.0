@@ -49,7 +49,7 @@ class Timeactivities   {
     scrollDirection:'horizontal',
     listArray:[], 
     specTime:'',
-    skillimg:'https://w.aishenglian.com/static/imgs/ms.png',
+    skillimg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/xsqb/time.png',
     list:[],
     status:'',
     statusindex:'',

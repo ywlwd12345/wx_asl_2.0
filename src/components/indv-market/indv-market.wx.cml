@@ -451,6 +451,7 @@ export default new IndvMarket();
   border-radius: 20cpx 20cpx 0 0;
   padding: 30cpx;
   background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/grsc/bj@2x.png');
+  background-repeat: no-repeat;
 }
 .phone{
   margin-left: 20cpx;
