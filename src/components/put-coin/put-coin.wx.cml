@@ -111,7 +111,10 @@ block bind:click="submit">提交</van-button>
           <view class="withdrawal_title">提现币种</view>
           <view class="withdrawal_title" style="padding-left:30cpx;">{{aslName}}</view>
         </view>
-        <view c-bind:click="xuanzhong">></view>
+        <view c-bind:click="xuanzhong" style="width: 40rpx;">
+          <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/sl@2x.png' style="width: 24cpx;height: 24cpx;" c-if="{{add==0}}" />
+          <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/xl@2x.png' style="width: 24cpx;height: 24cpx;" c-else />
+        </view>
       </view>
       <view class="classification">
         <van-radio-group value="{{ radio }}" bind:change="onChange">
@@ -156,7 +159,14 @@ block bind:click="submit">提交</van-button>
 </view>
 
 
-
+<van-popup show="{{ shows }}" bind:close="onClose" custom-class="popclass">
+  <view style="width:431cpx;height:453cpx;">
+    <view style="margin-top: 100cpx;">
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tj@3x.png" style="width: 159cpx;height: 159cpx;margin: 0 auto;"/>
+    </view>
+    <view style="font-size: 37cpx;color: #222222;text-align: center;margin-top: 30rpx;">提交成功</view>
+  </view>
+</van-popup>
 
   </view>
 </template>
@@ -175,6 +185,7 @@ class PutCoin implements PutCoinInterface {
   }
 
   data = {
+    shows:false,
     radio:1,
     title:'提现',
     radio: '1',
@@ -182,7 +193,8 @@ class PutCoin implements PutCoinInterface {
     coinData:{},
     viewPortHeight:'',
     aslName:'现金币',
-    add:0
+    add:0,
+
   }
 
   computed = {
@@ -192,6 +204,9 @@ class PutCoin implements PutCoinInterface {
   }
 
   methods = {
+        onClose() {
+    this.shows=false
+  },
   xuanzhong(){
     if(this.add==0){
       this.add=1
@@ -232,10 +247,11 @@ class PutCoin implements PutCoinInterface {
       uname=value
     postCoin({uname:uname,value:this.coin,type:this.radio}).then(res=>{
       if(res.code){
-          cml.showToast({
-      message:res.msg,
-      duration: 1000
-    })
+    //       cml.showToast({
+    //   message:res.msg,
+    //   duration: 1000
+    // })
+    this.shows=true
       }else{
           cml.showToast({
       message:res.msg,
@@ -326,6 +342,7 @@ export default new PutCoin();
   justify-content: space-between;
   border-bottom: 1cpx solid #EFEFEF;
   padding: 20cpx 0;
+  
 }
 .title_left{
   display: flex;
@@ -368,6 +385,7 @@ export default new PutCoin();
     height: 31rpx;
     margin-right: 10rpx;
 }
+
 
 
 .container{
@@ -453,7 +471,9 @@ border-radius: 10cpx;
   padding: 20cpx;
 
 }
-
+.popclass{
+  border-radius: 20cpx;
+}
 
 .input-icon{
   width: 100%;
@@ -493,7 +513,8 @@ border-radius: 10cpx;
             "van-field": "/vant/field/index",
               "van-button": "/vant/button/index",
                "van-nav-bar": "/vant/nav-bar/index",
-              "van-icon": "/vant/icon/index"
+              "van-icon": "/vant/icon/index",
+              "van-popup": "/vant/popup/index"
 
     }
   }

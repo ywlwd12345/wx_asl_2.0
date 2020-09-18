@@ -1,14 +1,21 @@
 <template>
   <view>
   <nav title="{{title}}"></nav>
-
+<view class="test">
 <view class="column" style="height:15cpx"></view>
   
 
 
   <van-cell-group>
+  <view class="bgimg">
+    <view class="topimg" c-bind:tap="uploads">
+      <view style="font-size:28cpx;color:#222;">头像</view>
+      <view>
+        <image src="{{avatar}}" style="width:58cpx;height:58cpx;border-radius:50%;"/>
+      </view>
+    </view>
+  </view>
   <van-field
-    required
     clearable
     label="姓名"
     icon="arrow"
@@ -23,7 +30,6 @@
     label="身份证号"
     icon="arrow"
     placeholder="请输入身份证号码"
-    required
     bind:change="changeIdNum"
     error-message="{{checkId}}"
     value="{{   idnum }}"
@@ -34,7 +40,6 @@
     label="开户行"
     icon="arrow"
     placeholder="请输入开户行"
-    required
     disabled
     error-message="{{ checkHang }}"
      value="{{   kaihuhang }}"
@@ -47,7 +52,6 @@
     label="银行卡号"
     icon="arrow"
     placeholder="请输入银行卡号"
-    required
     bind:change="changeCard"
     error-message="{{  checkCard }}"
       value="{{ card }}"
@@ -75,6 +79,7 @@
       />
   </van-popup>
   </view>
+  </view>
 </template>
 
 <script>
@@ -94,7 +99,7 @@ class PersonaDetails implements PersonaDetailsInterface {
 
   data = {
     columns: ['中国银行', '中国建设银行', '中国农业银行', '中国工商银行'],
-    title:'个人信息', 
+    title:'个人信息',
     realname:'',
     idnum:'',
     kaihuhang:'',
@@ -104,7 +109,8 @@ class PersonaDetails implements PersonaDetailsInterface {
     checkHang:'',
     checkCard:'',
     shows:false,
-    determine:true
+    determine:true,
+    avatar:''
 
   }
 
@@ -115,6 +121,56 @@ class PersonaDetails implements PersonaDetailsInterface {
   }
 
   methods = {
+    //上传头像
+    uploads(){
+      var that  = this
+      console.log("执行")
+      cml.getStorage('token').then((value)=>{
+      let tokens=value
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success (res) {
+          // tempFilePath可以作为img标签的src属性显示图片
+          const tempFilePaths = res.tempFilePaths
+          console.log("这里",tempFilePaths)
+          console.log('返回路径',tempFilePaths[0])
+          let uname
+          cml.getStorage('uname').then((value)=>{
+          uname=value
+          wx.uploadFile({
+            url:'https://w.aishenglian.com/app/upload/avatar', 
+            filePath:tempFilePaths[0],
+            name: "file",
+            method: "POST",
+            header: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': 'bearer '+tokens
+            },
+            formData: {
+              uname:uname,
+            },
+            success(res){
+              console.log("上传结果")
+              console.log(res)
+              var json = JSON.parse(res.data);
+              if(json.code==1){
+                cml.showToast({
+                  message: "上传成功",
+                  duration: 1000
+                })
+              }
+              that.avatar='https://'+json.avatar
+            }
+          })
+
+          })
+        }
+      })
+})
+
+    },
  onConfirm(event) {
     this.kaihuhang=event.detail.value
     this.shows=false
@@ -238,6 +294,7 @@ class PersonaDetails implements PersonaDetailsInterface {
         this.idnum=res.data[0].idNum
         this.kaihuhang=res.data[0].kaihuhang
         this.card=res.data[0].card
+        this.avatar='https://'+res.data[0].avatar
         if(this.idnum!=''){
           this.determine=false
         }
@@ -281,20 +338,36 @@ export default new PersonaDetails();
 </script>
 
 <style scoped>
+.test{
+  background: #F4F4F4;
+  height: 100vh;
+}
 
 .btn{
   width: 80%;
   margin:0 auto;
   margin-top:40cpx;
 }
-
+.topimg{
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 20cpx 30cpx 20cpx 0;
+  margin-left: 30cpx;
+  background: #fff;
+  border-bottom: 1px solid #ebedf0;
+}
+.bgimg{
+  background: #fff;
+}
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-       "nav":"/components/nav/nav",
+       "nav":"/components/nav-ver2/nav-ver2",
         "van-field": "/vant/field/index",
          "van-button": "/vant/button/index",
          "van-picker": "/vant/picker/index",
