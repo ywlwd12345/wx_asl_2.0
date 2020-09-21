@@ -97,7 +97,7 @@ const objList=[
   num:''
   },
   {
-  text:'抵消币',
+  text:'低消币',
   flag:true,
   num:''
   },
@@ -147,7 +147,7 @@ class WallePurse implements WallePurseInterface {
                  if(d.text==='拼吧币'){
                    d.num=data.groupFee
                   
-                 }else if(d.text==='抵消币'){
+                 }else if(d.text==='低消币'){
                     d.num=data.lowFee
 
                  }
@@ -180,7 +180,7 @@ class WallePurse implements WallePurseInterface {
   path: '/pages/group-exchange/group-exchange'
   })
         break;
-      case '抵消币':
+      case '低消币':
       this.goRecord(2)
         break;
      default:

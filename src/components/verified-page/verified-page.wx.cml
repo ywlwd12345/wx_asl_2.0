@@ -2,7 +2,7 @@
   <view>
   <nav-ver2  title="{{'实名认证'}}"></nav-ver2>
   <view class="tip">
-  <view class="tip-icon"><image src="{{tipImg}}" style="width:35cpx;height:35cpx"></image></view>
+  <view class="tip-icon" style="margin-left:30cpx;"><image src="{{tipImg}}" style="width:35cpx;height:35cpx"></image></view>
   <text style="margin-left:10cpx;font-size:28cpx;">请填写与您身份证一致的信息，否则不会通过审核。</text>
   </view>
   <view class="content">
