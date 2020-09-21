@@ -61,7 +61,7 @@
   <view class="fixed-bot" c-if="{{isShowCheck}}">
   <van-checkbox value="{{ checkedAll }}" bind:change="onChangeAll" 
   checked-color="#DE3A2C" c-if="{{false}}">全选</van-checkbox>
-  <view class="sure-btn" c-bind:tap="sureCancel">取消关注</view>
+  <view class="sure-btn" c-bind:tap="sureCancel" hover-class="hover-btn">取消关注</view>
   </view>
 
 

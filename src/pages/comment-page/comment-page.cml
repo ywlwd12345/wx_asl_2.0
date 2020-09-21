@@ -49,7 +49,7 @@ bind:delete="deleteImg"
 
 
    </view>
-   <view class="{{ flag && formData.comment? 'btn-custom':'btn-custom1'}}" c-bind:tap="submit">
+   <view class="{{ flag && formData.comment? 'btn-custom':'btn-custom1'}}" c-bind:tap="submit" hover-class="hover-btn">
    发表评论
    </view>
   </view>

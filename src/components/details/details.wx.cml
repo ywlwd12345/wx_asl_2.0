@@ -270,8 +270,8 @@
   <text>购物车</text>
 </view>
 
-<view class="join-cart"  c-bind:tap="onClickButtonCart">加入购物车</view>
-<view class="now-buy" c-bind:tap="onClickButtonNow">立即购买</view>
+<view class="join-cart"  c-bind:tap="onClickButtonCart"  hover-class="hover-btn">加入购物车</view>
+<view class="now-buy" c-bind:tap="onClickButtonNow" hover-class="hover-btn">立即购买</view>
 </view>
 
 
@@ -1591,6 +1591,8 @@ padding:0 10cpx;
 font-size: 26cpx;
 color: #666666;
 }
+
+
 
 
 

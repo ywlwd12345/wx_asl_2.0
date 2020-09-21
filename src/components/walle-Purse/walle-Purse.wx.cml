@@ -49,8 +49,9 @@
       <view  class="user-cell">
       <block   c-for="{{cellList}}"
           c-for-item="item"
+            c-for-index="i"
           c-key="text">
-      <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage" data-text="{{item.text}}"/>
+      <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage"  value="{{item.num}}" data-text="{{item.text}}"/>
       </block>
       </view>
 
@@ -92,16 +93,19 @@ import store from '../../store'
 const objList=[
   {
   text:'拼吧币',
-  flag:false
+  flag:false,
+  num:''
   },
   {
   text:'抵消币',
-  flag:true
+  flag:true,
+  num:''
   },
 
    {
   text:'兑换',
-  flag:false
+  flag:false,
+  num:''
   },
 ]
 class WallePurse implements WallePurseInterface {
@@ -136,8 +140,21 @@ class WallePurse implements WallePurseInterface {
          if(value){
            getWalletInfo({uname:value}).then(res=>{
              if(res.code){
-               this.userInfoObj=res.data[0]
-               this.userInfoObj.avatar=store.state.domainUrl+ this.userInfoObj.avatar
+               const data=res.data[0]
+               this.userInfoObj=data
+               this.userInfoObj.avatar=store.state.domainUrl+ data.avatar
+               this.cellList=this.cellList.map(d=>{
+                 if(d.text==='拼吧币'){
+                   d.num=data.groupFee
+                  
+                 }else if(d.text==='抵消币'){
+                    d.num=data.lowFee
+
+                 }
+
+                 return d
+
+               })
               
              }
            }).catch(err=>{})
