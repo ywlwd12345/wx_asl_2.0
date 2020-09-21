@@ -439,7 +439,7 @@ export default new IndvMarket();
   background: linear-gradient(0deg, #454651, #4C4C52,#32333c);
 }
 .aslNum{
-  background: #54545D;
+  background: linear-gradient(0deg, #464652, #40404A, #3A3A42);
 }
 .infor_top{
   position: relative;
@@ -449,7 +449,7 @@ export default new IndvMarket();
 .test{
   margin: 40cpx 25cpx 0 25cpx;
   border-radius: 20cpx 20cpx 0 0;
-  padding: 30cpx;
+  padding: 20cpx 30cpx 18cpx 30cpx;
   background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/grsc/bj@2x.png');
   background-repeat: no-repeat;
   background-size: 100% auto;
@@ -482,9 +482,9 @@ export default new IndvMarket();
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
+    padding: 20cpx 30cpx;
     color: #fff;
-    padding: 20cpx 10cpx;
 }
 .curs{
   font-size: 28cpx;

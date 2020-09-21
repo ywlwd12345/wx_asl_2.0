@@ -75,7 +75,7 @@
 import {addAddaddress, getOneAddrInfo,editAddressInfo,setDefaultAddr} from '../../api/index'
 import areaData from '../../untils/area'
 import cityId from '../../untils/city'
-import store from '../../store'
+import store from '../../store' 
 import cml from 'chameleon-api';
 class AddLocation implements AddLocationInterface {
   props = {

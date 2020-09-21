@@ -334,6 +334,7 @@ export default new HomeVer2();
 .seckill image{
   width: 152cpx;
   height: 152cpx;
+  border-radius: 10cpx;
 }
 .price_original{
   display: flex;

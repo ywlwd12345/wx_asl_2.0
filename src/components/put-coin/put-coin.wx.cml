@@ -147,7 +147,7 @@ block bind:click="submit">提交</van-button>
       </van-cell-group>
     </view>
     <view class="servicefee">
-      <text style="color:#ED4129;font-size:22cpx;">*提现扣除手续费{{coinData.serverFee}}%</text>
+      <text style="font-size: 22cpx;color: #ED422A;">* 提现扣除手续费{{coinData.serverFee}}%</text>
     </view>
   </view>
 </view>

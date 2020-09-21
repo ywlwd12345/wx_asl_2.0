@@ -104,7 +104,7 @@ class SeckilZone implements SeckilZoneInterface {
             d.name=dealStoreTitleName(d.name,14)
             d.time=this.dealTimePeriod(d.time)
             d.flag=false
-            if(d.status=='进行中'){
+            if(d.status=='抢购中'){
               d.flag=true
               this.statusindex=index
               this.getClassifiyData(d.time,index,d.status)
@@ -124,7 +124,7 @@ class SeckilZone implements SeckilZoneInterface {
       if(index>=0){
         this.statusindex=index
       }
-      if(status=='进行中'){
+      if(status=='抢购中'){
         this.purchasetime=1
       }else{
         this.purchasetime=0
@@ -150,10 +150,10 @@ class SeckilZone implements SeckilZoneInterface {
     dealStatus(status){
     switch(status) {
      case 0:
-        return '待开售'
+        return '即将开始'
         break;
      case 1:
-         return '进行中'
+         return '抢购中'
         break;
       default:
       return '已结束'

@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import store from '../../store'
 import {getUserNews,readsNews,delNews} from '../../api/index'
 import { moment }  from '../../untils/moment.js'
 import cml from 'chameleon-api';
@@ -76,6 +77,7 @@ class NewsListVer2 implements NewsListVer2Interface {
       readsNews({id:id}).then(res=>{
         if(res.code==1){
           this.newList[index].status=1
+          store.commit('changeCancel',false)
           cml.showToast({
             message: "已读成功",
             duration: 1000

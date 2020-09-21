@@ -16,7 +16,8 @@
       shape="round"
     />
     <view >
-      <image src="{{newsimg}}" c-bind:tap="goNews"></image>
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png" c-bind:tap="goNews" c-if="{{isunRead==0}}"></image>
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/index/yxx@2x.png" c-bind:tap="goNews" c-else style="width: 44.3rpx;height: 44.3rpx;"></image>
     </view>
     </view>
     </van-sticky>
@@ -403,19 +404,28 @@ class Home implements HomeInterface {
     imageGroup:'',
     groupFlag:[],
     sinPopFlag:false,//签到弹框显隐
-    newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png'
+    newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png',
+    isunRead:0
    
   }
 
   computed = {
     indexAnmationFlag () {
       return store.state.indexAnmationFlag
+    },
+    f1() {
+        return store.state.Cancels
     }
 
 
   }
 
   watch = {
+    //监听数据变化  刷新数据
+    f1(curVal, oldVal) {
+      //数据变化 刷新消息状态
+      this.getUnread() 
+        }
   }
 
   methods = {
@@ -426,9 +436,14 @@ class Home implements HomeInterface {
       },
     //该用户是否有未读消息
     getUnread(){
+      store.commit('changeCancel',true)
       getUnreadNews({}).then(res=>{
+        console.log(res)
         if(res.unRead==1){
-          this.newsimg='https://w.aishenglian.com/static/icon/ver2-icon/index/yxx@2x.png'
+          console.log(res.unRead)
+          this.isunRead=1
+        }else if(res.unRead==0){
+          this.isunRead=0
         }
 
       }).catch(err=>{})

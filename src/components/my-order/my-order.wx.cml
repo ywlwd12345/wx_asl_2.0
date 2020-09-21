@@ -74,7 +74,7 @@
 
       <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
       data-id="{{item.id}}"
-      ><van-icon name="delete" size="18" color="#999999"/></view>
+      ><image src="{{ delImg }}" style="width:23cpx;height:27cpx;"></image></view>
 
       <view class="items5">
       <view class="btn" c-if="{{item.statusMsg==='待支付'}}" c-bind:tap="canceldialog(item.orderId,item.statusMsg)">
@@ -184,7 +184,8 @@ class MyOrder implements MyOrderInterface {
     setBtnName:'取消订单',
     statuss:'',
     confirmReceipt:'确认收货',
-    returnGoods:'申请退货'
+    returnGoods:'申请退货',
+    delImg:require('../../assets/images/delet.png'),
   }
 
   computed = {
