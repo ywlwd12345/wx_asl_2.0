@@ -94,14 +94,15 @@
       <view style="margin-left:10cpx;"  c-if="{{item.status===0}}">
       <van-button round type="info" size="small" color="#f44336" bind:click="goPay" data-orderNo="{{item.order_no}}" >立即付款</van-button></view>-->
 
-      <view class="items4-left" c-bind:tap="showPop"  data-id="{{item.order_no}}">
+      <view class="items4-left" c-bind:tap="showPop"  data-id="{{item.order_no}}" hover-class="hover-btn">
        <image src="{{ delImg }}" style="width:23cpx;height:27cpx;"></image>
       </view>
 
       <view class="items4-right">
       <view class="items4-right-btn1"  c-bind:tap="operateOrder"   data-id="{{item.order_no}}"  
-      c-if="{{item.status}}">取消订单</view>
+      c-if="{{item.status}}" hover-class="hover-btn">取消订单</view>
       <view class="items4-right-btn2" style="margin-left:20cpx;"  c-if="{{item.status===0}}" c-bind:tap="goPay"
+        hover-class="hover-btn"
        data-orderNo="{{item.order_no}}">付款</view>
       </view>
 
@@ -136,8 +137,8 @@
   </view>
 
     <view class="pop-conternt-bot">
-    <view class="pop-btn1" c-bind:tap="cancel">取消</view>
-    <view class="pop-btn2" c-bind:tap="sure">删除</view>
+    <view class="pop-btn1" c-bind:tap="cancel" hover-class="hover-btn">取消</view>
+    <view class="pop-btn2" c-bind:tap="sure"  hover-class="hover-btn">删除</view>
     </view>
   
   
