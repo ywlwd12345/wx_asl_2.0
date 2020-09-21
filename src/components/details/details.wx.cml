@@ -260,12 +260,12 @@
 <view class="pop-back" style="{{popStyle}}"></view>  <!-- 设置分享弹框背景色-->
 
 <view class="bottom-btn-cart">
-<view class="cart-customer" c-bind:tap="onClickIconTel">
+<view class="cart-customer" c-bind:tap="onClickIconTel"  hover-class="hover-btn">
  <image src="{{cartImg}}" style="width:45cpx;height:38cpx;"></image>
   <text>客服</text>
 </view>
 
-<view class="cart-bus"  c-bind:tap="onClickIconCart">
+<view class="cart-bus"  c-bind:tap="onClickIconCart" hover-class="hover-btn">
  <image src="{{cartBus}}" style="width:45cpx;height:38cpx;"></image>
   <text>购物车</text>
 </view>
