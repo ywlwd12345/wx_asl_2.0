@@ -10,12 +10,14 @@
   <view class="bgimg">
     <view class="topimg" c-bind:tap="uploads">
       <view style="font-size:28cpx;color:#222;">头像</view>
-      <view>
-        <image src="{{avatar}}" style="width:58cpx;height:58cpx;border-radius:50%;"/>
+      <view class="icons">
+        <image src="{{avatar}}" style="width:58cpx;height:58cpx;border-radius:50%;margin-right: 10cpx;"/>
+        <van-icon name="arrow" color="var(--field-icon-container-color, #969799)" size="29rpx"/>
       </view>
     </view>
   </view>
   <van-field
+    input-align="right"
     clearable
     label="姓名"
     icon="arrow"
@@ -26,6 +28,7 @@
   />
 
   <van-field
+    input-align="right"
     type="number"
     label="身份证号"
     icon="arrow"
@@ -37,6 +40,7 @@
 
 <view c-bind:tap="changeBank">
   <van-field
+    input-align="right"
     label="开户行"
     icon="arrow"
     placeholder="请输入开户行"
@@ -48,6 +52,7 @@
 </view>
 
    <van-field
+   input-align="right"
     type="number"
     label="银行卡号"
     icon="arrow"
@@ -62,8 +67,8 @@
 <view class="btn">
 
 
-<van-button type="primary" color="linear-gradient(to right, #e73827, #f85032)" round block  bind:click="dialog" c-if="{{determine}}">确定</van-button>
-<van-button type="primary" color="linear-gradient(to right, #e73827, #f85032)" round block  bind:click="modifys" c-else>修改</van-button>
+<van-button type="primary" color="#E92210" round block  bind:click="dialog" c-if="{{determine}}">确定</van-button>
+<van-button type="primary" color="#E92210" round block  bind:click="modifys" c-else>修改</van-button>
 
 
 
@@ -361,6 +366,11 @@ export default new PersonaDetails();
 .bgimg{
   background: #fff;
 }
+.icons{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 </style>
 
 <script cml-type="json">
@@ -372,7 +382,8 @@ export default new PersonaDetails();
          "van-button": "/vant/button/index",
          "van-picker": "/vant/picker/index",
          "van-popup": "/vant/popup/index",
-         "van-dialog": "/vant/dialog/index"
+         "van-dialog": "/vant/dialog/index",
+         "van-icon": "/vant/icon/index"
     }
   }
 }

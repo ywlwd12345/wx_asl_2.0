@@ -79,7 +79,7 @@ class="transfer"
 color="linear-gradient(to right, #e73827, #f85032)"
 block bind:click="submit">提交</van-button>
 </view>-->
-<view  style="height:410cpx;">
+<view  style="height:420cpx;">
   <view class="top">
     <view class="curs">
       <view class="title_left">
@@ -137,6 +137,7 @@ block bind:click="submit">提交</van-button>
   >
     <view class="total"><text class="tip">提现金额</text></view>
     <view class="input-icon">
+      <view style="font-size: 28cpx;color:#222222;">¥</view>
       <van-cell-group>
         <van-field
           border="{{ false }}"
@@ -153,7 +154,7 @@ block bind:click="submit">提交</van-button>
 
 <view class="btn">
   <van-button type="primary" round
-  color="linear-gradient(to right, #e73827, #f85032)"
+  color="#E92210"
   block bind:click="submit">提交
   </van-button>
 </view>
@@ -373,7 +374,7 @@ export default new PutCoin();
   margin:20cpx 0;
 }
 .adds{
-    height: 130rpx;
+    height: 140rpx;
     overflow: hidden;
 }
 .addsto{
@@ -477,10 +478,14 @@ border-radius: 10cpx;
 
 .input-icon{
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1cpx solid #EFEFEF;
+  margin-bottom: 20cpx;
 }
 .spec-input{
   width: 100%;
- border-bottom: 2cpx solid #000;
  font-size: 58cpx;
  color: #212121;
  height: 100cpx;

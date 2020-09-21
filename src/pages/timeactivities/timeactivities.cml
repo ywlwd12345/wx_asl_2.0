@@ -241,8 +241,8 @@ height: 100vh;
     font-size: 38cpx;
 }
 .purchase{
-    font-size: 25cpx;
-    background: #ED4129;
+    font-size: 20cpx;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
     color: #fff;
     padding: 8cpx 30cpx;
     border-radius: 30cpx;
