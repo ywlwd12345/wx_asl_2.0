@@ -18,7 +18,7 @@
     <scroller
     scroll-direction="{{scrollDirection}}"
     width="{{740}}"
-    c-style="width: 0; height: 0;color: transparent;display:none;"
+  
   >
 
 
@@ -136,7 +136,6 @@
     scroll-direction="{{scrollDirection}}"
     width="{{750}}"
     height="{{-1}}"
-    cstyle="overflow-x:hidden;"
   >
   <block  c-for="{{listArray}}"
         c-for-index="i"
@@ -567,6 +566,7 @@ align-items: center;
 font-size: 22cpx;
 font-weight: 300;
 color: #C0C0C0;
+text-decoration:line-through;
 }
 
 .now-price{
