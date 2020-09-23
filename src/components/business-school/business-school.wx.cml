@@ -7,6 +7,7 @@
     scroll-direction="{{scrollDirection}}"
     width="{{740}}"
     height="{{-1}}"
+    cstyle="overflow:hidden;"
   >
   <block c-for="{{listArray}}"
         c-for-index="i"
@@ -408,6 +409,14 @@ line-height: 35cpx;
   right: 0;
   opacity: 0;
   z-index: 999;
+}
+
+
+::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+    color: transparent;
+    display:none;
 }
 
 

@@ -18,7 +18,7 @@
     <scroller
     scroll-direction="{{scrollDirection}}"
     width="{{740}}"
-    height="{{-1}}"
+    c-style="width: 0; height: 0;color: transparent;display:none;"
   >
 
 
@@ -136,7 +136,7 @@
     scroll-direction="{{scrollDirection}}"
     width="{{750}}"
     height="{{-1}}"
-    cstyle="overflow:hidden;"
+    cstyle="overflow-x:hidden;"
   >
   <block  c-for="{{listArray}}"
         c-for-index="i"
@@ -160,7 +160,7 @@
   <view class="list-ver2-wrap">
 
   <view class="ver2-column"></view>
-  <view class="list-ver2 {{i%2===0?'animate-self':'animate-self-right'}}"   
+  <view class="list-ver2 {{i%2===0?'animate-self':'animate-self-right'}} "   
           c-for="{{lists}}"
           c-for-index="i"
           c-for-item="item"
@@ -598,11 +598,12 @@ color: #ED4129;
 
 
 .panels{
-  min-width:100cpx;
+  width:100cpx;
   min-height:50cpx;
   display: inline-block;
   margin-right: 35cpx;
   padding:10cpx;
+  overflow: hidden;
 }
 
 
@@ -748,6 +749,7 @@ border-bottom: 2cpx solid #F3F3F3;
   background: #fff;
   width: 750cpx;
   margin-bottom:75cpx;
+  overflow: hidden;
 
 }
 
@@ -807,6 +809,7 @@ flex-direction: row;
 .ver2-column{
   height: 80cpx;
   background: #fff;
+  border-radius: 20cpx 20cpx 0 0;
 }
 
 
@@ -824,6 +827,7 @@ display: flex;
 justify-content: center;
 align-items: center;
 flex-direction: row;
+
 }
 
 
@@ -1023,6 +1027,18 @@ margin-right:11cpx;
     transform: translate3d(0, 0, 0);
   }
 }
+
+
+
+
+::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+    color: transparent;
+    display:none;
+}
+
+
 
 
 
