@@ -12,7 +12,8 @@
   bind:click-right="onClickRight"
   safe-area-inset-top="{{true}}"
 >
-<van-icon name="arrow-left"  slot="left" color="#AAAAAA" size="64rpx" custom-class="icon-nav"/>
+<!--<van-icon name="arrow-left"  slot="left" color="#AAAAAA" size="64rpx" custom-class="icon-nav"/>-->
+<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
 <text slot="right" class="slot-text">添加</text>
 </van-nav-bar>
   </view>
@@ -110,7 +111,8 @@ class Address implements AddressInterface {
     title:"收货地址",
     lists:[],
     checked:false,
-    radio:'1'
+    radio:'1',
+    back:require('../../assets/images/fanhui.png')
   }
 
   computed = {

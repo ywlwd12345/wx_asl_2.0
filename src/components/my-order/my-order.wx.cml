@@ -146,6 +146,21 @@
     <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
   </view>
 
+  <van-popup show="{{ isShow }}" bind:close="onClose" z-index="{{2}}" custom-class="de_popup">
+    <view class="pop-conternt">
+      <view class="pop-conternt-top">
+        <text>温馨提示</text>
+        <text>确认删除此订单</text>
+      </view>
+
+      <view class="pop-conternt-bot">
+        <view class="pop-btn1" c-bind:tap="cancel" hover-class="hover-btn">取消</view>
+        <view class="pop-btn2" c-bind:tap="sure"  hover-class="hover-btn">删除</view>
+      </view>
+    </view> 
+  </van-popup>
+
+
 
   <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
   <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
@@ -175,6 +190,8 @@ class MyOrder implements MyOrderInterface {
   }
 
   data = {
+    id:0,
+    isShow:false,
     title:"我的订单",
     active:0,
     loading:false,
@@ -195,6 +212,13 @@ class MyOrder implements MyOrderInterface {
   }
 
   methods = {
+  //关闭
+    onClose(){
+      this.isShow=false
+    },
+    cancel(){
+       this.isShow=false
+    },
     logistics(expNum){
       console.log('打印',expNum)
       if(expNum===''||expNum===null){
@@ -206,16 +230,24 @@ class MyOrder implements MyOrderInterface {
         })
       }
     },
-   dialog(id){
-      Dialog.confirm({
-      title: '提示',
-      context:this,
-      message: '您确认要删除该订单吗？'
-    }).then(() => {
-      this.deleteOrderData(id)
-    }).catch(() => { 
-    });
-   },
+  //  dialog(id){
+  //     Dialog.confirm({
+  //     title: '提示',
+  //     context:this,
+  //     message: '您确认要删除该订单吗？'
+  //   }).then(() => {
+  //     this.deleteOrderData(id)
+  //   }).catch(() => { 
+  //   });
+  //  },
+  dialog(id){
+    this.id=id
+    this.isShow=true
+  },
+  sure(){
+    this.isShow=false
+      this.deleteOrderData()
+    },
     
     onChange(e){
       console.log(e)
@@ -492,11 +524,11 @@ class MyOrder implements MyOrderInterface {
     //   this.deleteOrderData(id)
 
     // },
-    deleteOrderData(id){
+    deleteOrderData(){
       let uname
       cml.getStorage('uname').then((value)=>{
       uname=value
-      deleteOrder({orderId:id,uname:uname}).then(res=>{
+      deleteOrder({orderId:this.id,uname:uname}).then(res=>{
         if(res.code==1){
           cml.showToast({
             message: "删除成功",
@@ -816,6 +848,77 @@ color: #ED4229;
   padding: 0 20cpx;
   background: none!important;
 }
+.pop-conternt{
+margin:0 auto;
+width: 431cpx;
+height: 273cpx;
+background: #FFFFFF;
+box-shadow: 0cpx 0cpx 24cpx 0cpx rgba(5, 5, 5, 0.1);
+ display: flex;
+flex-direction: column;
+justify-content: space-around;
+align-items: center;
+}
+.pop-conternt-top{
+   display: flex;
+flex-direction: column;
+justify-content: space-around;
+align-items: center;
+
+}
+
+
+.pop-conternt-top > text:nth-child(1){
+font-size: 37cpx;
+font-weight: 500;
+color: #222222;
+
+
+}
+.pop-conternt-top > text:nth-child(2){
+font-size: 27cpx;
+font-weight: 400;
+color: #AAAAAA;
+}
+
+.pop-conternt-bot{
+    width: 100%;
+     display: flex;
+flex-direction: row;
+justify-content: space-around;
+align-items: center;
+
+}
+.pop-btn1{
+width: 148cpx;
+height: 49cpx;
+border: 2cpx solid #DD3A2C;
+border-radius: 24cpx;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+font-size: 23cpx;
+font-weight: 500;
+color: #ED4229;
+}
+
+.pop-btn2{
+width: 148cpx;
+height: 49cpx;
+background: linear-gradient(269deg, #FE573F, #E61A09);
+border-radius: 24cpx;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+font-size: 23cpx;
+font-weight: 500;
+color: #fff;
+}
+.de_popup{
+  border-radius: 17cpx;
+}
 </style>
 
 <script cml-type="json">
@@ -830,7 +933,8 @@ color: #ED4229;
               "van-icon": "/vant//icon/index",
               "van-button": "/vant/button/index",
               "van-dialog": "/vant/dialog/index",
-              "van-loading": "/vant/loading/index"
+              "van-loading": "/vant/loading/index",
+              "van-popup": "/vant/popup/index"
     }
   }
 }

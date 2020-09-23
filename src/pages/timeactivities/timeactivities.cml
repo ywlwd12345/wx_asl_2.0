@@ -229,11 +229,12 @@ height: 100vh;
 .price_s{
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
 }
 .rmb{
     color: #ED4129;
     padding-right: 5cpx;
+    font-size: 25cpx;
 }
 .rmb_p{
     color: #ED4129;

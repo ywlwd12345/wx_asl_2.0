@@ -13,14 +13,14 @@
       />
     </van-cell-group>
   </view>
-  <view class="{{add==0?'addsto':'adds'}}" style="margin: 0 25cpx;background: #fff;border-radius: 0 0 10cpx 10cpx;padding-left: 20cpx;"> 
+  <view class="adds" style="margin: 0 25cpx;background: #fff;border-radius: 0 0 10cpx 10cpx;padding-left: 20cpx;"> 
     <view class="curs">
       <view class="title_left">
         <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
         <view class="withdrawal_title">提现币种</view>
         <view class="withdrawal_title" style="padding-left:59cpx;">{{aslName}}</view>
       </view>
-      <view c-bind:click="xuanzhong" style="width: 40cpx;">
+      <view style="width: 40cpx;">
         <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/sl@2x.png' style="width: 24cpx;height: 24cpx;" c-if="{{add==0}}" />
         <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/xl@2x.png' style="width: 24cpx;height: 24cpx;" c-else />
       </view>
@@ -143,8 +143,8 @@ class EftBank implements EftBankInterface {
     id:'',
     viewPortHeight:'',
     add:0,
-    aslName:'现金币',
-    radio:'1'
+    aslName:'',
+    radio:'5'
   }
 
   computed = {

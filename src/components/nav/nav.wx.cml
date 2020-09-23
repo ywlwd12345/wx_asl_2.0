@@ -11,7 +11,8 @@
   title-class="title-style"
  
 >
-<van-icon name="arrow-left"  slot="left" color="#fff" size="60rpx" custom-class="icon-nav"/>
+<!--<van-icon name="arrow-left"  slot="left" color="#fff" size="40rpx" custom-class="icon-nav"/>-->
+<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
 </van-nav-bar>
   </origin-view>
   <!-- nav end-->
@@ -38,7 +39,8 @@ class Nav implements NavInterface {
 
   data = {
 
-    navHeight:''
+    navHeight:'',
+    back:require('../../assets/images/fanhui2.png')
 
   
    

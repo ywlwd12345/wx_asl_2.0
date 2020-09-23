@@ -128,7 +128,7 @@
   </view>
 
 
-  <van-popup show="{{ isShow }}" bind:close="onClose" z-index="{{2}}">
+  <van-popup show="{{ isShow }}" bind:close="onClose" z-index="{{2}}" custom-class="de_popup">
 
   <view class="pop-conternt">
   <view class="pop-conternt-top">
@@ -716,7 +716,9 @@ justify-content: space-around;
 align-items: center;
 
 }
-
+.de_popup{
+  border-radius: 17cpx;
+}
 
 .pop-conternt-top > text:nth-child(1){
 font-size: 37cpx;

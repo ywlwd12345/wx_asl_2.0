@@ -11,7 +11,8 @@
   bind:click-right="onClickRight"
   safe-area-inset-top="{{true}}"
 >
-<van-icon name="arrow-left"  slot="left" color="#000" size="64rpx" custom-class="icon-nav"/>
+<!--<van-icon name="arrow-left"  slot="left" color="#000" size="64rpx" custom-class="icon-nav"/>-->
+<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
 <text slot="right" class="slot-text">提现日志</text>
 </van-nav-bar>
   </view>
@@ -79,7 +80,7 @@ class="transfer"
 color="linear-gradient(to right, #e73827, #f85032)"
 block bind:click="submit">提交</van-button>
 </view>-->
-<view  style="height:420cpx;">
+<view>
   <view class="top">
     <view class="curs">
       <view class="title_left">
@@ -104,14 +105,14 @@ block bind:click="submit">提交</van-button>
       </view>
       <view class="values">{{coinData.asl5}}</view>
     </view>
-    <view class="{{add==0?'addsto':'adds'}}"> 
+    <view class="adds"> 
       <view class="curs">
         <view class="title_left">
           <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
           <view class="withdrawal_title">提现币种</view>
           <view class="withdrawal_title" style="padding-left:30cpx;">{{aslName}}</view>
         </view>
-        <view c-bind:click="xuanzhong" style="width: 40rpx;">
+        <view style="width: 40rpx;">
           <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/sl@2x.png' style="width: 24cpx;height: 24cpx;" c-if="{{add==0}}" />
           <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/xl@2x.png' style="width: 24cpx;height: 24cpx;" c-else />
         </view>
@@ -186,14 +187,15 @@ class PutCoin implements PutCoinInterface {
   }
 
   data = {
+    back:require('../../assets/images/fanhui.png'),
     shows:false,
     radio:1,
     title:'提现',
-    radio: '1',
+    radio: '5',
     coin:'',
     coinData:{},
     viewPortHeight:'',
-    aslName:'现金币',
+    aslName:'',
     add:0,
 
   }
@@ -377,10 +379,7 @@ export default new PutCoin();
     height: 140rpx;
     overflow: hidden;
 }
-.addsto{
-    height: 75rpx;
-    overflow: hidden;
-}
+
 .icons image{
     width: 31rpx;
     height: 31rpx;

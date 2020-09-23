@@ -22,7 +22,7 @@
           <text class="{{i==statusindex?'curtitle':''}}" style="text-align:center;font-size:35cpx;">{{item.time}}</text>
         </view>
         <view  class="panel-text" >
-          <text class="{{i==statusindex?'cur':''}}" style="text-align:center;font-size:23cpx;color:#999999;">{{item.status}}</text>
+          <text class="{{i==statusindex?'cur':''}}" style="text-align:center;font-size:23cpx;color: #9A9A9A;">{{item.status}}</text>
         </view>
         </view>
       </block>
@@ -240,7 +240,7 @@ background: #eee;
   color: #ED4129;
 }
 .cur{
-    background: #ED4129;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
     color: #fff!important;
     font-size: 25cpx!important;
     border-radius: 20rpx;
@@ -281,11 +281,13 @@ background: #eee;
 .price_s{
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
+
 }
 .rmb{
     color: #ED4129;
     padding-right: 5cpx;
+    font-size: 25cpx;
 }
 .rmb_p{
     color: #ED4129;
@@ -294,7 +296,7 @@ background: #eee;
 }
 .purchase{
     font-size: 25cpx;
-    background: #ED4129;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
     color: #fff;
     padding: 8cpx 30cpx;
     border-radius: 30cpx;
