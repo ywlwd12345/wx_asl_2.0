@@ -33,7 +33,7 @@ onShareAppMessage: function(res) {
     if (res.from === 'button') {}
     return {
 　　　　title: this.titles,
-　　　　path: '/pages/article-details/article-details?id='+this.pid,
+　　　　path: '/pages/index/index?studayId='+this.pid,
 　　　　imgUrl: '', 
 　　　　success: function(res){　 // 转发成功之后的回调　　　　　
 　　　　　　if(res.errMsg == 'shareAppMessage:ok'){

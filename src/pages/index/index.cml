@@ -304,6 +304,23 @@ goLive(){
     }
     }
 
+
+    //商学院分享
+
+        if(res.target.id==='3'){
+          const data=res.target.dataset.studay
+        return {
+      title:data.title,
+      desc: data.introduce,
+      path: '/pages/index/index?studayId='+data.id,
+      imageUrl:data.icon
+    }
+    }
+
+
+
+
+
     if (res.from === 'button'){
         return {
       title:'30亿拼团红包大放送，注册即送10元现金红包...',
@@ -415,6 +432,21 @@ console.log('分享参数',gid)
        })
 
      }
+//商学院分享
+
+  const studayId=res.studayId
+  if(/^\d+(?=\.{0,1}\d+$|$)/.test(studayId)){
+      cml.navigateTo({
+        path: '/pages/article-details/article-details',
+        query: {
+        id:studayId
+        }
+      })
+
+  }
+
+
+
   }
 
     mounted() {
