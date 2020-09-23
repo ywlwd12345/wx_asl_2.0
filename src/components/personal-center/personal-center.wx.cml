@@ -79,8 +79,8 @@
           c-key="text"
 >
 
-<view>
-<view class="section-icon"  c-bind:tap="goSection" data-name="{{item.text}}">
+<view  c-bind:tap="goSection" data-name="{{item.text}}">
+<view class="section-icon" >
  <image src="{{item.imageSrc}}" style="width:55cpx;height:55cpx;" ></image>
 </view>
 <view class="section"><text class="icon-text">{{item.text}}</text></view>
@@ -413,7 +413,7 @@ class PersonalCenter implements PersonalCenterInterface {
     imgInfo:imgInfo,
     imgSection:imgSection,
     userObj:{},
-    avatar:'',
+    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png',
     vipSign:require('../../assets/images/qd@2x.png'),
     bgImg:'https://w.aishenglian.com/static/icon/ver2-icon/mine/bj@2x.png',
     vipImg:'https://w.aishenglian.com/static/icon/ver2-icon/asl-vip/ASL@2x.png',
@@ -722,27 +722,27 @@ class PersonalCenter implements PersonalCenterInterface {
   query:{title:name}
       })
   },
-    getInfo(){
+//     getInfo(){
 
-      cml.getStorage('userInfo').then((value)=>{
-        console.log(value,'用户信息')
-    // 处理获取到的键值
+//       cml.getStorage('userInfo').then((value)=>{
+//         console.log(value,'用户信息')
+//     // 处理获取到的键值
 
-    // this.isStandard(value.userinfo)
-    this.userObj=value.userinfo
+//     // this.isStandard(value.userinfo)
+//     this.userObj=value.userinfo
     
-    if(value.userinfo.avatar.substr(0,5)==='https'){
-       this.avatar=value.userinfo.avatar
+//     if(value.userinfo.avatar.substr(0,5)==='https'){
+//        this.avatar=value.userinfo.avatar
        
-    }else{
-       this.avatar=store.state.domainUrl+value.userinfo.avatar
+//     }else{
+//        this.avatar=store.state.domainUrl+value.userinfo.avatar
 
-    }
+//     }
     
    
-})
+// })
 
-    },
+//     },
     //退出登录
     quit(){
       let self=this
@@ -844,11 +844,13 @@ class PersonalCenter implements PersonalCenterInterface {
             message: "登录失效",
             duration: 2000
           })
+           return 
         }
+       
       }
       this.usersinfo=res.data[0]
       this.specLevel=res.data[0].level
-      this.avatar='https://'+this.usersinfo.avatar
+      this.avatar=this.usersinfo.avatar?'https://'+this.usersinfo.avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png'
       //是否实名验证
             const data=res.data[0]
             console.log(res.data[0],'草包')

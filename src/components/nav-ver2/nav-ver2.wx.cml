@@ -4,15 +4,23 @@
    <van-nav-bar
   title="{{title}}"
   left-arrow="{{false}}"
-  bind:click-left="onClickLeft"
   border="{{false}}"
   custom-class="nav-root"
+  bind:click-left="onClickLeft"
   title-class="title-style"
  
 >
 <!--<van-icon name="arrow-left"  slot="left" color="#AAA" size="30px" custom-class="icon-nav"/>-->
 
-<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
+<!--24 37-->
+
+<view  slot="left" class="spec-nav" hover-class="hover-btn">
+
+
+<image src="{{back}}" style="width:24cpx;height:37cpx;"  ></image>
+
+</view>
+
 
 
 
@@ -135,6 +143,17 @@ width: 750cpx;
   top:0;
   z-index: 9;
 }
+
+
+.spec-nav{
+  width: 50cpx;
+  height: 50cpx;
+  position: relative;
+  bottom:20cpx;
+  /* background: red; */
+}
+
+
 
 </style>
 

@@ -37,7 +37,7 @@
 
       <view class="user-bg">
       <view class="user-img">
-        <image src="{{userInfoObj.avatar }}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+        <image src="{{userInfoObj.avatar?userInfoObj.avatar:avatar }}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
       </view>
       <view class="user-info">
       <text>{{userInfoObj.mobile}}</text>
@@ -51,7 +51,10 @@
           c-for-item="item"
             c-for-index="i"
           c-key="text">
-      <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage"  value="{{item.num}}" data-text="{{item.text}}"/>
+      <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage" 
+      border="{{i===2?false:true}}"
+      
+       value="{{item.num}}" data-text="{{item.text}}"/>
       </block>
       </view>
 
@@ -124,7 +127,8 @@ class WallePurse implements WallePurseInterface {
     cellIcon4:require('../../assets/group-images/icon/szmx.png'),
     userInfoObj:{},
     cellList:objList,
-    title:'拼团钱包'
+    title:'拼团钱包',
+    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png'
   }
 
   computed = {
@@ -142,7 +146,7 @@ class WallePurse implements WallePurseInterface {
              if(res.code){
                const data=res.data[0]
                this.userInfoObj=data
-               this.userInfoObj.avatar=store.state.domainUrl+ data.avatar
+               this.userInfoObj.avatar=data.avatar?store.state.domainUrl+ data.avatar:''
                this.cellList=this.cellList.map(d=>{
                  if(d.text==='拼吧币'){
                    d.num=data.groupFee
