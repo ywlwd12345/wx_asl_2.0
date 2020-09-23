@@ -1,14 +1,27 @@
 <template>
-   <view class="container" style="min-height:{{viewPortHeight}}cpx;">
-    <view class="nav">
-   <view class="purse-title"><view class="icon"  ><van-icon name="arrow-left" size="24px" bind:click="goBack" color="#fff"/>
-   </view><text  class="wallet">超值拼团</text></view>
+   <view class="container" >
+   <view class="nav"  c-if="{{false}}">
+   <view class="purse-title">
+   <view class="icon"  >
+   <van-icon name="arrow-left" size="24px" bind:click="goBack" color="#fff"/>
+   </view>
+   
+   <text  class="wallet">超值拼团</text>
+   
+   </view>
+
+   <!-- purse-title end-->
+
+
+
    <view class="period">
     <scroller
     scroll-direction="{{scrollDirection}}"
     width="{{740}}"
     height="{{-1}}"
   >
+
+
   <block  c-for="{{listArray}}"
         c-for-index="i"
         c-for-item="item"
@@ -21,14 +34,30 @@
   </block>
   
   </scroller>
-<view class="remaining"><text class="spec-text">还剩:</text>
+
+  <!-- scroller end-->
+<view class="remaining">
+<text class="spec-text">还剩:</text>
 <view class="count-tiem">
 <van-count-down use-slot  time="{{specTime }}" bind:change="onChangeCount" data-id="{{item.id}}" format="DD天 HH:mm:ss">
 <view class="item-count"><text class="spec-text">{{timeData.hours<10?0:'' }}{{timeData.hours }}:</text><text class="spec-text">{{timeData.minutes<10?0:'' }}{{timeData.minutes }}:</text>
  <text class="spec-text">{{timeData.seconds<10?0:'' }}{{timeData.seconds }}</text></view>
 </van-count-down>
-</view></view>
+</view>
+
+</view>
+<!-- remaining end-->
    </view>
+   <!-- period  end-->
+
+   
+
+
+  
+
+
+
+
    <view class="purse-wrap">
     <list
       bottom-offset="{{bottomOffset}}"
@@ -82,6 +111,129 @@
  
     </view>
     <!--nav end-->
+
+<van-sticky offset-top="{{ 0 }}">
+
+    <view class="nav-ver2">
+    <view class="title-ver2" style="margin-top:{{ menuButton.top+menuButton.height/3}}px;"  >
+      <view class="title-arrow-ver2" c-bind:tap="goBack" hover-class="hover-btn" > 
+       <image src="{{iconVer2}}" style="width:24cpx;height:37cpx;" ></image>
+       </view>
+    <text>超值拼团</text>
+    </view>
+    <!-- title-ver2 end-->
+    </view>
+
+    </van-sticky>
+
+
+
+
+     
+ <van-sticky offset-top="{{ Th }}">
+    <view class="column-time" >
+     <scroller
+    scroll-direction="{{scrollDirection}}"
+    width="{{750}}"
+    height="{{-1}}"
+    cstyle="overflow:hidden;"
+  >
+  <block  c-for="{{listArray}}"
+        c-for-index="i"
+        c-for-item="item"
+        c-key="id"
+        >
+  <view class="panels"  c-bind:click="getIndexData" data-id="{{item.id}}" >
+    <view class="{{item.flag?'time-tip':'time-tip1'}}">{{item.timeTip}}</view>
+    <view class="{{item.flag?'btn-text':'btn-text1'}}">{{item.statusTip}}</view>
+  </view>
+  </block>
+  </scroller>
+ 
+  </view>
+   </van-sticky>
+
+  
+     
+  <!-- column-time end-->
+
+  <view class="list-ver2-wrap">
+
+  <view class="ver2-column"></view>
+  <view class="list-ver2 {{i%2===0?'animate-self':'animate-self-right'}}"   
+          c-for="{{lists}}"
+          c-for-index="i"
+          c-for-item="item"
+       c-key="id">
+
+    <image src="{{item.thumb}}" style="width:177cpx;height:177cpx;"></image>
+
+
+    <view class="desc-ver2" style="margin-left:20cpx;">
+    <view class="desc-ver2-top">{{item.name}}</view>
+
+    <view class="desc-ver2-bot">
+    <view class="desc-ver2-price">
+    <text style="margin-right:5cpx;" >￥</text>
+    <text style="margin-right:11cpx;" class="now-price">{{item.price}}</text>
+    <text  class="original-price">￥{{item.market_price}}</text>
+    </view>
+
+
+
+    <view class="ver2-btn" hover-class="hover-btn"   c-bind:tap="goGroupGoodsdetails" data-id="{{item.id}}">立即拼</view>
+
+    </view>
+       <!-- desc-ver2-bot end-->
+
+    </view>
+      <!-- desc-ver2 end-->
+ 
+   
+
+
+  
+    
+
+
+
+
+  
+
+
+  </view>
+
+   <!-- list-ver2 end-->
+
+
+   <view class="ver2-pos-wrap">
+   <view class="ver2-pos-tip">距离结束:</view>
+   <view class="count-tiem" style="margin-left:20cpx;">
+<van-count-down use-slot  time="{{specTime }}" bind:change="onChangeCount" data-id="{{item.id}}" format="DD天 HH:mm:ss">
+<view class="item-count">
+<view class="box-time">{{timeData.hours<10?0:'' }}{{timeData.hours }} </view><text class="point">:</text>
+<view class="box-time">{{timeData.minutes<10?0:'' }}{{timeData.minutes }}</view><text class="point">:</text>
+<view class="box-time">{{timeData.seconds<10?0:'' }}{{timeData.seconds }}</view></view>
+</van-count-down>
+</view>
+    </view>
+ 
+  
+  
+  </view>
+
+  <!-- list-ver2-wrap end-->
+
+
+
+
+
+
+
+
+    
+
+
      <view class="loading">
     <i-spin  c-if="{{loading}}"  size="large"></i-spin>
   </view>
@@ -94,6 +246,7 @@ import cml from 'chameleon-api';
 import {getGroupPeriod,getClassificationData} from '../../api/grouping.js' //引入拼团模块接口
 import {momentTime} from '../../untils/moment.js' //引入拼团模块接口
 import { dealStoreTitleName } from '../../untils/processData'
+import store from '../../store'
 
 
 
@@ -114,14 +267,19 @@ class Homepage implements HomepageInterface {
      listArray:[],
      timeData:{},
      specTime:0,
-    loading:false
-   
+      loading:false,
+      iconVer2:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/pb/fh@3x.png',
+      Th:''
+     
+  
     
 
   }
 
-  computed = {
-  }
+  computed = store.mapState({
+   menuButton: state => state.menuButton
+
+  })
 
   watch = {
   }
@@ -248,10 +406,30 @@ class Homepage implements HomepageInterface {
   },
 
 
+     // 获取轮播图高度
+  getNavHeight(){
+  const query=wx.createSelectorQuery().in(this)
+  query.select('.nav-ver2').boundingClientRect(res => {
+    // this.navHeight=res.height
+   
+
+    this.Th=res.height
+    
+
+     
+}).exec()
+
+ 
+
+  },
+
+
 
 
     init(){
       this.getData()
+      this.getNavHeight()
+      
     }
   }
 
@@ -266,11 +444,8 @@ class Homepage implements HomepageInterface {
 
   mounted() {
     this.init()
-    cml.getStorage('viewPortHeight').then((value)=>{
-    // 处理获取到的键值
-    this.viewPortHeight=value
-   
-})
+
+
   }
 
   beforeDestroy() {
@@ -301,9 +476,6 @@ export default new Homepage();
   align-items: center;
 }
 
-.container{
-  background: #f8f8f9;
-}
 
 .nav{
 width: 750cpx;
@@ -392,15 +564,15 @@ align-items: center;
 
 
 .original-price{
-  color:#b0bec5;
-  text-decoration:line-through;
-  font-size: 26cpx;
-
+font-size: 22cpx;
+font-weight: 300;
+color: #C0C0C0;
 }
 
 .now-price{
-  color:#ff2626;
-  font-size: 26cpx;
+font-size: 28cpx;
+font-weight: 700;
+color: #ED4129;
 }
 
 .spec-btn{
@@ -423,43 +595,17 @@ align-items: center;
 
 
 
-.goods-name{
-  max-width:300cpx;
-}
-
-
-.goods-price{
-  width:100%;
-  display: flex;
-flex-direction:row;
-justify-content:space-between;
-align-items: center;
-
-}
-
-.price{
-    width: 150cpx;
-   display: flex;
-flex-direction:column;
-justify-content:space-around;
-align-items: center;
-}
 
 
 .panels{
-  min-width:152cpx;
+  min-width:100cpx;
   min-height:50cpx;
   display: inline-block;
-  margin-right: 5cpx;
+  margin-right: 35cpx;
   padding:10cpx;
 }
 
-.spec-text{
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  letter-spacing: 2cpx;
-  color:#fff;
-}
+
 
 .spec-btn{
 padding:0 20cpx!important;
@@ -471,10 +617,6 @@ padding:0 20cpx!important;
 
 
 .item-count{
-  min-width:180cpx;
-  position: relative;
-  top:5cpx;
-  margin-left:10cpx;
   display: flex;
 flex-direction:row;
 justify-content:space-around;
@@ -482,26 +624,31 @@ align-items: center;
 }
 
 .btn-text{
- display: inline-block;
- padding:5cpx 10cpx;
- border-radius: 10px;
-background: #ff9900;
-text-overflow: ellipsis;
-white-space: nowrap;
-letter-spacing: 2cpx;
-color:#fff;
-text-align: center;
-font-size: 26cpx;
+width: 100%;
+display: flex;
+flex-direction:row;
+justify-content:center;
+align-items: center;
+padding:5cpx 10cpx;
+background: linear-gradient(269deg, #FE573E, #E61A09);
+border-radius: 14cpx;
+transition: all 0.6s;
+font-size: 18cpx;
+font-weight: 500;
+color: #FFFFFF;
+transition: all 0.6s;
 }
 
 .btn-text1{
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  letter-spacing: 2cpx;
-  color:#fff;
-  font-size:24cpx;
-  color: #bbbec4;
-  transition: all 0.6s;
+  width: 100%;
+font-size: 18cpx;
+font-weight: 400;
+color: #999999;
+transition: all 0.6s;
+display: flex;
+flex-direction:row;
+justify-content:center;
+align-items: center;
 }
 
 .loading{
@@ -510,6 +657,376 @@ font-size: 26cpx;
   left: 50%;
   transform: translate(-50%);
 }
+
+
+.nav-ver2{
+  width:750cpx;
+  height: 404cpx;
+ background-repeat:no-repeat;
+  margin:0 auto;
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/pb/bj@2x.png');
+  background-size:contain;
+
+}
+
+.title-ver2{
+  width: 750cpx;
+  /* background: red; */
+  text-align: center;
+  position: relative;
+}
+
+.title-ver2 > text{
+display: inline-block;
+font-size: 34cpx;
+font-weight: 400;
+color: #FFFFFF;
+text-align: center;
+}
+.container view,.container text{
+  letter-spacing: 2cpx;
+}
+
+.title-arrow-ver2{
+  width: 100cpx;
+  height: 60cpx;
+  position: absolute;
+  top:0cpx;
+  left:32cpx;
+  z-index: 5;
+
+ 
+}
+
+.time-tip{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 30cpx;
+font-weight: 600;
+color: #212121;
+transition: all 0.5s;
+color: #ED4129;
+}
+
+
+.time-tip1{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 30cpx;
+font-weight: 600;
+color: #212121;
+transition: all 0.5s;
+}
+
+.list-ver2-wrap{
+  width: 750cpx;
+  padding: 0 20cpx;
+  /* margin-top:73cpx; */
+}
+
+.list-ver2{
+  width: 100%;
+  margin:0 auto;
+  padding: 20cpx;
+  background: #FFFFFF;
+  min-height: 218cpx;
+  display: flex;
+justify-content: space-between;
+align-items:flex-start;
+flex-direction: row;
+border-bottom: 2cpx solid #F3F3F3;
+
+}
+
+.column-time{
+  background: #fff;
+  width: 750cpx;
+  margin-bottom:75cpx;
+
+}
+
+.desc-ver2{
+  width:500cpx;
+  min-height: 177cpx;
+  display: flex;
+justify-content: space-between;
+align-items:flex-start;
+flex-direction: column;
+}
+
+
+.desc-ver2-bot{
+  width: 100%;
+  display: flex;
+justify-content: space-between;
+align-items:center;
+flex-direction: row;
+}
+.desc-ver2-price{
+  display: flex;
+justify-content: space-between;
+align-items:center;
+flex-direction: row;
+}
+
+
+.desc-ver2-price > text:nth-child(1){
+  color: #ED4129;
+  font-size: 22cpx;
+
+}
+
+
+.desc-ver2-top{
+font-size: 26cpx;
+font-weight: 400;
+color: #212121;
+}
+
+
+.ver2-btn{
+  width: 113cpx;
+height: 44cpx;
+background: linear-gradient(269deg, #FE573E, #E61A09);
+border-radius: 22cpx;
+font-size: 20cpx;
+font-weight: 500;
+color: #FFFFFF;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+.ver2-column{
+  height: 80cpx;
+  background: #fff;
+}
+
+
+.ver2-pos-wrap{
+  width: 418cpx;
+height: 80cpx;
+background: #FFFFFF;
+box-shadow: 0cpx 7cpx 27cpx 0cpx rgba(249, 159, 101, 0.23);
+border-radius: 40cpx;
+position: absolute;
+transform: translateX(-50%);
+left:50%;
+top:-40cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+
+.ver2-pos-tip{
+font-size: 24cpx;
+font-weight: 400;
+color: #212121;
+}
+
+
+.box-time{
+  width: 43cpx;
+height: 43cpx;
+background: linear-gradient(37deg, #F76D63, #F9AF65);
+border-radius: 6cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 24cpx;
+font-weight: 300;
+color: #FFFFFF;
+margin-right: 11cpx;
+}
+
+.point{
+font-size: 25cpx;
+font-weight: 400;
+color: #F97F63;
+margin-right:11cpx;
+
+
+}
+
+.animate-self{
+   animation:bounceInLeft 2s 1;
+
+}
+
+
+.animate-self-right{
+
+    animation:bounceInRight 2s 1;
+
+}
+
+
+
+@-webkit-keyframes bounceInRight {
+  from,
+  60%,
+  75%,
+  90%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(3000px, 0, 0) scaleX(3);
+    transform: translate3d(3000px, 0, 0) scaleX(3);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(-25px, 0, 0) scaleX(1);
+    transform: translate3d(-25px, 0, 0) scaleX(1);
+  }
+
+  75% {
+    -webkit-transform: translate3d(10px, 0, 0) scaleX(0.98);
+    transform: translate3d(10px, 0, 0) scaleX(0.98);
+  }
+
+  90% {
+    -webkit-transform: translate3d(-5px, 0, 0) scaleX(0.995);
+    transform: translate3d(-5px, 0, 0) scaleX(0.995);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes bounceInRight {
+  from,
+  60%,
+  75%,
+  90%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(3000px, 0, 0) scaleX(3);
+    transform: translate3d(3000px, 0, 0) scaleX(3);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(-25px, 0, 0) scaleX(1);
+    transform: translate3d(-25px, 0, 0) scaleX(1);
+  }
+
+  75% {
+    -webkit-transform: translate3d(10px, 0, 0) scaleX(0.98);
+    transform: translate3d(10px, 0, 0) scaleX(0.98);
+  }
+
+  90% {
+    -webkit-transform: translate3d(-5px, 0, 0) scaleX(0.995);
+    transform: translate3d(-5px, 0, 0) scaleX(0.995);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+
+
+@-webkit-keyframes bounceInLeft {
+  from,
+  60%,
+  75%,
+  90%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-3000px, 0, 0) scaleX(3);
+    transform: translate3d(-3000px, 0, 0) scaleX(3);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(25px, 0, 0) scaleX(1);
+    transform: translate3d(25px, 0, 0) scaleX(1);
+  }
+
+  75% {
+    -webkit-transform: translate3d(-10px, 0, 0) scaleX(0.98);
+    transform: translate3d(-10px, 0, 0) scaleX(0.98);
+  }
+
+  90% {
+    -webkit-transform: translate3d(5px, 0, 0) scaleX(0.995);
+    transform: translate3d(5px, 0, 0) scaleX(0.995);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes bounceInLeft {
+  from,
+  60%,
+  75%,
+  90%,
+  to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-3000px, 0, 0) scaleX(3);
+    transform: translate3d(-3000px, 0, 0) scaleX(3);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(25px, 0, 0) scaleX(1);
+    transform: translate3d(25px, 0, 0) scaleX(1);
+  }
+
+  75% {
+    -webkit-transform: translate3d(-10px, 0, 0) scaleX(0.98);
+    transform: translate3d(-10px, 0, 0) scaleX(0.98);
+  }
+
+  90% {
+    -webkit-transform: translate3d(5px, 0, 0) scaleX(0.995);
+    transform: translate3d(5px, 0, 0) scaleX(0.995);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+
+
+
 
 
 
@@ -524,7 +1041,8 @@ font-size: 26cpx;
     "van-button": "/vant/button/index",
      "van-count-down": "/vant/count-down/index",
       "i-spin": "/iview/spin/index",
-      "van-transition": "/vant/transition/index"
+      "van-transition": "/vant/transition/index",
+       "van-sticky": "/vant/sticky/index"
   
 
     }

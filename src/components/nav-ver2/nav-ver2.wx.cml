@@ -4,7 +4,6 @@
    <van-nav-bar
   title="{{title}}"
   left-arrow="{{false}}"
-  bind:click-left="onClickLeft"
   border="{{false}}"
   custom-class="nav-root"
   title-class="title-style"
@@ -12,7 +11,9 @@
 >
 <!--<van-icon name="arrow-left"  slot="left" color="#AAA" size="30px" custom-class="icon-nav"/>-->
 
-<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
+
+<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left" c-bind:tap="onClickLeft"></image>
+
 
 
 
@@ -135,6 +136,8 @@ width: 750cpx;
   top:0;
   z-index: 9;
 }
+
+
 
 </style>
 

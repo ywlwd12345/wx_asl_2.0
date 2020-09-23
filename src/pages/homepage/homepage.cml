@@ -1,6 +1,6 @@
 <template>
-  <view>
-  <homepage></homepage>
+  <view class="wrap-2"> 
+  <homepage ></homepage>
   </view>
 </template>
 
