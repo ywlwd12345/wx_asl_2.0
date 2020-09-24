@@ -13,7 +13,7 @@
       c-for-item="items"
     c-key="id"
     >
-      <view class="{{i===0?'panel1':'panel'}}">
+      <view class="{{i===0?'panel1':'panel'}}"   data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)">
       <van-checkbox value="{{ items.flag }}" bind:change="onChangeItem" 
         data-id="{{items.id}}"
        checked-color="#DE3A2C" c-if="{{isShowCheck}}"/>
@@ -31,7 +31,7 @@
         <view class="panel-right-bot">
           <text>￥{{items.price}}</text>
           <image src="{{cartImg}}" style="width:45cpx;height:45cpx; margin-right:10cpx; "
-           data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)"></image>
+           data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)" c-if="{{false}}"></image>
         </view>
         </view>
         <!-- panel-right end -->
