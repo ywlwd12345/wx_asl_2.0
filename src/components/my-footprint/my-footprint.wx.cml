@@ -17,8 +17,12 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 
 
 
-  
+  <view class="calendar">
    <calendar calendarConfig="{{calendarConfig}}"   bind:whenChangeMonth="whenChangeMonth"    bind:afterTapDay="afterTapDay" ></calendar>
+   </view>
+
+
+   <view class="tiem-now">{{ nowTime}}</view>
    <view class="list-goods">
         <block
           c-for="{{listData}}"
@@ -106,7 +110,8 @@ class MyFootprint implements MyFootprintInterface {
     period:{},
     checked:false,
     navHeight:'',//导航栏高度
-    editTitle:'删除'
+    editTitle:'删除',
+    nowTime:''
   }
 
   computed = {
@@ -204,12 +209,18 @@ whenChangeMonth(e){
   this.historyData(e.detail.next)
   cancelSelectedDates()
   this.listData=[]
+ 
 },
 
 //选择日期后执行的事件
 
 afterTapDay(e){
+  
   this.dealPeriod(e.detail)
+   this.getNowTimeSetStyle(e.detail)
+  
+
+  
 
 },
 
@@ -337,19 +348,9 @@ dealPeriod(data){
     //获取当前日期并设置样式
 
     //该方法失效
-    getNowTimeSetStyle(){
-      console.log(getSelectedDay(),'当前日期')
-      const dateObj=getSelectedDay()
-      const toSet = [
-  {
-    year: dateObj.year,
-    month: dateObj.month,
-    day: dateObj.day,
-    class: 'other-class' // 页面定义的 class，多个 class 由空格隔开
-  }
-];
-    setDateStyle(toSet)
-
+    getNowTimeSetStyle(dateObj){
+      this.nowTime=`${dateObj.month}月${dateObj.day}日`
+      
     }
 
 
@@ -369,7 +370,7 @@ dealPeriod(data){
   mounted() {
     this.setDefaultData()
 
-    this.getNowTimeSetStyle()
+    this.getNowTimeSetStyle(getSelectedDay()[0])
 
 try {
   const res = wx.getSystemInfoSync()
@@ -576,6 +577,27 @@ font-size: 29cpx;
 font-weight: 500;
 color: #FFFFFF;
 }
+
+
+.tiem-now{
+font-size: 20cpx;
+font-weight: 400;
+color: #414141;
+letter-spacing: 8cpx;
+margin-top:51cpx;
+margin-top:22cpx;
+margin-left:20cpx;
+
+}
+
+
+.calendar{
+  background: #fff;
+  border-radius: 20cpx;
+  margin-top:21cpx;
+}
+
+
 
 
 

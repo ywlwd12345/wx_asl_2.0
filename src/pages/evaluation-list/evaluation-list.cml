@@ -1,0 +1,179 @@
+<template>
+ <view class="wrap-2">
+   <nav-ver2  title="{{'评价晒单'}}"></nav-ver2>
+
+   <view class="panel">
+
+   <view class="left"></view>
+   <view class="right">
+   <text>逩腾剃须刀电动刮胡刀男士迷你小巧便携双刀头水 洗车载USB充电式</text>
+
+<view class="btn-wrap">
+
+<view class="view-btn" hover-class="hover-btn">评价</view>
+
+
+</view>
+
+
+   
+   </view>
+
+
+
+
+   
+   
+   
+   </view>
+
+
+
+
+
+  
+  </view>
+</template>
+
+<script>
+
+class EvaluationList   {
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new EvaluationList();
+</script>
+
+<style scoped>
+
+.panel{
+  width:750cpx;
+min-height: 216cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+padding: 20cpx;
+margin-top:20cpx;  
+display: flex;
+justify-content: flex-start;
+align-items: center;
+flex-direction: row;
+}
+
+
+.left{
+  width: 150cpx;
+  height: 150cpx;
+  background: pink
+
+
+}
+
+.view-btn{
+  width: 118cpx;
+height: 42cpx;
+border: 2cpx solid #DD3A2C;
+border-radius: 20cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 26cpx;
+font-weight: 400;
+color: #ED4229;
+
+}
+
+.right{
+   min-height: 150cpx;
+   width:540cpx;
+   display: flex;
+justify-content: space-between;
+align-items: flex-start;
+flex-direction: column;
+margin-left:20cpx;
+
+}
+
+.right > text{
+
+
+font-size: 26cpx;
+font-weight: 500;
+color: #222222;
+
+
+}
+
+.wrap-2 text,.wrap-2 text{
+  letter-spacing: 2cpx;
+}
+
+
+.btn-wrap{
+  width: 100%;
+   display: flex;
+justify-content: flex-end;
+align-items: center;
+flex-direction: row;
+
+
+
+
+}
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+   "nav-ver2":"/components/nav-ver2/nav-ver2"
+
+    }
+  },
+  "wx": {
+   "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>
