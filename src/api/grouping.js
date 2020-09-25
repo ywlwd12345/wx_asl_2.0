@@ -581,3 +581,37 @@ export function goodsComments(data) {
         url: "/app/goods/comment"
     });
 }
+
+
+
+/**
+ * @desc  拼吧确认收货api
+ * @url  app/groups/order/receive
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function confirmReceipt(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/groups/order/receive"
+    });
+}
+
+
+
+/**
+ * @desc  获取待评价商品信息api
+ * @url  /app/tobecomment/goods
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function commentGoodsList(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/tobecomment/goods"
+    });
+}

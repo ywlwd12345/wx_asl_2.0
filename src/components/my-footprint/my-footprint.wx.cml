@@ -2,13 +2,27 @@
   <view class="container">
    <nav title="{{title}}"  c-bind:onshowNav="setHt"></nav>
 
-  <view class="del-data" style="position:fixed;top:{{navHeight}}px" >
+ <!-- <view class="del-data" style="position:fixed;top:{{navHeight}}px" >
   <text class="success" c-bind:tap='success' c-if="{{!showDel}}" >完成</text>
   <van-icon name="delete" size="30px"  color="#bbbec4" 
 bind:click="deleteGoods" c-if="{{showDel}}"/>
-  </view>
-  <view class="cloumn" style="height:80cpx;"></view>
+  </view>-->
+  <!-- del-data end-->
+  <!--<view class="cloumn" style="height:80cpx;"></view>-->
+  <!-- cloumn end-->
+
+    <van-sticky offset-top="{{ navHeight }}">
+  <view class="edit-text" c-bind:tap="showEdit" ><text class="{{editTitle==='完成'?'succe-text':''}}">{{editTitle}}</text></view>
+  </van-sticky >
+
+
+
+  <view class="calendar">
    <calendar calendarConfig="{{calendarConfig}}"   bind:whenChangeMonth="whenChangeMonth"    bind:afterTapDay="afterTapDay" ></calendar>
+   </view>
+
+
+   <view class="tiem-now">{{ nowTime}}</view>
    <view class="list-goods">
         <block
           c-for="{{listData}}"
@@ -18,16 +32,15 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
         >
           <view class="panel">
           <view class="goods-img">
-             <image src="{{item.goodsThumb}}" style="width:200cpx;height:200cpx;" data-gid="{{item.goodsId}}" c-bind:tap="goDetails"></image>
+             <image src="{{item.goodsThumb}}" style="width:242cpx;height:242cpx;" 
+             data-gid="{{item.goodsId}}" c-bind:tap="goDetails"></image>
           </view>
-
     <view class="goods-price">
-    <text class="now-price">{{item.goodsPrice}}</text>
-    <text class="spec-cirle">...</text>
+    <view class="checkbox" c-if="{{showDel}}">
+    <van-checkbox value="{{ item.checked }}" bind:change="onChange"  checked-color="#dd3a2c" data-id="{{item.id}}"></van-checkbox>
     </view>
-
-    <view class="checkbox" c-if="{{!showDel}}">
-    <van-checkbox value="{{ item.checked }}" bind:change="onChange"  checked-color="#ff410f" data-id="{{item.id}}"></van-checkbox>
+    <text class="now-price">￥{{item.goodsPrice}}</text>
+    <text class="spec-cirle"  c-if="{{!showDel}}">...</text>
     </view>
 
           </view>
@@ -36,8 +49,7 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 
 <!-- list-goods end-->
 
-<view class="dle-btn" c-if="{{!showDel}}">
-
+<!--<view class="dle-btn" c-if="{{showDel}}">
 
 <van-submit-bar
   button-text="删除"
@@ -52,6 +64,20 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 </van-submit-bar>
 
 </view>
+-->
+
+<!-- dle-btn  end-->
+<view class="del-btn-ver2" c-if="{{showDel}}">
+
+<view class="view-btn"  hover-class="hover-btn"  c-bind:tap="onSubmit">删除</view>
+
+
+
+</view>
+
+
+
+
 
 
 
@@ -60,7 +86,7 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 <script>
  // getCurrentYM() 获取日历当前年月
 
-import { jump,getSelectedDay,setTodoLabels,getCurrentYM,cancelSelectedDates,clearTodoLabels} from '../../rl/calendar/main.js';
+import { jump,getSelectedDay,setTodoLabels,getCurrentYM,cancelSelectedDates,clearTodoLabels,setDateStyle} from '../../rl/calendar/main.js';
 import {getBrowsingHistoryData,browsingGoodsData,delBrowsingGoods} from '../../api/grouping.js' //引入拼团模块接口
 import {momentMs} from '../../untils/moment.js' //引入拼团模块接口
 import cml from 'chameleon-api';
@@ -76,14 +102,16 @@ class MyFootprint implements MyFootprintInterface {
       title:'我的足迹',
       calendarConfig: {
       // 配置内置主题
-      theme: 'default',
+      theme: 'elegant',
       onlyShowCurrentMonth: true
     },
     listData:[],
-    showDel:true,
+    showDel:false,
     period:{},
     checked:false,
-    navHeight:''//导航栏高度
+    navHeight:'',//导航栏高度
+    editTitle:'删除',
+    nowTime:''
   }
 
   computed = {
@@ -158,7 +186,7 @@ dealHistoryData(arr){
       c=Number(c)
       return c
     })
-    arr1.push({year:item[0],month:item[1],day:item[2],color:'#ff410f'})
+    arr1.push({year:item[0],month:item[1],day:item[2],color:'#dd3a2c'})
     return d
   })
   return arr1
@@ -181,12 +209,18 @@ whenChangeMonth(e){
   this.historyData(e.detail.next)
   cancelSelectedDates()
   this.listData=[]
+ 
 },
 
 //选择日期后执行的事件
 
 afterTapDay(e){
+  
   this.dealPeriod(e.detail)
+   this.getNowTimeSetStyle(e.detail)
+  
+
+  
 
 },
 
@@ -302,7 +336,23 @@ dealPeriod(data){
      }
    }).catch(err=>{})
 
-  }
+  },
+
+
+   showEdit(){
+      this.showDel=!this.showDel
+      this.editTitle= this.editTitle==='删除'?'完成':'删除'
+    },
+
+
+    //获取当前日期并设置样式
+
+    //该方法失效
+    getNowTimeSetStyle(dateObj){
+      this.nowTime=`${dateObj.month}月${dateObj.day}日`
+      
+    }
+
 
 
 
@@ -319,6 +369,8 @@ dealPeriod(data){
 
   mounted() {
     this.setDefaultData()
+
+    this.getNowTimeSetStyle(getSelectedDay()[0])
 
 try {
   const res = wx.getSystemInfoSync()
@@ -351,11 +403,11 @@ export default new MyFootprint();
 
 
 .list-goods{
-  margin:0 auto;
+  /* margin:0 auto; */
   margin-top:20cpx;
   /* position: relative; */
-  width:710cpx;
-  padding-bottom:130cpx;
+  width:750cpx;
+  padding-bottom:120cpx;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -364,10 +416,9 @@ export default new MyFootprint();
 }
 
 .panel{
-flex:0.333;
+width: 33.33%;
+padding: 0 10cpx;
 margin-bottom:20cpx;
-padding:0 10cpx;
-  
 }
 
 
@@ -382,23 +433,24 @@ margin-bottom:20cpx;
 .goods-price{
   margin-top:15cpx;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   flex-direction: row;
   align-items: center;
 }
 
+
+
+
 .now-price{
-  color:#ff0000;
-  letter-spacing: 2cpx;
-  font-size: 28cpx;
-  /* font-weight: bold; */
+font-size: 26cpx;
+font-weight: 550;
+color: #DC4D46;
 }
 
 .spec-cirle{
-   letter-spacing: 2cpx;
-  font-size: 28cpx;
+  font-size: 26cpx;
   font-weight: bold;
-  color: #80848f;
+  color: #C8C8C8;
 }
 
 .del-data{
@@ -468,6 +520,93 @@ margin-bottom:20cpx;
 
 
 
+.edit-text{
+  background: #fff;
+  width: 750cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+ 
+}
+
+.edit-text >text {
+margin-right:50cpx;
+font-size: 26cpx;
+font-weight: 400;
+color: #C1C1C1;
+margin-bottom:20cpx;
+}
+
+
+.edit-text >text.succe-text{
+  margin-right:50cpx;
+margin-bottom:20cpx;
+font-size: 26cpx;
+font-weight: 550;
+color: #222222;
+}
+
+.container > text,.container > view{
+  letter-spacing: 2cpx;
+}
+
+
+.del-btn-ver2{
+  width: 750cpx;
+  height: 83cpx;
+  background: #FFFFFF;
+  border-top: 1cpx solid #F0F0F0;
+  position: fixed;
+  bottom:0;
+  display: flex;
+justify-content: flex-end;
+align-items: center;
+flex-direction: row;
+}
+
+.view-btn{
+  width: 194cpx;
+height: 83cpx;
+background: linear-gradient(89deg, #F59625, #FDC127);
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 29cpx;
+font-weight: 500;
+color: #FFFFFF;
+}
+
+
+.tiem-now{
+font-size: 20cpx;
+font-weight: 400;
+color: #414141;
+letter-spacing: 8cpx;
+margin-top:51cpx;
+margin-top:22cpx;
+margin-left:20cpx;
+
+}
+
+
+.calendar{
+  background: #fff;
+  border-radius: 20cpx;
+  margin-top:21cpx;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -483,7 +622,8 @@ margin-bottom:20cpx;
         "van-icon": "/vant/icon/index",
         "van-submit-bar":"/vant/submit-bar/index",
           "van-checkbox": "/vant/checkbox/index",
-          "van-checkbox-group": "/vant/checkbox-group/index"
+          "van-checkbox-group": "/vant/checkbox-group/index",
+          "van-sticky": "/vant/sticky/index"
          
     }
   }

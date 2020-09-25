@@ -11,8 +11,12 @@
 }
 
 .elegant_choosed {
-    color: #000;
-    background-color: #e2e2e2;
+    /* color: #000;
+    background-color: #e2e2e2; */
+    /* ywl变更  */
+    background: #DD3A2C;
+    opacity: 0.5;
+    color: #fff;
 }
 
 .elegant_date-disable {

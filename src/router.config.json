@@ -340,7 +340,14 @@
             "url": "/cml/h5/my-vip-asl",
             "path": "/pages/my-vip-asl/my-vip-asl",
             "name": "我的asl会员"
+        },
+
+        {
+            "url": "/cml/h5/evaluation-list",
+            "path": "/pages/evaluation-list/evaluation-list",
+            "name": "评价晒单"
         }
+
 
 
     ]

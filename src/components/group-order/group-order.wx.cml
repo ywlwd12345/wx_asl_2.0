@@ -6,7 +6,7 @@
   <van-tab title="待付款"></van-tab>
   <van-tab title="待发货"></van-tab>
   <van-tab title="待收货"></van-tab>
-  <van-tab title="已收货"></van-tab>
+  <van-tab title="已完成"></van-tab>
 </van-tabs>
 
   <view class="panel-list">
@@ -101,10 +101,28 @@
       <view class="items4-right">
       <view class="items4-right-btn1"  c-bind:tap="operateOrder"   data-id="{{item.order_no}}"  
       c-if="{{item.status}}" hover-class="hover-btn">取消订单</view>
+
       <view class="items4-right-btn2" style="margin-left:20cpx;"  c-if="{{item.status===0}}" c-bind:tap="goPay"
-        hover-class="hover-btn"
-       data-orderNo="{{item.order_no}}">付款</view>
+        hover-class="hover-btn" data-orderNo="{{item.order_no}}">付款</view>
+     
+       <view class="items4-right-btn2" style="margin-left:20cpx;" 
+        c-if="{{item.status===3 || item.status===4  || item.status===2}}"  
+        data-id="{{item.order_no}}"  c-bind:tap="goOrderInfo"
+        hover-class="hover-btn">查看详情</view>
+
+           <view class="items4-right-btn1"  c-bind:tap="goOrderInfo"   data-id="{{item.order_no}}"  
+      c-if="{{item.status===5}}" hover-class="hover-btn">查看物流</view>
+
+       <view class="items4-right-btn2" style="margin-left:20cpx;" 
+        c-if="{{item.status===5 }}"  
+        data-id="{{item.order_no}}"  c-bind:tap="sureReceipt"
+        hover-class="hover-btn">确认收货</view>
+        
       </view>
+      <!-- items4-right  end-->
+
+
+      
 
       </view>
          <!-- items4 end-->
@@ -157,7 +175,10 @@
 
 <script>
 import cml from 'chameleon-api';
-import {getGroupOrder,groupOrderOperating} from '../../api/grouping.js' //引入拼团模块接口
+import {getGroupOrder,groupOrderOperating,confirmReceipt} from '../../api/grouping.js' //引入拼团模块接口
+
+import { tip} from '../../untils/processData'
+
 class GroupOrder implements GroupOrderInterface {
   props = {
     name: {
@@ -249,7 +270,7 @@ goPay(e){
     case '待收货':
          this.status=5
         break;
-    case '已收货':
+    case '已完成':
          this.status=6
         break;
       default:
@@ -294,9 +315,6 @@ dealStatusText(status){
         //  this.status=5
          return '已取消'
         break;
-
-          break;
-
           case 8:
         //  this.status=5
          return '已删除'
@@ -391,6 +409,37 @@ dealStatusText(status){
     },
     sure(){
       this.deleteOrder()
+    },
+
+  //确认收货
+    sureReceipt({target}){
+
+      const orderId=target.dataset.id
+
+      confirmReceipt({orderId: orderId}).then(res=>{
+        if(res.code){
+          tip('收货成功',3000)
+
+        }else{
+          tip(res.msg)
+
+        }
+
+      }).catch(err=>{
+
+      })
+
+
+
+
+    
+
+
+
+
+
+
+
     }
 
 
@@ -441,7 +490,7 @@ export default new GroupOrder();
     width:100%;
     display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   border-bottom: 2cpx solid #F3F3F3;
   padding-bottom: 20cpx;
@@ -454,6 +503,7 @@ export default new GroupOrder();
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  margin-left:20cpx;
 }
 
 
@@ -579,6 +629,8 @@ color: #ED4229;
 
 .order-number > text{
   font-size: 24cpx;
+font-weight: 400;
+color: #9A9A9A;
 }
 
 
