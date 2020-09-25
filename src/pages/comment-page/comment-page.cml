@@ -49,7 +49,7 @@ bind:delete="deleteImg"
 
 
    </view>
-   <view class="{{ flag && formData.comment? 'btn-custom':'btn-custom1'}}" c-bind:tap="submit" hover-class="hover-btn">
+   <view class="{{ flag || formData.comment? 'btn-custom':'btn-custom1'}}" c-bind:tap="submit" hover-class="hover-btn">
    发表评论
    </view>
   </view>
@@ -182,7 +182,7 @@ getGoodDetails({id:this.formData.goodsId}).then(res=>{
 
   submit(){
      this.formData.imgUrl=[]
-    if(!this.fileList.length || !this.formData.comment){
+    if(!this.fileList.length && !this.formData.comment){
       tip('请添加评论内容')
     }else{
       this.fileList.map(d=>{

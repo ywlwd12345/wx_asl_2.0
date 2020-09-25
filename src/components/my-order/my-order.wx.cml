@@ -120,9 +120,7 @@
       </view>
 
 
-       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成'}}" data-orderid="{{item.orderId}}"
-     
-     
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成' || item.statusMsg==='已评价'}}" data-orderid="{{item.orderId}}"
       c-catch:click="goComment($event)">
       <van-button round type="info" size="small" custom-class="button_payment">评价</van-button></view>
       
