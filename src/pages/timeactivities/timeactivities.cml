@@ -14,7 +14,7 @@
     </view>
 
     <view style="padding:0 30cpx;margin-top: -100cpx;">
-      <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.goodsId)">
+      <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.id)">
         <view class="lift">
           <image src="{{item.thumb}}"></image>
         </view>
