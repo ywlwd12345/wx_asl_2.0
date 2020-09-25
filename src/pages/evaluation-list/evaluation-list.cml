@@ -2,21 +2,22 @@
  <view class="wrap-2">
    <nav-ver2  title="{{'评价晒单'}}"></nav-ver2>
 
-   <view class="panel">
+   <view class="panel"  
+        c-for="{{listData}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="goodsId">
 
-   <view class="left"></view>
+   <image src="{{'https://'+item.thumb}}" class="left"></image>
+
    <view class="right">
-   <text>逩腾剃须刀电动刮胡刀男士迷你小巧便携双刀头水 洗车载USB充电式</text>
-
+   <text>{{item.goodsName}}</text>
 <view class="btn-wrap">
 
-<view class="view-btn" hover-class="hover-btn">评价</view>
-
-
+<view class="view-btn" hover-class="hover-btn" data-id="{{item.goodsId}}"
+ c-bind:tap="goPage">评价</view>
 </view>
 
-
-   
    </view>
 
 
@@ -36,10 +37,15 @@
 </template>
 
 <script>
+import cml from 'chameleon-api';
+import {commentGoodsList} from '../../api/grouping'
+import store from '../../store'
+import {tip} from '../../untils/processData'
 
 class EvaluationList   {
 
   data = {
+    listData:[]
   }
 
   computed = {
@@ -49,6 +55,26 @@ class EvaluationList   {
   }
 
   methods = {
+  getData(){
+    const id=store.state.globalId.orderId
+    commentGoodsList({orderId:id}).then(res=>{
+    if(res.code){
+      this.listData=res.data
+    }
+
+
+    }).catch(err=>{})
+
+
+
+
+  },
+  goPage({currentTarget}){
+     store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
+     cml.navigateTo({path: '/pages/comment-page/comment-page'})  
+
+  }
+
   }
 
   beforeCreate(query) {
@@ -64,6 +90,7 @@ class EvaluationList   {
   }
 
   mounted() {
+    this.getData()
   }
 
   onHide() {
@@ -143,18 +170,18 @@ color: #222222;
   letter-spacing: 2cpx;
 }
 
-
 .btn-wrap{
   width: 100%;
    display: flex;
 justify-content: flex-end;
 align-items: center;
 flex-direction: row;
-
-
-
-
 }
+
+
+
+
+
 
 
 </style>
