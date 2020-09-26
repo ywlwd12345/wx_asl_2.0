@@ -547,7 +547,7 @@ class Details implements DetailsInterface {
     //获取属性数据
     getStyleData(){
       this.show=false
-      cml.navigateTo({
+      cml.redirectTo({
         path: '/pages/confirm-order/confirm-order',
         query:{gid:this.allDetails.goodsId,attr:this.cartdata.spec}
       })

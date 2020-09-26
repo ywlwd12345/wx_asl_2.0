@@ -244,19 +244,19 @@ const imgArrayOrder=[
  {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfk@2x.png',
    text:'待付款',
-   type:3
+   type:1
 
-},
-{
-   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfh@2x.png',
-   text:'待发货',
-   type:1  ,
-   num:''
 },
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dsh@2x.png',
    text:'待收货',
    type:2  ,
+   num:''
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfh@2x.png',
+   text:'已完成',
+   type:3  ,
    num:''
 }
 
@@ -1005,13 +1005,13 @@ showPop(){
             })
         this.OrderCarousel=data
        this.img =this.img.map(d=>{
-          if(d.type===1){
+          if(d.type===3){
             //设置待发货角标
           d.num=data.toBeDelivered
           }else if(d.type===2){
               //设置待收货角标
                d.num=data.toBeReceived
-          }else if(d.type===3){
+          }else if(d.type===1){
              d.num=data.toBePay
 
           }else{

@@ -4,9 +4,11 @@
  
 <van-tabs active="{{ active }}" bind:click="onChange" border="{{false}}">
   <van-tab title="全部"></van-tab>
-  <van-tab title="待发货"></van-tab>
-  <van-tab title="待收货"></van-tab>
+  <!--<van-tab title="待发货"></van-tab>-->
   <van-tab title="待付款"></van-tab>
+  <van-tab title="待收货"></van-tab>
+  <van-tab title="已完成"></van-tab>
+  <van-tab title="已取消"></van-tab>
 </van-tabs>
 
   <view class="panel-list">
@@ -24,7 +26,7 @@
           data-idx="{{i}}"
         >
       <view class="panel">
-      <view class="items items1" style="border-bottom: 1cpx solid #eee;padding-bottom: 10cpx;">
+      <view class="items items1" style="border-bottom: 1cpx solid #eee;padding-bottom: 10cpx;justify-content: space-between;">
         <view class="order-number"><text class="order-textid">订单编号:{{item.orderId}}</text></view>
         <view class="status"><text class="spec-order-status">{{item.statusMsg}}</text></view>
       </view>
@@ -38,26 +40,21 @@
             <view>
               <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;"></image>
             </view>
-            <view style="width:300cpx;">
-              <text class="spec-order-goodsName">{{items.goodsName}}</text> 
-              <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
-            </view>
-            <view >
-              <text class="spec-order-price">￥{{items.price}}</text> 
-              <text class="spec-order-totalCount">x{{items.totalCount}}</text>
-            </view>
-          </view>
-          <view class="items3">
-            <view class="top">
-              <text class="spec-total">总价￥{{item.totalMoney}}</text>
-              <text style="margin-left:10cpx;" class="spec-order-text" ></text>
-              <text class="now-price">应付款:￥{{item.totalMoney}}</text>
-            </view>
-            <view class="bottom"  c-if="{{item.pay_status}}">
-              <text class="spec-order-text">实付总额:</text>
-              <text class="now-price">{{item.real_money}}</text>
+            <view style="margin-left: 20cpx;display: flex;flex-direction: column;justify-content: space-between;width: 70%">
+              <view>
+                <text class="spec-order-goodsName">{{items.goodsName}}</text> 
+                <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
+              </view>
+              <view style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+                <text class="spec-order-totalCount">x{{items.totalCount}}</text>
+                <view style="display: flex;flex-direction: row;align-items: center;">
+                  <text style="font-size:23cpx;color: #ED4229;">￥</text>
+                  <text class="spec-order-price">{{items.price}}</text>
+                </view>
+              </view>
             </view>
           </view>
+
        <!--    <view class="btn" c-if="{{item.statusMsg==='已完成'}}"  data-orderid="{{item.orderId}}"
       data-id="{{items.goodsId}}" c-catch:click="goComment($event)">
       <van-button round type="default" size="small" >去评价</van-button>
@@ -68,10 +65,22 @@
       </cell>
 
 
+      <view class="items3">
+        <view class="top">
+          <!--<text class="spec-total">总价￥{{item.totalMoney}}</text>-->
+          <text class="spec-total">共计{{item.totalCount}}件商品</text>
+          <text style="margin-left:10cpx;" class="spec-order-text" ></text>
+          <text class="now-price">实付款:</text>
+          <span style="font-size:30cpx;">￥{{item.totalMoney}}</span>
+        </view>
+        <!--<view class="bottom"  c-if="{{item.pay_status}}">
+          <text class="spec-order-text">实付总额:</text>
+          <text class="now-price">{{item.real_money}}</text>
+        </view>-->
+      </view>
 
 
-
-      <view class="items items1" style="align-items: center;border-top: 2cpx solid #eee;">
+      <view class="items items1" style="align-items: center;border-top: 2cpx solid #eee;justify-content: space-between;">
 
       <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
       data-id="{{item.id}}"
@@ -260,11 +269,13 @@ class MyOrder implements MyOrderInterface {
     onChange(e){
       console.log(e)
       if(e.detail.index==1){
-        this.statuss=2
+        this.statuss=1
       }else if(e.detail.index==2){
         this.statuss=3
       }else if(e.detail.index==3){
-         this.statuss=1
+         this.statuss=5
+      }else if(e.detail.index==4){
+         this.statuss=6
       }else{
         this.statuss=''
       }
@@ -661,11 +672,11 @@ class MyOrder implements MyOrderInterface {
   mounted() {
     this.active=this.type
       if(this.type==1){
-        this.statuss=2
+        this.statuss=1
       }else if(this.type==2){
         this.statuss=3
       }else if(this.type==3){
-         this.statuss=1
+         this.statuss=5
       }else{
         this.statuss=''
       }
@@ -718,7 +729,7 @@ export default new MyOrder();
 .items{
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top:20cpx;
   padding-top: 10cpx;
   padding-bottom: 5cpx;
@@ -734,13 +745,14 @@ export default new MyOrder();
 }
 
 .items3{
-  padding:10cpx!important;
+  border-top: 1px solid #eee;
+  padding-top: 20cpx;
   width: 100%;
    display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  margin-top: -40cpx;
+
 
 }
 .top{
@@ -830,7 +842,7 @@ color: #ED4229;
 }
 .spec-total{
   font-size: 23cpx;
-  color: #D2D2D2;
+  color: #222222;
   margin-right: 20cpx;
 }
 .buttons{

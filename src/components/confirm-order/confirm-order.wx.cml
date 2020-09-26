@@ -230,7 +230,7 @@ class ConfirmOrder implements ConfirmOrderInterface {
           res.data[0].addressid=this.address.id
           cml.setStorage('payData',res.data[0])
           this.orderlist=JSON.parse(this.orderlist)
-        cml.navigateTo({
+        cml.redirectTo({
           path: '/pages/payment/payment',
           query:{osn:res.data[0].totalMoney}
         })

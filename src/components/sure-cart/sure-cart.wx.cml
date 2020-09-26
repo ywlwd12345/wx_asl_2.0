@@ -56,7 +56,7 @@
 <text class="spec-text">{{ total/100}}元</text>
 </view>
 
-<view class="goods-total">
+<view class="goods-total" style="margin-bottom:110cpx;">
 <text class="spec-text">运费</text>
 <text class="spec-text">{{ 0}}元</text>
 </view>
@@ -110,12 +110,35 @@ class SureCart implements SureCartInterface {
   }
 
   computed = {
+    f2() {
+        return store.state.newaddress
+      }
   }
 
   watch = {
+    //监听数据变化  点击新地址进行切换
+    f2(curVal, oldVal) {
+      this.newAddress()
+    }
   }
 
   methods = {
+    newAddress(){
+      cml.getStorage('address').then((value)=>{
+        console.log('更改的地址信息',value)
+        if(value){
+          this.address.receiver=value.receiver
+          this.address.mobile=value.mobile
+          this.address.province=value.province
+          this.address.city=value.city
+          this.address.district=value.district
+          this.address.place=value.place
+          this.address.id=value.id
+          cml.removeStorage('payData')
+        }
+      })
+      store.commit('changeNewaddress',true)
+    },
     //获取购物车列表
   getCartData(){
     let uname
@@ -184,7 +207,7 @@ class SureCart implements SureCartInterface {
         if(res.code){
           console.log("提交结果",res)
           cml.setStorage('payData',res.data[0])
-          cml.navigateTo({
+          cml.redirectTo({
             path: '/pages/payment/payment',
             query:{osn:res.data[0].totalMoney}
             })
@@ -201,8 +224,9 @@ class SureCart implements SureCartInterface {
     },
     goAddress(){
        cml.navigateTo({
-  path: '/pages/address/address'
-  })
+          path: '/pages/address/address',
+          query:{add:1}
+        })
     }
   }
 
@@ -247,7 +271,7 @@ export default new SureCart();
    font-size:28cpx;
 }
 
-.address{
+.address{ 
   width: 750cpx;
   padding:10cpx 0;
   background: #fff;
