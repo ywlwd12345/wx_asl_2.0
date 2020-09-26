@@ -58,8 +58,10 @@ class EvaluationList   {
   getData(){
     const id=store.state.globalId.orderId
     commentGoodsList({orderId:id}).then(res=>{
-    if(res.code){
+    if(res.code && res.data.length){
       this.listData=res.data
+    }else{
+      tip('无数据')
     }
 
 
