@@ -110,22 +110,18 @@ block bind:click="submit">提交</van-button>
         <view class="title_left">
           <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
           <view class="withdrawal_title">提现币种</view>
-          <view class="withdrawal_title" style="padding-left:30cpx;">{{aslName}}</view>
         </view>
-        <view style="width: 40rpx;">
-          <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/sl@2x.png' style="width: 24cpx;height: 24cpx;" c-if="{{add==0}}" />
-          <image src='https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/xl@2x.png' style="width: 24cpx;height: 24cpx;" c-else />
-        </view>
+        <view class="values">{{aslName}}</view> 
       </view>
       <view class="classification">
         <van-radio-group value="{{ radio }}" bind:change="onChange">
-          <van-radio name="1" checked-color="#DD392B" icon-size="15" label-class="radio_text">现金币</van-radio>
+          <van-radio name="1" checked-color="#DD392B" icon-size="15" label-class="{{addcur==1?'radio_textto':'radio_text'}}">现金币</van-radio>
         </van-radio-group>
         <van-radio-group value="{{ radio }}" bind:change="onChange">
-          <van-radio name="2" checked-color="#DD392B" icon-size="15" label-class="radio_text">ASL2</van-radio>
+          <van-radio name="2" checked-color="#DD392B" icon-size="15" label-class="{{addcur==2?'radio_textto':'radio_text'}}">ASL2</van-radio>
         </van-radio-group>
         <van-radio-group value="{{ radio }}" bind:change="onChange">
-          <van-radio name="3" checked-color="#DD392B" icon-size="15" label-class="radio_text">ASL5</van-radio>
+          <van-radio name="3" checked-color="#DD392B" icon-size="15" label-class="{{addcur==3?'radio_textto':'radio_text'}}">ASL5</van-radio>
         </van-radio-group>
       </view>
     </view>
@@ -195,8 +191,9 @@ class PutCoin implements PutCoinInterface {
     coin:'',
     coinData:{},
     viewPortHeight:'',
-    aslName:'',
+    aslName:'请选择',
     add:0,
+    addcur:''
 
   }
 
@@ -219,7 +216,13 @@ class PutCoin implements PutCoinInterface {
   },
     onChange(e){
       this.radio=e.detail
-      console.log(this.radio)
+      this.addcur=this.radio
+       console.log(this.addcur)
+       if(this.addcur==1){
+         console.log('等于1')
+       }else if(this.addcur==2){
+          console.log('等于2')
+       }
       if(this.radio==1){
         this.aslName='现金币'
       }else if(this.radio==2){
@@ -354,7 +357,7 @@ export default new PutCoin();
 }
 .value_title{
   font-size: 28cpx;
-  color: #999999;
+  color: #222222;
 }
 .values{
   font-size: 28cpx;
@@ -367,6 +370,10 @@ export default new PutCoin();
 .radio_text{
   font-size: 22cpx;
   color: #999999;
+}
+.radio_textto{
+  font-size: 22cpx;
+  color: #f44336;
 }
 .classification{
   display: flex;
