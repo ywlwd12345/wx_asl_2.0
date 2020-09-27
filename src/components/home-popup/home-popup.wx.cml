@@ -4,10 +4,11 @@
 
  
 
-  <view c-bind:tap="jumpType" data-item="{{ popData }}"  class="wrap-pop" c-if="{{show}}">
+  <view   class="wrap-pop" c-if="{{show}}">
    <view class="icon"><van-icon name="close"  size="30" color="#fff" bind:click="onClose"/></view>
 
-   <image src="{{'https://'+ popData.icon}}" style="width:700cpx;height:700cpx;" class="flash"></image>
+   <image src="{{'https://'+ popData.icon}}" style="width:700cpx;height:700cpx;" class="flash" 
+   c-bind:tap="jumpType" data-item="{{ popData }}"></image>
   </view>
  
  
