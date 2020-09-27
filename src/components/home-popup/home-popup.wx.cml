@@ -1,0 +1,252 @@
+<template>
+  <view >
+  <!--<van-popup show="{{show}}" bind:close="onClose" z-index="{{9999}}" >-->
+
+ 
+
+  <view c-bind:tap="jumpType" data-item="{{ popData }}"  class="wrap-pop" c-if="{{show}}">
+   <view class="icon"><van-icon name="close"  size="30" color="#fff" bind:click="onClose"/></view>
+
+   <image src="{{'https://'+ popData.icon}}" style="width:700cpx;height:700cpx;" class="flash"></image>
+  </view>
+ 
+ 
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+import store from '../../store'
+import { homePopup } from '../../api/grouping'
+import { tip} from '../../untils/processData'
+
+class HomePopup implements HomePopupInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+
+    popData:{},
+    show:false
+
+
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+  getData(){
+
+    homePopup({}).then(res=>{
+      console.log(res,55566)
+      if(res.code && res.data.length){
+        this.popData=res.data[0]
+        this.show=true
+      }
+
+
+    }).catch(err=>{})
+
+  },
+  onClose(){
+    this.show=false
+  },
+
+   // 跳转指定类型
+    jumpType({currentTarget}){
+      const item=currentTarget.dataset.item
+      if(item.type===1){
+        //执行跳转商品详情
+          cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:item.key1}
+  })
+      }else if(item.type===2){
+         this.goClassify(item.key3,item.key2)
+      }else{
+
+      }
+
+
+
+    },
+
+    //去分类
+  goClassify(id,pid){
+
+    // let pid=e.currentTarget.dataset.pid
+    // let name=e.currentTarget.dataset.name
+    let sort=10
+  cml.navigateTo({
+  path: '/pages/classify/classify',
+  query:{pid:pid,name:id,sort:sort}
+  })
+},
+
+
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+    this.getData()
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new HomePopup();
+</script>
+
+<style scoped >
+.wrap-pop{
+  width: 750cpx;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, .7);
+  position: fixed;
+  z-index: 9999;
+  top:0;
+
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+
+
+}
+.icon{
+  /* width:750cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center; */
+
+/* position: absolute;
+z-index: 99999;
+top:-100cpx; */
+
+align-self:flex-end;
+margin-bottom:30cpx;
+margin-right:20cpx;
+
+
+
+}
+
+.flash{
+
+  animation: rubberBand 2s ease-out 1;
+  
+}
+
+
+@-webkit-keyframes rubberBand {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    -webkit-transform: scale3d(1.25, 0.75, 1);
+    transform: scale3d(1.25, 0.75, 1);
+  }
+
+  40% {
+    -webkit-transform: scale3d(0.75, 1.25, 1);
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.15, 0.85, 1);
+    transform: scale3d(1.15, 0.85, 1);
+  }
+
+  65% {
+    -webkit-transform: scale3d(0.95, 1.05, 1);
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  75% {
+    -webkit-transform: scale3d(1.05, 0.95, 1);
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+@keyframes rubberBand {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    -webkit-transform: scale3d(1.25, 0.75, 1);
+    transform: scale3d(1.25, 0.75, 1);
+  }
+
+  40% {
+    -webkit-transform: scale3d(0.75, 1.25, 1);
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  50% {
+    -webkit-transform: scale3d(1.15, 0.85, 1);
+    transform: scale3d(1.15, 0.85, 1);
+  }
+
+  65% {
+    -webkit-transform: scale3d(0.95, 1.05, 1);
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  75% {
+    -webkit-transform: scale3d(1.05, 0.95, 1);
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+       "van-popup": "/vant/popup/index",
+        "van-icon": "/vant/icon/index"
+
+    }
+  }
+}
+</script>

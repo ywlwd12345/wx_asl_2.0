@@ -59,6 +59,12 @@
 <recommende-pop ></recommende-pop>
 </view>
 <!-- 推荐弹框 end-->
+
+<!--  首页弹屏-->
+<view class="home-popup" c-if="{{isShowRecommendPop}}">
+<home-popup></home-popup>
+</view>
+<!--  首页弹屏 end -->
   <c-tabbar 
     c-bind:onclick='handleTabbarClick' 
     c-model="{{currentComp}}"  
@@ -694,6 +700,7 @@ export default new Index();
       "demo-com": "/components/demo-com/demo-com",
       "vant": "/components/vant/vant",
       "home": "/components/home/home",
+      "home-popup": "/components/home-popup/home-popup",
       "shopping-cart": "/components/shopping-cart/shopping-cart",
       "leaderboard": "/components/leaderboard/leaderboard",
       "business-school": "/components/business-school/business-school",
