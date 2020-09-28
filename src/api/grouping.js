@@ -615,3 +615,20 @@ export function commentGoodsList(data) {
         url: "/app/tobecomment/goods"
     });
 }
+
+
+
+/**
+ * @desc 首页弹屏api
+ * @url /app/indexpush
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function homePopup(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/indexpush"
+    });
+}

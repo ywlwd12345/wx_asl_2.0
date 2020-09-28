@@ -103,8 +103,6 @@ class GroupPay implements GroupPayInterface {
 
    },
   fail (res) { 
-
-   
     cml.showToast({
         message:'支付失败',
         duration: 2000

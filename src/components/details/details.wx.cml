@@ -547,7 +547,7 @@ class Details implements DetailsInterface {
     //获取属性数据
     getStyleData(){
       this.show=false
-      cml.redirectTo({
+      cml.navigateTo({
         path: '/pages/confirm-order/confirm-order',
         query:{gid:this.allDetails.goodsId,attr:this.cartdata.spec}
       })
@@ -1534,11 +1534,12 @@ height: 150cpx;
 background:pink;
 border-radius: 8cpx;
 margin-top:20cpx;
+margin-right: 10cpx;
 }
 
 .eval-img-wrap{
   display: flex;
-  justify-content:space-between;
+  justify-content:flex-start;
   align-items: flex-start;
   flex-direction:row;
   flex-wrap: wrap;

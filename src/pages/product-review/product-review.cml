@@ -45,10 +45,10 @@
    <text>{{item.comment}}</text>
    <view class="desc-mid-img">
    <view class="panel-img"  c-for-index="i"
-        c-for="{{ imgs }}"
-          c-for-item="item"
+        c-for="{{ item.imgs }}"
+          c-for-item="itemImg"
         c-key="i" >
-         <image src="{{item}}" style="width:155cpx;height:155cpx;border-radius:8cpx;" ></image>
+         <image src="{{itemImg}}" style="width:155cpx;height:155cpx;border-radius:8cpx;" ></image>
         </view>
    </view>
   <!-- desc-middle end-->
@@ -127,6 +127,8 @@ class ProductReview   {
         });
       goodsComments(this.formData).then(res=>{
         wx.hideToast();
+
+        console.log(res,'评论数据')
         if(res.code && res.data.length){
           this.listData=this.listData.concat(res.data)
         }else{
@@ -292,7 +294,7 @@ border-bottom: 4cpx solid  #EFEFEF;
 .desc-mid-img{
   margin-top:13cpx;
   display: flex;
-  justify-content:space-between;
+  justify-content:flex-start;
   align-items: center;
   flex-direction: row;
   flex-wrap: wrap;
@@ -302,9 +304,10 @@ border-bottom: 4cpx solid  #EFEFEF;
 .panel-img{
 width: 155cpx;
 height: 155cpx;
-background:pink;
+/* background:pink; */
 border-radius: 8cpx;
 margin-bottom:10cpx;
+margin-right: 10cpx;
 }
 
 .like{
