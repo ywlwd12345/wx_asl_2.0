@@ -12,8 +12,7 @@
   c-key="i"
 >
   <view class="detail" c-if="{{false}}">
-    <i-card title="{{item.goodsName}}"  full="{{true}}" thumb="{{item.thumb}}" 
- extra="{{item.price+'x'+item.totalCount}}">
+    <i-card title="{{item.goodsName}}"  full="{{true}}" thumb="{{item.thumb}}" extra="{{item.price+'x'+item.totalCount}}">
       <view slot="content" class="wrap">
         <view class="order-name spec-order-text"><text>订单总价</text></view>
         <view class="order-price spec-order-text"><text>{{item.totalMoney}}</text></view>    
@@ -23,38 +22,42 @@
 
   <view class="details-card" c-bind:tap="goDetails" data-gid="{{item.goodsId}}">
     <view class="panel-top">
-      <view class="panel-img" style="margin-left:50cpx;">
-        <image src="{{item.thumb}}" style="width:150cpx;height:150cpx;border-radius:20cpx;"></image>
+      <view class="panel-img">
+        <image src="{{item.thumb}}" style="width:150cpx;height:150cpx;"></image>
       </view>
     
-    <view class="panel-text" style="width:440cpx;">
+    <view class="panel-text">
       <view><text style="font-size:26cpx;">{{item.goodsName}}</text></view>
       <view class="price-bottom">
-        <text class="details-text">￥{{item.price}}</text>
-        <text >x{{item.totalCount}}</text>
+        <view>
+          <text style="font-size: 20cpx;color:#222222;padding-left: 6cpx;">x{{item.totalCount}}</text>
+          <text class="details-text">￥{{item.price}}</text>
+        </view>
+        <!--操作-->
+        <view>
+          <view c-if="{{item.statusNum==2||item.statusNum==3||item.statusNum==5}}" c-bind:tap="returnGood">
+            <view class="operation">申请退货</view>
+          </view>
+
+          <view c-if="{{item.statusNum==6}}">
+            <view class="operation">已取消</view>
+          </view>
+
+          <view c-if="{{item.statusNum==7}}">
+            <view class="operation">退货中</view>
+          </view>
+
+          <view c-if="{{item.statusNum==8}}">
+            <view class="operation">同意退货</view>
+          </view>
+
+          <view c-if="{{item.statusNum==9}}">
+            <view class="operation">已退货</view>
+          </view>
+        </view>
       </view>
     </view>
     </view>
-  </view>
-
-  <view style="margin:12cpx;" c-if="{{item.statusNum==2||item.statusNum==3||item.statusNum==5}}" c-bind:tap="returnGood">
-    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">申请退货</van-button>
-  </view>
-
-  <view style="margin:12cpx;" c-if="{{item.statusNum==6}}">
-    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">已取消</van-button>
-  </view>
-
-  <view style="margin:12cpx;" c-if="{{item.statusNum==7}}">
-    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">退货中</van-button>
-  </view>
-
-  <view style="margin:12cpx;" c-if="{{item.statusNum==8}}">
-    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">同意退货</van-button>
-  </view>
-
-  <view style="margin:12cpx;" c-if="{{item.statusNum==9}}">
-    <van-button round type="info" size="small" color="#f44336" style="margin-left: 75%;">已退货</van-button>
   </view>
 
   <view c-if="{{detailsData.status==='已发货'}}">
@@ -70,8 +73,8 @@
   </view>
 </cell>
   <view class="panel-bottom">
-  <text>订单总价</text>
-  <text class="details-text">￥{{detailsData.totalMoney}}</text>
+  <text style="font-size:26cpx;color:#222222;">订单总价</text>
+  <text class="details-text" style="font-size:34cpx;">￥{{detailsData.totalMoney}}</text>
   </view>
 </view>
    <!--detail end-->
@@ -94,10 +97,20 @@
 
    <!--detail-info end-->
    <view class="harvest-address">
-    <i-card   full="{{true}}"  i-class="cancel-border" >
+    <i-card   full="{{true}}"   i-class="cancel-border">
+      <view slot="content" >
+        <view class="info-name"><text class="spec-order-text">收货地址</text></view>
+        <view  class="wrap-info">
+          <view  class="spec-order-text">{{detailsData.receiver}}
+            <span style="color:#9A9A9A;font-size:25cpx;padding-left:40cpx;display: contents;">{{detailsData.mobile}}</span>
+          </view>
+          <text  class="spec-order-text" style="color:#9A9A9A;">{{detailsData.province}}{{detailsData.city}}{{detailsData.district}}{{detailsData.place}}</text>
+        </view>
+      </view>
+    </i-card>
+    <!--<i-card   full="{{true}}"  i-class="cancel-border" >
     <view slot="content" class="harvest-wrap">
     <view class="address-logo">
-    <!--<van-icon name="location" size="30px" color="#f4211a" />-->
      <image src="{{addressUrlIcon}}" style="width:60cpx;height:60cpx;"></image>
     </view>
      <view class="address-info" style="width:550cpx;">
@@ -105,7 +118,7 @@
      <view class="user-address"><text  class="spec-order-text">{{detailsData.province}}{{detailsData.city}}{{detailsData.district}}{{detailsData.place}}</text></view>
     </view>
     </view>
-</i-card>   
+</i-card>--> 
    </view>
     <!--harvest-address end-->
 <!-- 暂时隐藏-->
@@ -167,6 +180,7 @@ color="linear-gradient(to right, #e73827, #f85032)"
 </template>
 
 <script>
+import { dealStoreTitleName } from '../../untils/processData'
 import cml from 'chameleon-api';
 import {getOrderData,getOrderNumber, transportInfo,returnsGoodsToOid,modifyState} from '../../api/index'
 import {addressUrlIcon} from '../../untils/icon.js'
@@ -273,7 +287,8 @@ class OrderDetails implements OrderDetailsInterface {
              res.data[0].createTime=res.data[0].createTime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
              res.data[0].createTime=res.data[0].createTime.substring(0,res.data[0].createTime.length-7)
             res.data[0].goodsInfo.forEach(element => {
-              element.thumb='http://'+element.thumb             
+              element.thumb='http://'+element.thumb
+              element.goodsName=dealStoreTitleName(element.goodsName,25)            
             });
             this.detailsData=res.data[0]
             // this.pay_status=res.data.pay_status
@@ -422,20 +437,27 @@ export default new OrderDetails();
 <style scoped>
 .details-card{
   background: #fff;
-  padding:30cpx 0;
-}
+  padding:30cpx;
+  margin-top: 20cpx;
+  border-radius: 20cpx;
+  }
 .price-bottom{
-    margin-top:100cpx;
+    margin-top:20cpx;
    display: flex;
   flex-direction: row;
   justify-content:space-between;
-  align-items:center;
+  align-items: flex-end;
 
 }
 
 .panel-text{
-    margin-left:50cpx;
-   letter-spacing: 2cpx;
+    margin-left:30cpx;
+    letter-spacing: 2cpx;
+    width: 520cpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150rpx;
 }
 .panel-top{
   display: flex;
@@ -451,14 +473,20 @@ export default new OrderDetails();
   flex-direction: row;
   justify-content:space-between;
   align-items:center;
+  margin-top: 25cpx;
+  border-radius: 18cpx;
 }
 .details-text{
   letter-spacing: 2cpx;
-color:#ff410f;
+  color:#ff410f;
+  font-size: 26cpx;
+  margin-top: 10cpx;
 }
 
 .spec-order-text{
    letter-spacing: 2cpx;
+   font-size: 26cpx;
+    margin-bottom: 20cpx;
 }
 
 .trans-panel{
@@ -614,6 +642,7 @@ width: 750cpx;
 
 .cancel-border{
 position: static!important;
+border-radius: 20cpx;
 }
 .items{
   padding-top: 7cpx;
@@ -630,14 +659,20 @@ position: static!important;
     justify-content:flex-end;
 
 }
-
+.operation{
+    border: 1cpx solid #DE3A2C;
+    border-radius: 30cpx;
+    font-size: 26cpx;
+    color: #DE3A2C;
+    padding: 5cpx 30cpx;
+}
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-       "nav":"/components/nav/nav",
+       "nav":"/components/nav-ver2/nav-ver2",
        "van-nav-bar": "/vant/nav-bar/index",
        "van-icon": "/vant/icon/index",
        "i-card": "/iview/card/index",

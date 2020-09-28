@@ -132,6 +132,10 @@
        <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成' || item.statusMsg==='已评价'}}" data-orderid="{{item.orderId}}"
       c-catch:click="goComment($event)">
       <van-button round type="info" size="small" custom-class="button_payment">评价</van-button></view>
+
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已取消'}}" data-orderid="{{item.orderId}}"
+      c-catch:click="goOrderDetails(item.orderId)">
+      <van-button round type="info" size="small" custom-class="button_payment">查看详情</van-button></view>
       
       <view style="margin-left:10cpx;" c-if="{{item.status==1}}" c-bind:tap="getNumber(item.orderId)" data-id="{{item.id}}" >
       <van-button round type="info" size="small" custom-class="button_payment">付款</van-button></view>
