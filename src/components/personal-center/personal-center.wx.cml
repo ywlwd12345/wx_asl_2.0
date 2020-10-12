@@ -1036,9 +1036,9 @@ showPop(){
   },
   //去我的会员页面
   goMyVip(){
-    // cml.navigateTo({
-    //         path: '/pages/my-vip-asl/my-vip-asl',
-    //       }) 
+      cml.navigateTo({
+            path: '/pages/my-vip-asl/my-vip-asl',
+          }) 
 
 
   }

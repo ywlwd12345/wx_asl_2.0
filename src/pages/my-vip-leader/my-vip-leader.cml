@@ -1,5 +1,5 @@
 <template>
-  <view class="container">
+<view class="container">
   <view class="head" >
   <view class="head-nav"  style="margin-top:{{ menuButton.top+menuButton.height/3}}px;">
   <view c-bind:tap="goBack" hover-class="hover-btn" > 
@@ -17,7 +17,7 @@
   <text>12345678900</text>
   <text>2020-8-31  到期时间></text>
   </view>
-  <view class="view-btn" hover-class="hover-btn">立即升级</view>
+  <view class="view-btn" hover-class="hover-btn" c-bind:tap="showPop">立即升级</view>
   </view>
 
   <!-- user-level end --> 
@@ -51,10 +51,10 @@
 <view class="level-c-wrap"  c-for="{{levelData}}"
           c-for-item="item"
             c-for-index="i"
-          c-key="text">
+          c-key="text"  style="margin-bottom:{{i<8?40:0}}cpx;">
  <image src="{{item.img}}" style="width:75cpx;height:74cpx;"></image>
 
- <text>{{item.text}}</text>
+ <text >{{item.text}}</text>
 
 </view>
 
@@ -62,7 +62,7 @@
 
 
   
-  
+    <vip-pop-tip c-if="{{show}}" obj="{{obj}}" c-bind:onshow="onshow"></vip-pop-tip>
   
   
   </view>
@@ -70,36 +70,70 @@
 
 <script>
 
+
+
 import cml from 'chameleon-api';
 import store from '../../store'
 import {  } from '../../api/grouping'
 import { tip} from '../../untils/processData'
 import { backIcon,avatar} from '../../untils/icon'
 
+
+
 const levelData=[
   {
-  text:'分享收益',
-  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/asl-vip/fxnsy@2x.png'
+  text:'分享拿收益',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/fxnsy@2x.png'
 },
  {
   text:'拥有创富系统',
-  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/asl-vip/yycfxt@2x.png'
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/yycfxt@2x.png'
 },
  {
   text:'教育系统',
-  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/asl-vip/jyxt@2x.png'
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/jyxt@2x.png'
 },
  {
   text:'自购省',
-  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/asl-vip/zgs@2x.png'
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/zgs@2x.png'
+},
+ {
+  text:'共享平台利润',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/gxptlr@2x.png'
+},
+
+ {
+  text:'享受平台分红',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/xsptfh@2x.png'
+},
+ {
+  text:'产品实物回报',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/cpswhb@2x.png'
+}, {
+  text:'分享收益',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/fxsy@2x.png'
+},
+ {
+  text:'推荐店主获得40%-60%奖励',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/tjdz@2x.png'
+},
+ {
+  text:' 一级消费利润15%',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/yjxf@2x.png'
+},
+ {
+  text:'二级消费利润10%',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/ejxf@2x.png'
 }
+
 
 ]
 
-class MyVipAsl   {
+class MyVipLeader   {
 
   data = {
-    menuButton:{  
+
+      menuButton:{  
 width: 87,
 height: 32,
 left: 278,
@@ -109,7 +143,12 @@ bottom: 56
 },
 backIcon:backIcon,
 avatar:avatar,
-levelData:levelData
+levelData:levelData,
+show:false,
+obj:{
+  url:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/other/pop2.png',
+  text:'请直接联系所属推荐人或致电4008567085咨询客服'
+}
   }
 
   computed = {
@@ -119,13 +158,13 @@ levelData:levelData
   }
 
   methods = {
-  setNav(){
-
-  
-
-}
-
-
+        showPop(){
+      this.show=true
+    },
+    onshow({detail}){
+      this.show=detail.value
+      // console.log(e,'65897456')
+    }
   }
 
   beforeCreate(query) {
@@ -141,7 +180,6 @@ levelData:levelData
   }
 
   mounted() {
-    // console.log(store.state.menuButton,'哈哈猪123456')
   }
 
   onHide() {
@@ -154,10 +192,12 @@ levelData:levelData
   }
 }
 
-export default new MyVipAsl();
+export default new MyVipLeader();
 </script>
 
 <style scoped>
+
+
 .container{
   width:750cpx;
   height: 100vh;
@@ -212,7 +252,7 @@ text-align: center;
   height: 190cpx;
  background-repeat:no-repeat;
   margin:0 auto;
-  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/asl-vip/aslbj@2x.png');
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/bj@2x.png');
   background-size:contain;
   left: 50%;
   transform: translateX(-50%);
@@ -332,17 +372,15 @@ color: #FFFFFF;
 
 
  .level-column{
-  
-   padding: 0 30cpx;
+   padding:30cpx;
    width: 700cpx;
-min-height: 199cpx;
 background: #FFFFFF;
 border-radius: 12cpx;
 margin: 0 auto;
 display: flex;
 justify-content: flex-start;
 flex-direction: row;
-align-items: center;
+align-items: flex-start;
 flex-wrap: wrap;
  }
 
@@ -358,13 +396,9 @@ align-items: center;
 
 
  .level-c-wrap > text{
-
 font-size: 22cpx;
 font-weight: 400;
 color: #222222;
-
-
-
 
  }
 
@@ -372,6 +406,11 @@ color: #222222;
 
 
 
+
+
+
+
+</style>
 
 
 
@@ -384,12 +423,14 @@ color: #222222;
 <script cml-type="json">
 {
   "base": {
-    "usingComponents": {}
+    "usingComponents": {
+  "vip-pop-tip": "/components/vip-pop-tip/vip-pop-tip"
+
+    }
   },
   "wx": {
-     "navigationStyle":"custom",
-     "navigationBarTextStyle": "white"
-
+   "navigationStyle":"custom",
+  "navigationBarTextStyle": "white"
   },
   "tt": {
     "navigationBarTitleText": "index",

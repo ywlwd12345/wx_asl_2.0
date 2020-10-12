@@ -346,9 +346,25 @@
             "url": "/cml/h5/evaluation-list",
             "path": "/pages/evaluation-list/evaluation-list",
             "name": "评价晒单"
+        },
+
+        {
+            "url": "/cml/h5/my-vip-senior",
+            "path": "/pages/my-vip-senior/my-vip-senior",
+            "name": "我的会员中心-高级店主"
+        },
+
+        {
+            "url": "/cml/h5/my-vip-leader",
+            "path": "/pages/my-vip-leader/my-vip-leader",
+            "name": "我的会员中心-盟主"
+        },
+
+        {
+            "url": "/cml/h5/my-vip-district",
+            "path": "/pages/my-vip-district/my-vip-district",
+            "name": "我的会员中心-区代"
         }
-
-
 
     ]
 }

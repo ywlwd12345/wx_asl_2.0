@@ -9,6 +9,7 @@
   "dependencies": {
     "@vant/weapp": "^1.0.1",
     "animate.css": "^4.1.1",
+    "animateJs": "^0.1.0",
     "chameleon-api": "1.0.0",
     "chameleon-runtime": "1.0.0",
     "chameleon-store": "1.0.0",
