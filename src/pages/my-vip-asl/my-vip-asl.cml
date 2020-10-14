@@ -10,14 +10,14 @@
   <!-- head-nav end-->
   <view class="user-level">
    <view class="user-img">
-        <image src="{{avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+        <image src="{{personUserInfo.avatar?'https://'+personUserInfo.avatar:avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
   </view>
 
   <view class="time-tip">
-  <text>12345678900</text>
-  <text>2020-8-31  到期时间></text>
+  <text>{{personUserInfo.mobile}}</text>
+  <text></text>
   </view>
-  <view class="view-btn" hover-class="hover-btn">立即升级</view>
+  <view class="view-btn" hover-class="hover-btn" c-bind:tap="goUpgrade">立即升级</view>
   </view>
 
   <!-- user-level end --> 
@@ -33,7 +33,7 @@
 <view class="level-info">
 <view class="level-center-wrap">
 <view class="level-c-w-1">
-<text>ASL</text>
+<text>{{personUserInfo.level}}</text>
 <text>会员等级</text>
 </view>
 <view class="level-c-w-2"></view>
@@ -99,17 +99,11 @@ const levelData=[
 class MyVipAsl   {
 
   data = {
-    menuButton:{  
-width: 87,
-height: 32,
-left: 278,
-top: 24,
-right: 365,
-bottom: 56
-},
+    menuButton:{ },
 backIcon:backIcon,
 avatar:avatar,
-levelData:levelData
+levelData:levelData,
+personUserInfo:{}
   }
 
   computed = {
@@ -119,11 +113,16 @@ levelData:levelData
   }
 
   methods = {
-  setNav(){
+ goBack(){
+  cml.navigateBack(-1)
+ },
+ goUpgrade(){
+     cml.navigateTo({
+  path: '/pages/rebate-credits/rebate-credits',
+  query:{flag:3}
+  })
 
-  
-
-}
+ }
 
 
   }
@@ -142,6 +141,10 @@ levelData:levelData
 
   mounted() {
     // console.log(store.state.menuButton,'哈哈猪123456')
+    this.menuButton=store.state.menuButton
+    this.personUserInfo=store.state.personUserInfo
+
+
   }
 
   onHide() {

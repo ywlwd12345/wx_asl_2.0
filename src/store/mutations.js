@@ -48,7 +48,12 @@ export default {
     //胶囊按钮的信息
     menuButton(state, obj) {
         state.menuButton = obj
+    },
+    //用户个人信息
+    personUserInfo(state, obj) {
+        state.personUserInfo = obj
     }
+
 
 
 

@@ -23,11 +23,6 @@ class MyOrder   {
 
   beforeCreate(query) {
     this.type=query.type
-
-
-    
-
-
   }
 
   created(query) {

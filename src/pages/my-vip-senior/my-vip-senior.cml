@@ -10,12 +10,12 @@
   <!-- head-nav end-->
   <view class="user-level">
    <view class="user-img">
-        <image src="{{avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+        <image src="{{personUserInfo.avatar?'https://'+personUserInfo.avatar:avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
   </view>
 
   <view class="time-tip">
-  <text>12345678900</text>
-  <text>2020-8-31  到期时间></text>
+  <text>{{personUserInfo.mobile}}</text>
+  <text>{{personUserInfo.endTime}}  到期时间></text>
   </view>
   <view class="view-btn" hover-class="hover-btn" c-bind:tap="showPop">立即升级</view>
   </view>
@@ -33,7 +33,7 @@
 <view class="level-info">
 <view class="level-center-wrap">
 <view class="level-c-w-1">
-<text>高级店主</text>
+<text>{{personUserInfo.level}}</text>
 <text>会员等级</text>
 </view>
 <view class="level-c-w-2"></view>
@@ -115,14 +115,7 @@ const levelData=[
 class MyVipSenior   {
 
   data = {
-        menuButton:{  
-width: 87,
-height: 32,
-left: 278,
-top: 24,
-right: 365,
-bottom: 56
-},
+menuButton:{ },
 backIcon:backIcon,
 avatar:avatar,
 levelData:levelData,
@@ -130,7 +123,8 @@ show:false,
 obj:{
   url:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/other/pop1.png',
   text:'需要直接推荐至少9位伙伴晋级店主'
-}
+},
+personUserInfo:{}
   }
 
   computed = {
@@ -147,7 +141,10 @@ obj:{
       this.show=detail.value
       // console.log(e,'65897456')
 
-    }
+    },
+     goBack(){
+  cml.navigateBack(-1)
+ }
   }
 
   beforeCreate(query) {
@@ -163,6 +160,8 @@ obj:{
   }
 
   mounted() {
+    this.menuButton=store.state.menuButton
+    this.personUserInfo=store.state.personUserInfo
   }
 
   onHide() {
@@ -251,7 +250,7 @@ text-align: center;
 height: 150cpx;
 background: #FFFFFF;
 border-radius: 50%;
-border:8cpx solid #DCDCDC;
+border:8cpx solid #EBD7AC;
 overflow: hidden;
 }
 

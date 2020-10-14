@@ -78,7 +78,7 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 
 
 
-
+<van-notify id="van-notify" />
 
 
   </view>
@@ -88,7 +88,7 @@ bind:click="deleteGoods" c-if="{{showDel}}"/>
 
 import { jump,getSelectedDay,setTodoLabels,getCurrentYM,cancelSelectedDates,clearTodoLabels,setDateStyle} from '../../rl/calendar/main.js';
 import {getBrowsingHistoryData,browsingGoodsData,delBrowsingGoods} from '../../api/grouping.js' //引入拼团模块接口
-import {momentMs} from '../../untils/moment.js' //引入拼团模块接口
+import {momentMs} from '../../untils/moment.js' 
 import cml from 'chameleon-api';
 
 class MyFootprint implements MyFootprintInterface {
@@ -217,7 +217,7 @@ whenChangeMonth(e){
 afterTapDay(e){
   
   this.dealPeriod(e.detail)
-   this.getNowTimeSetStyle(e.detail)
+  this.getNowTimeSetStyle(e.detail)
   
 
   

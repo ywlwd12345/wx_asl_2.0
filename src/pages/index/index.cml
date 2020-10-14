@@ -62,7 +62,7 @@
 
 <!--  首页弹屏-->
 <view class="home-popup" c-if="{{isShowRecommendPop}}">
-<home-popup></home-popup>
+<home-popup ></home-popup>
 </view>
 <!--  首页弹屏 end -->
   <c-tabbar 
