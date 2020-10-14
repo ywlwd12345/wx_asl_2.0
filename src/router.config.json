@@ -370,6 +370,11 @@
             "url": "/cml/h5/sign-page",
             "path": "/pages/sign-page/sign-page",
             "name": "签到页面"
+        },
+        {
+            "url": "/cml/h5/pb-exchange",
+            "path": "/pages/pb-exchange/pb-exchange",
+            "name": "拼吧币兑换asl1"
         }
 
 

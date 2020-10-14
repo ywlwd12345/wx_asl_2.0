@@ -52,7 +52,7 @@
             c-for-index="i"
           c-key="text">
       <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage" 
-      border="{{i===2?false:true}}"
+      border="{{i===3?false:true}}"
        value="{{item.num}}" data-text="{{item.text}}"/>
       </block>
       </view>
@@ -95,18 +95,19 @@ import store from '../../store'
 const objList=[
   {
   text:'拼吧币',
-  flag:false,
   num:''
   },
   {
   text:'低消币',
-  flag:true,
   num:''
   },
 
    {
-  text:'兑换',
-  flag:false,
+  text:'ASL1兑换',
+  num:''
+  },
+   {
+  text:'拼吧币兑换',
   num:''
   },
 ]
@@ -178,9 +179,14 @@ class WallePurse implements WallePurseInterface {
      case '拼吧币':
      this.goRecord(1)
         break;
-     case '兑换':
+     case 'ASL1兑换':
         cml.navigateTo({
   path: '/pages/group-exchange/group-exchange'
+  })
+        break;
+        case '拼吧币兑换':
+        cml.navigateTo({
+  path:'/pages/pb-exchange/pb-exchange'
   })
         break;
       case '低消币':

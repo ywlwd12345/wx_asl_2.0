@@ -649,3 +649,20 @@ export function signOneMonth(data) {
         url: "/app/sign/info"
     });
 }
+
+
+
+/**
+ * @desc 拼吧币兑换asl币api
+ * @url /app/groupfee/to/asl
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function pbExchangeAsl1(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/groupfee/to/asl"
+    });
+}

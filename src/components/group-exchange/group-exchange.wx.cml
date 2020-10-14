@@ -76,7 +76,7 @@ class GroupExchange implements GroupExchangeInterface {
   }
 
   data = {
-    title:'兑换',
+    title:'ASL1兑换',
     viewPortHeight:'',
     userInfoObj:'',
     type:'asl1',
