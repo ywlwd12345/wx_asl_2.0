@@ -10,14 +10,14 @@
   <!-- head-nav end-->
   <view class="user-level">
    <view class="user-img">
-        <image src="{{avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+        <image src="{{personUserInfo.avatar?'https://'+personUserInfo.avatar:avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
   </view>
 
   <view class="time-tip">
-  <text>12345678900</text>
-  <text>2020-8-31  到期时间></text>
+  <text>{{personUserInfo.mobile}}</text>
+  <text>{{personUserInfo.endTime}}  到期时间></text>
   </view>
-  <view class="view-btn" hover-class="hover-btn">立即升级</view>
+  <view class="view-btn" hover-class="hover-btn" c-bind:tap="goUpgrade">立即升级</view>
   </view>
 
   <!-- user-level end --> 
@@ -33,12 +33,12 @@
 <view class="level-info">
 <view class="level-center-wrap">
 <view class="level-c-w-1">
-<text>ASL</text>
+<text>{{personUserInfo.level}}</text>
 <text>会员等级</text>
 </view>
 <view class="level-c-w-2"></view>
 <view class="level-c-w-3">
-<text>4</text>
+<text>14</text>
 <text>会员特权</text></view>
 </view>
 <!-- level-center-wrap end-->
@@ -54,7 +54,7 @@
           c-key="text"  style="margin-bottom:{{i<12?40:0}}cpx;">
  <image src="{{item.img}}" style="width:75cpx;height:74cpx;"></image>
 
- <text>{{item.text}}</text>
+ <text class="break-text">{{item.text}}</text>
 
 </view>
 
@@ -142,17 +142,11 @@ class MyVipDistrict   {
 
   data = {
 
-      menuButton:{  
-width: 87,
-height: 32,
-left: 278,
-top: 24,
-right: 365,
-bottom: 56
-},
+menuButton:{ },
 backIcon:backIcon,
 avatar:avatar,
-levelData:levelData
+levelData:levelData,
+personUserInfo:{}
   }
 
   computed = {
@@ -162,6 +156,12 @@ levelData:levelData
   }
 
   methods = {
+    goUpgrade(){
+      tip('暂不能升级')
+    },
+           goBack(){
+  cml.navigateBack(-1)
+ }
   }
 
   beforeCreate(query) {
@@ -177,6 +177,8 @@ levelData:levelData
   }
 
   mounted() {
+     this.menuButton=store.state.menuButton
+    this.personUserInfo=store.state.personUserInfo
   }
 
   onHide() {
@@ -263,7 +265,7 @@ text-align: center;
 height: 150cpx;
 background: #FFFFFF;
 border-radius: 50%;
-border:8cpx solid #DCDCDC;
+border:8cpx solid #E1D1F9;
 overflow: hidden;
 }
 
@@ -396,6 +398,12 @@ font-weight: 400;
 color: #222222;
 
  }
+
+  .break-text{
+   overflow: hidden;
+word-break: break-all;
+ }
+
 
 
 

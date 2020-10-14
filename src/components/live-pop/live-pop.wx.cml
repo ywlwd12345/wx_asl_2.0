@@ -116,7 +116,7 @@ class LivePop implements LivePopInterface {
     showSure:false,
     showItem:null,
     liveRoom:[],
-    ntImg:'https://aishenglian.com/start/zhibo.png',
+    ntImg:'https://w.aishenglian.com/static/icon/zhibo/zhibo.png',
     ntShow:false,
   
   }

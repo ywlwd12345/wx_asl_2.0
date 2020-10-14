@@ -49,7 +49,7 @@ class HomePopup implements HomePopupInterface {
   getData(){
 
     homePopup({}).then(res=>{
-      console.log(res,55566)
+    
       if(res.code && res.data.length){
         this.popData=res.data[0]
         this.show=true

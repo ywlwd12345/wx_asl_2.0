@@ -49,8 +49,6 @@ class NavVer2 implements NavVer2Interface {
   data = {
        navHeight:'',
        back:require('../../assets/images/fanhui.png')
-
-
   }
 
   computed = {
@@ -151,6 +149,11 @@ width: 750cpx;
   position: relative;
   bottom:20cpx;
   /* background: red; */
+}
+
+.container view{
+  overflow: visible!important;
+
 }
 
 

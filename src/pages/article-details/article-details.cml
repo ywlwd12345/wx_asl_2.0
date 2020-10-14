@@ -2,6 +2,10 @@
 
 <template>
   <view>
+
+    <nav title="{{title}}"></nav>
+
+
   <article pid="{{pid}}" ></article>
  
 
@@ -18,6 +22,7 @@ class ArticleDetails   {
 
   data = {
     pid:'',
+    title:'文章详情'
     
   }
 
@@ -102,7 +107,8 @@ export default new ArticleDetails();
 {
   "base": {
     "usingComponents": {
-       "article": "/components/article/article"
+       "article": "/components/article/article",
+         "nav":"/components/nav-ver2/nav-ver2"
 
     }
   },

@@ -336,16 +336,17 @@
             "name": "限时活动"
         },
 
-        {
-            "url": "/cml/h5/my-vip-asl",
-            "path": "/pages/my-vip-asl/my-vip-asl",
-            "name": "我的asl会员"
-        },
+
 
         {
             "url": "/cml/h5/evaluation-list",
             "path": "/pages/evaluation-list/evaluation-list",
             "name": "评价晒单"
+        },
+        {
+            "url": "/cml/h5/my-vip-asl",
+            "path": "/pages/my-vip-asl/my-vip-asl",
+            "name": "我的asl会员"
         },
 
         {
@@ -364,7 +365,13 @@
             "url": "/cml/h5/my-vip-district",
             "path": "/pages/my-vip-district/my-vip-district",
             "name": "我的会员中心-区代"
+        },
+        {
+            "url": "/cml/h5/sign-page",
+            "path": "/pages/sign-page/sign-page",
+            "name": "签到页面"
         }
+
 
     ]
 }

@@ -828,6 +828,11 @@ goShare(){
 },
 //签到
 sign(name){
+    cml.navigateTo({
+  path: '/pages/sign-page/sign-page'
+      })
+  return 
+  
 
   if(name==='今日签到'){
     //获取用户是否签到

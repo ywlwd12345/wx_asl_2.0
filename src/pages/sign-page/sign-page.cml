@@ -1,0 +1,292 @@
+<template>
+  <view class="container">
+  <nav-ver2 title="{{'签到'}}" ></nav-ver2>
+  <view class="head">
+  <view class="head-tip">
+  <view class="sign-tip-text">-已连续签到-</view>
+  <view class="sign-tip-life"><text>{{signData.days}}</text><text>天</text></view>
+  <view class="view-btn" hover-class="hover-btn" c-bind:tap="userSign">立即签到</view>
+  <view class="sign-tip-7">连续签到7天可领取惊喜奖励</view>
+  </view>
+  </view>
+
+  <!-- head end-->
+  <view class="rl-wrap">
+   <calendar calendarConfig="{{calendarConfig}}"   bind:whenChangeMonth="whenChangeMonth"    bind:afterTapDay="afterTapDay" ></calendar>
+  </view>
+
+  <van-notify id="van-notify" />
+
+  <all-tip></all-tip>
+  
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import store from '../../store'
+import { signOneMonth } from '../../api/grouping'
+import {sign} from '../../api/index'
+import Notify from '../../vant/notify/notify';
+import { tip} from '../../untils/processData'
+import { jump,getSelectedDay,setTodoLabels,getCurrentYM,cancelSelectedDates,clearTodoLabels,setDateStyle,enableDays} from '../../rl/calendar/main.js';
+import {momentMs} from '../../untils/moment.js' 
+
+class SignPage   {
+
+  data = {
+     calendarConfig: {
+      // 配置内置主题
+      theme: 'elegant',
+      onlyShowCurrentMonth: true
+    },
+    signData:{}
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+
+    //选择日期后执行的事件
+
+    // 日期点击事件（此事件会完全接管点击事件），需自定义配置 takeoverTap 值为真才能生效
+whenChangeMonth(e){
+  this.historyData(e.detail.next)
+},
+
+
+    setDefaultData(){
+      jump()
+this.historyData(getCurrentYM())
+  },
+
+    historyData(data){
+   signOneMonth(data).then(res=>{
+      if(res.code){
+        const result=res.data
+        this.signData=result
+        this.setHistoryData(this.dealHistoryData(result.signDate))
+      }
+     
+    
+
+}).catch(err=>{})
+
+
+  },
+  // 处理配置历史签到的数据 
+dealHistoryData(arr){
+  let arr1=[]  //返回的数组对象
+  arr.map(d=>{
+     let item=d.split('-').map(c=>{
+      c=Number(c)
+      return c
+    })
+    arr1.push({year:item[0],month:item[1],day:item[2],color:'#dd3a2c'})
+    return d
+  })
+  return arr1
+},
+//  设置签到日期
+setHistoryData(arr){
+        setTodoLabels({
+  // 待办点标记设置
+  pos: 'bottom', // 待办点标记位置 ['top', 'bottom']
+  dotColor: 'purple', // 待办点标记颜色
+  showLabelAlways: true, // 点击时是否显示待办事项（圆点/文字），在 circle 为 true 及当日历配置 showLunar 为 true 时，此配置失效
+  days:arr
+})
+
+},
+//设置只能选中当天
+setNowDay(){
+   const timestamp=new Date().getTime()
+  const  begin=momentMs(timestamp)
+  enableDays([begin])
+ 
+
+},
+ userSign(){
+  let uname
+  cml.getStorage('uname').then((value)=>{
+  uname=value
+  sign({uname:uname}).then(res=>{
+    
+      if(res.code==1){  
+        Notify({ type: 'success', message:`签到成功,获取爱生链币${res.fee}个`,context:this,safeAreaInsetTop:true });
+        this.setDefaultData()
+         if(res.reward){
+           tip(`奖励asl${res.reward}个`)
+         }
+      }else{
+        tip(res.msg)
+      }
+    }).catch(err=>{
+      // console.log(res)
+
+    })
+})
+  },
+
+
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+    this.setDefaultData()
+
+    this.setNowDay()
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new SignPage();
+</script>
+
+<style scoped>
+.head-tip{
+  width:350cpx;
+  margin:0 auto;
+  margin-top:150cpx;
+  min-height: 312cpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+
+}
+
+.container{
+  background: #eee;
+  width: 750cpx;
+  min-height: 100vh;
+}
+.head{
+  width: 750cpx;
+  background-repeat:no-repeat;
+  height: 681cpx;
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/sign/sign.png');
+  background-size:contain;
+}
+
+
+.sign-tip-text{
+font-size: 22cpx;
+font-weight: 400;
+color: #FFFFFF;
+
+
+}
+.sign-tip-life{
+    width: 100%;
+    display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.sign-tip-life > text:nth-child(1){
+font-size: 100cpx;
+font-weight: bold;
+color: #FFFFFF;
+
+}
+
+
+.sign-tip-life > text:nth-child(2){
+
+
+font-size: 28cpx;
+
+font-weight: 600;
+color: #FFFFFF;
+
+
+
+}
+
+.container text,.container view{
+  letter-spacing: 2cpx;
+}
+
+.view-btn{
+  width: 226cpx;
+height: 58cpx;
+background: #FFFFFF;
+border-radius: 29cpx;
+font-size: 28cpx;
+font-weight: 500;
+color: #EA2210;
+text-align: center;
+line-height: 58cpx;
+}
+.sign-tip-7{
+font-size: 18cpx;
+font-weight: 400;
+color: #FFFFFF;
+}
+
+
+.rl-wrap{
+width:690cpx;
+height: 657cpx;
+margin: 0 auto;
+background: #FFFFFF;
+box-shadow: 1cpx 10cpx 20cpx 0cx rgba(0, 0, 0, 0.05);
+border-radius: 8cpx;
+position: relative;
+z-index: 2;
+top:-180cpx;
+}
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+    "nav-ver2":"/components/nav-ver2/nav-ver2",
+    "all-tip":"/components/all-tip/all-tip",
+    "calendar":"/rl/calendar/index",
+    "van-notify": "/vant/notify/index"
+    
+
+    }
+  },
+  "wx": {
+    "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

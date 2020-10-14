@@ -854,6 +854,7 @@ class PersonalCenter implements PersonalCenterInterface {
       //是否实名验证
             const data=res.data[0]
             console.log(res.data[0],'草包')
+            store.commit('personUserInfo',res.data[0])
             this.isCertification=data.authentication
             this.levelInfo=res.data[0].levelInfo
       // this.isCertification && (this.setCertificationUi())
@@ -896,6 +897,11 @@ showPop(){
 
   //设置用户签到模块功能
   sign(){
+    cml.navigateTo({
+  path: '/pages/sign-page/sign-page'
+      })
+    return 
+
      if(this.signTitle==='今日签到'){
     //获取用户是否签到
     this.getBaseUserData()
@@ -903,8 +909,7 @@ showPop(){
   }else{
     this.tip('你已经签到过了')
 
-    console.log('1223')
-
+  
   }
 
 
@@ -1036,12 +1041,48 @@ showPop(){
   },
   //去我的会员页面
   goMyVip(){
-      cml.navigateTo({
-            path: '/pages/my-vip-asl/my-vip-asl',
+
+    const level=store.state.personUserInfo.levelInfo
+    switch (level) {
+         case 1:
+               this.goVipPage('/pages/my-vip-asl/my-vip-asl')
+        
+        break;
+         case 2:
+               this.goVipPage('/pages/my-vip-senior/my-vip-senior')
+        
+        break;
+         case 3:
+               this.goVipPage('/pages/my-vip-senior/my-vip-senior')
+        break;
+         case 4:
+               this.goVipPage('/pages/my-vip-leader/my-vip-leader')
+        
+        break;
+         case 5:
+               this.goVipPage('/pages/my-vip-district/my-vip-district')
+        break;
+
+          case 6:
+            tip('目前没有省代页面')
+        break;
+    
+      default:
+        break;
+    }
+
+
+    
+
+  },
+
+  goVipPage(page){
+     cml.navigateTo({
+            path: page,
           }) 
-
-
   }
+
+
 
 
 

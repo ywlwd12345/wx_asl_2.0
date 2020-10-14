@@ -632,3 +632,20 @@ export function homePopup(data) {
         url: "/app/indexpush"
     });
 }
+
+
+
+/**
+ * @desc 查看某月签到日期api
+ * @url /app/sign/info
+ * @method GET
+ * @param { year,month}
+ * @author ywl
+ */
+export function signOneMonth(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/sign/info"
+    });
+}

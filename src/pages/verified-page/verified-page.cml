@@ -49,7 +49,7 @@ class VerifiedPage   {
 export default new VerifiedPage();
 </script>
 
-<style>
+<style scoped>
 
 </style>
 

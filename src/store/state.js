@@ -15,7 +15,8 @@ const state = {
     },
     navOpacity: 0, //导航栏透明度
     detailTop: 0, //详情页面距顶部的高度
-    menuButton: {} //胶囊按钮信息
+    menuButton: {}, //胶囊按钮信息
+    personUserInfo: {} //用户个人信息
 
 }
 

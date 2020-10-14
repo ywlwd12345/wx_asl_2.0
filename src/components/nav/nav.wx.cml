@@ -2,17 +2,28 @@
      <view class="container" >
     <origin-view    class="nav">
    <van-nav-bar
-
   title="{{title}}"
   left-arrow="{{false}}"
-  bind:click-left="onClickLeft"
   border="{{false}}"
   custom-class="nav-root"
+  bind:click-left="onClickLeft"
   title-class="title-style"
  
 >
-<!--<van-icon name="arrow-left"  slot="left" color="#fff" size="40rpx" custom-class="icon-nav"/>-->
-<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
+<!--<van-icon name="arrow-left"  slot="left" color="#AAA" size="30px" custom-class="icon-nav"/>-->
+
+<!--24 37-->
+
+<view  slot="left" class="spec-nav" hover-class="hover-btn">
+
+
+<image src="{{back}}" style="width:24cpx;height:37cpx;"  ></image>
+
+</view>
+
+
+
+
 </van-nav-bar>
   </origin-view>
   <!-- nav end-->
@@ -40,7 +51,7 @@ class Nav implements NavInterface {
   data = {
 
     navHeight:'',
-    back:require('../../assets/images/fanhui2.png')
+    back:require('../../assets/images/fanhui.png')
 
   
    
@@ -59,12 +70,8 @@ class Nav implements NavInterface {
     },
   // 获取导航的高度
   getNavHeight(){
-  console.log()
-
   const query=wx.createSelectorQuery().in(this)
-
   query.select('.nav').boundingClientRect(res => {
-
 
     this.navHeight=res.height
         this.$cmlEmit('onshowNav',{
@@ -76,11 +83,7 @@ class Nav implements NavInterface {
  
 
   }
-
-
-
-
-
+  
   
 
 
@@ -120,13 +123,19 @@ width: 750cpx;
 
 
 }
+
+.container view{
+  overflow: visible!important;
+
+}
 .nav-root{
- background: linear-gradient(to right, #e73827, #f85032);
+ /* background: linear-gradient(to right, #e73827, #f85032); */
+ background: #fff;
  
 }
 
 .title-style{
-  color:#fff!important;
+  color:#222!important;
 }
 
 .icon-nav{
@@ -149,8 +158,19 @@ width: 750cpx;
   width:750cpx;
   position: fixed;
   top:0;
-  z-index: 99999;
+  z-index: 9;
 }
+
+
+.spec-nav{
+  width: 50cpx;
+  height: 50cpx;
+  position: relative;
+  bottom:20cpx;
+  /* background: red; */
+}
+
+
 </style>
 
 <script cml-type="json">
