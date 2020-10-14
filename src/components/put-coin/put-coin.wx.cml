@@ -111,7 +111,7 @@ block bind:click="submit">提交</van-button>
           <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
           <view class="withdrawal_title">提现币种</view>
         </view>
-        <view class="values">{{aslName}}</view> 
+        <view class="values" style="color:#999999;">{{aslName}}</view> 
       </view>
       <view class="classification">
         <van-radio-group value="{{ radio }}" bind:change="onChange">

@@ -68,10 +68,17 @@
       <view class="items3">
         <view class="top">
           <!--<text class="spec-total">总价￥{{item.totalMoney}}</text>-->
-          <text class="spec-total">共计{{item.totalCount}}件商品</text>
-          <text style="margin-left:10cpx;" class="spec-order-text" ></text>
-          <text class="now-price">实付款:</text>
-          <span style="font-size:30cpx;">￥{{item.totalMoney}}</span>
+          <view class="topto">
+            <text class="spec-total">共计{{item.totalCount}}件商品</text>
+            <text style="margin-left:10cpx;" class="spec-order-text" ></text>
+          </view>
+          <view class="topto">
+            <text class="now-price">应付款</text>
+            <span style="font-size:30cpx;">￥{{item.totalMoney}}</span>
+            <text class="now-price" style="padding-left:20cpx;">实付款</text>
+            <span style="font-size:30cpx;" c-if="{{item.statusMsg==='待支付'}}">￥0.00</span>
+            <span style="font-size:30cpx;" c-else>￥{{item.totalMoney}}</span>
+          </view>
         </view>
         <!--<view class="bottom"  c-if="{{item.pay_status}}">
           <text class="spec-order-text">实付总额:</text>
@@ -82,9 +89,10 @@
 
       <view class="items items1" style="align-items: center;border-top: 2cpx solid #eee;justify-content: space-between;">
 
-      <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
-      data-id="{{item.id}}"
-      ><image src="{{ delImg }}" style="width:23cpx;height:27cpx;"></image></view>
+      <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"data-id="{{item.id}}" c-if="{{item.statusMsg==='已完成'||item.statusMsg==='已取消'}}">
+        <image src="{{ delImg }}" style="width:23cpx;height:27cpx;"></image>
+      </view>
+      <view c-else> </view>
 
       <view class="items5">
       <view class="btn" c-if="{{item.statusMsg==='待支付'}}" c-bind:tap="canceldialog(item.orderId,item.statusMsg)">
@@ -108,7 +116,7 @@
       </view>
 
 
-      <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
+      <view class="btn" c-if="{{item.status==3||item.status==4}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
       <van-button round type="default" size="small"
       custom-class="buttons"
        data-tip="{{item.statusMsg}}"
@@ -128,12 +136,21 @@
       </van-button>
       </view>
 
+      <view class="btn" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}">
+      <van-button round type="default" size="small"
+      custom-class="buttons"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       再次购买
+      </van-button>
+      </view>
 
-       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成' || item.statusMsg==='已评价'}}" data-orderid="{{item.orderId}}"
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成'}}" data-orderid="{{item.orderId}}"
       c-catch:click="goComment($event)">
       <van-button round type="info" size="small" custom-class="button_payment">评价</van-button></view>
 
-       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已取消'}}" data-orderid="{{item.orderId}}"
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已取消'||item.statusMsg==='已退货'|| item.statusMsg==='已评价'}}" data-orderid="{{item.orderId}}"
       c-catch:click="goOrderDetails(item.orderId)">
       <van-button round type="info" size="small" custom-class="button_payment">查看详情</van-button></view>
       
@@ -150,8 +167,9 @@
 
 
 
-      <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
-      <van-button round type="info" size="small" color="#f44336">再来一单</van-button></view>
+<!--      <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
+      <van-button round type="info" size="small" color="#f44336">再来一单</van-button></view>-->
+
 
       </view>
       </view>
@@ -758,6 +776,14 @@ export default new MyOrder();
 
 }
 .top{
+  width: 100%;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+.topto{
    display: flex;
   flex-direction: row;
   justify-content:space-between;
