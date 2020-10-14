@@ -90,6 +90,7 @@ class AddLocation implements AddLocationInterface {
   }
 
   data = {
+    tag:0,
     title:'新增地址',
     areaList:areaData,
     show:false,
@@ -142,6 +143,7 @@ class AddLocation implements AddLocationInterface {
     },
     //选择地址
   getCode(e){
+      this.tag +=1
       if(e.detail.values[0].name===e.detail.values[1].name){
       this.valueArea=e.detail.values[0].name+e.detail.values[2].name
         this.transitObj.province=e.detail.values[0].name
@@ -158,6 +160,10 @@ class AddLocation implements AddLocationInterface {
     this.dealAreaObj() 
   },
   yes(){
+    console.log('数字',this.tag)
+    if(this.tag==0){
+      this.valueArea='北京市东城区'
+    }
       this.show=false
   },
   cancel(){

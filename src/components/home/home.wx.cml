@@ -339,7 +339,7 @@ const imgArray=[
 
 {
    imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/qd@2x.png',
-   text:'今日签到'
+   text:'签到'
 }
 
 ]
@@ -620,7 +620,7 @@ goSpecifiedContent(name){
          case '一键分享':
         this.goShare()
         break;
-        case '今日签到':
+        case '签到':
         this.sign(name)
         break;
         case '已签到':
@@ -834,7 +834,7 @@ sign(name){
   return 
   
 
-  if(name==='今日签到'){
+  if(name==='签到'){
     //获取用户是否签到
     this.getBaseInfoData()
 
@@ -914,7 +914,7 @@ showPop(){
     getBaseUserInfo({uname:uname}).then(res=>{
       // 判断今天有没有签到
       if(res.data[0].sign==0){
-        this.signTitle='今日签到'
+        this.signTitle='签到'
       }else{
         this.setSign('已签到')
       }
