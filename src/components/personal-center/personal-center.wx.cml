@@ -203,7 +203,7 @@
   
   </view>
    <!-- set-person end-->
-<view class="cml-btn">
+<view class="cml-btn" style="margin-bottom:{{isIphoneX >= 0?88:20}}cpx;">
  <van-button 
  type="primary"
  block
@@ -435,6 +435,7 @@ class PersonalCenter implements PersonalCenterInterface {
     realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png',
     specLevel:'',
     levelInfo:'',//店主等级判断字段
+    isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
 
   }
 
@@ -1392,6 +1393,7 @@ border-radius: 10cpx;
 .cml-btn{
   width: 580cpx; 
   margin:20cpx auto;
+  margin-bottom:88cpx;
 
 }
 

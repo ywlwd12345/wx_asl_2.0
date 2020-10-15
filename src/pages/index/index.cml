@@ -394,6 +394,12 @@ onshowInput(e){
 
  created(res){
 
+   
+if(wx.getSystemInfoSync().model.indexOf("iPhone X")>=0){
+      this.tabbar.tabbarStyle="height:188cpx;background-color:#fff;"
+
+}
+
       cml.getSystemInfo().then(info => {
     //这里要减去tabbar的高度，默认是120cpx,如果tabbarStyle中设置了其他高度，则要减去对应的值；
     
@@ -475,6 +481,19 @@ console.log('分享参数',gid)
       this.currentComp='shopping-cart'
     }
     this.newsuser=query.newsuser
+//判断是否是iphoneX并处理
+
+
+
+
+
+
+
+
+
+
+
+
    
   }
 

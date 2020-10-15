@@ -144,7 +144,7 @@
   button-text="{{'结算('+num+')'}}"
   bind:submit="yesCart"
   tip="{{ true }}"
-  custom-class="add-height"
+  custom-class="{{isIphoneX>=0?'add-height1':'add-height'}}"
   loading="{{false}}"
   button-class="submit-btn"
 >
@@ -157,7 +157,7 @@
 
 </view>
 <!-- submit end-->
-<view class="spec-column"></view>
+<view class="spec-column" ></view>
 <view c-if="{{loading}}" class="loading">
 <van-loading   type="spinner" />
 </view>
@@ -229,7 +229,8 @@ class ShoppingCart implements ShoppingCartInterface {
   },
 
 id:'',//商品id
-noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png'
+noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png',
+isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
 
   }
 
@@ -694,6 +695,12 @@ width: 100%;
   width: 750cpx;
   margin-bottom: 120cpx;
 
+}
+
+
+.add-height1{
+  width: 750cpx;
+  margin-bottom: 188cpx;
 }
 
 .submit-btn{
