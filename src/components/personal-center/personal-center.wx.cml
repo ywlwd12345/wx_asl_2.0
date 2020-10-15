@@ -625,11 +625,14 @@ class PersonalCenter implements PersonalCenterInterface {
       })
         break;
         case "实名认证":
-        if(this.levelInfo<2){
-          tip('店主及以上才能实名认证',2000)
-        }else{
-            cml.navigateTo({path: '/pages/verified-page/verified-page'})
-        }
+            cml.navigateTo({
+  path: '/pages/verified-page/verified-page'
+      })
+        // if(this.levelInfo<2){
+        //   tip('店主及以上才能实名认证',2000)
+        // }else{
+        //     cml.navigateTo({path: '/pages/verified-page/verified-page'})
+        // }
         break;
         case "商学院":
           this.xuexi()
