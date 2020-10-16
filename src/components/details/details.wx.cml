@@ -259,7 +259,7 @@
 <share-pop obj="{{passObj}}" c-if="{{objFlag}}" c-bind:onshow="setBackground"></share-pop>
 <view class="pop-back" style="{{popStyle}}"></view>  <!-- 设置分享弹框背景色-->
 
-<view class="bottom-btn-cart">
+<view class="{{isIphoneX>=0?'bottom-btn-cart1':'bottom-btn-cart'}}" >
 <view class="cart-customer" c-bind:tap="onClickIconTel"  hover-class="hover-btn">
  <image src="{{cartImg}}" style="width:45cpx;height:38cpx;"></image>
   <text>客服</text>
@@ -372,7 +372,8 @@ class Details implements DetailsInterface {
     goodsTp:'',
     commentTp:'',
     detailsTp:'',
-    tapFlag:true
+    tapFlag:true,
+    isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
   }
 
   computed =  store.mapState({
@@ -1310,6 +1311,21 @@ color: #ED422A;
 .bottom-btn-cart{
   width:750cpx;
   min-height: 98cpx;
+  background: #fff;
+  position: fixed;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+
+.bottom-btn-cart1{
+   width:750cpx;
+  min-height: 132cpx;
   background: #fff;
   position: fixed;
   bottom: 0;

@@ -694,13 +694,12 @@ width: 100%;
 .add-height{
   width: 750cpx;
   margin-bottom: 120cpx;
-
 }
 
 
 .add-height1{
   width: 750cpx;
-  margin-bottom: 188cpx;
+  margin-bottom: 174cpx;
 }
 
 .submit-btn{
@@ -733,14 +732,13 @@ background: linear-gradient(269deg, #FE573F, #E61A09)!important;
 width: 100cpx;
 background: #F7A226;
 box-shadow: 1px 5px 10px 0px rgba(183, 183, 183, 0.22);
- display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
 color:#fff;
 
 }
-
 
 .i-swipeout-demo-button2{
 width: 100cpx;

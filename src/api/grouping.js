@@ -666,3 +666,20 @@ export function pbExchangeAsl1(data) {
         url: "/app/groupfee/to/asl"
     });
 }
+
+
+
+/**
+ * @desc  获取小程序分享图文信息api
+ * @url /app/share/info
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function indexShareInfo(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/share/info"
+    });
+}

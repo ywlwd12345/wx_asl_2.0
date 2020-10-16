@@ -23,7 +23,7 @@
           <!--<view class="item3 item"><text>{{item.msg}}</text></view>-->
           </view>
           <view class="right">
-          <text class="color2">{{item.amount}}</text>
+        <text class="{{item.type===1?'coin1':'coin2'}}">{{item.type===1?'+':'-'}}{{item.amount}}</text>
           </view>
 
          
@@ -102,6 +102,7 @@ class Recharge implements RechargeInterface {
 
         }
         if(res.code){
+          console.log(res,'波波狗')
           this.pbdxliag= this.pbdxliag.concat(res.data.map(d=>{
           
         
@@ -192,11 +193,28 @@ export default new Recharge();
   left: 50%;
   transform: translate(-50%);
 }
-
 .color2{
   color:#ff410f;
 }
+/* .right{
+   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 
+} */
+
+.coin1{
+font-size: 28cpx;
+font-weight: 600;
+color: #DC4D46;
+}
+
+.coin2{
+font-size: 28cpx;
+font-weight: 600;
+color: #4E9100;
+}
 
 </style>
 
