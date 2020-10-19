@@ -77,7 +77,8 @@
 import cml from 'chameleon-api';
 import { checkLogin,  cachOpenid} from '../../untils/publicInterface.js'; 
 import store from '../../store'
-import {getIndexRecommendgoods,getShareInfo,getGoodCate,getclassificationgoods} from '../../api/index'
+import {getIndexRecommendgoods,getGoodCate,getclassificationgoods} from '../../api/index'
+import { indexShareInfo } from '../../api/grouping'
 import { dealStoreTitleName} from '../../untils/processData'
 class Index  {
   data = {
@@ -329,7 +330,7 @@ goLive(){
 
     if (res.from === 'button'){
         return {
-      title:'30亿拼团红包大放送，注册即送10元现金红包...',
+      title:this.title,
       desc: '',
       path: '/pages/share-registration/share-registration?id='+this.value,
       imageUrl:this.shareImg
@@ -341,15 +342,36 @@ goLive(){
     }
     }
     },
+    // //获取分享信息
+    // shareInfo(){
+    //   getShareInfo({}).then(res=>{
+    //     console.log(res,5566)
+    //     if(res.code){
+    //       this.shareImg=store.state.domainUrl+res.data.url    
+    //       this.title=res.data.txt
+    //     }
+    //   }).catch(err=>{})
+    // },
+
     //获取分享信息
+
     shareInfo(){
-      getShareInfo({}).then(res=>{
+      indexShareInfo({}).then(res=>{
         if(res.code){
-          this.shareImg=store.state.domainUrl+res.data.url    
-          this.title=res.data.txt
+          const data=res.data[0]
+          this.shareImg='https://'+data.pic
+          this.title=data.content
         }
+
+
+
       }).catch(err=>{})
+
+
     },
+
+
+    
 
     //监听小程序页面滚动
         onPageScroll:function(e){
@@ -393,6 +415,12 @@ onshowInput(e){
 
 
  created(res){
+
+   
+if(wx.getSystemInfoSync().model.indexOf("iPhone X")>=0){
+      this.tabbar.tabbarStyle="height:188cpx;background-color:#fff;"
+
+}
 
       cml.getSystemInfo().then(info => {
     //这里要减去tabbar的高度，默认是120cpx,如果tabbarStyle中设置了其他高度，则要减去对应的值；
@@ -463,11 +491,15 @@ console.log('分享参数',gid)
         this.value=value
       }
       })
+
+      this.shareInfo() //获取分享信息
       // this.getRecommendData()
       this.getClassifyItems()
       if(store.state.isCancelLogin){
         checkLogin()
       }
+
+
   }
 
   beforeCreate(query) {
@@ -475,6 +507,19 @@ console.log('分享参数',gid)
       this.currentComp='shopping-cart'
     }
     this.newsuser=query.newsuser
+//判断是否是iphoneX并处理
+
+
+
+
+
+
+
+
+
+
+
+
    
   }
 

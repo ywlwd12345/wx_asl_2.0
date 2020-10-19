@@ -135,6 +135,15 @@ personUserInfo:{}
 
   methods = {
     showPop(){
+ if(this.personUserInfo.levelInfo===3){
+   this.obj={  
+     url:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/other/pop2.png',
+      text:'请直接联系所属推荐人或致电4008567085咨询客服'
+  }
+
+ 
+ }
+
       this.show=true
     },
     onshow({detail}){
