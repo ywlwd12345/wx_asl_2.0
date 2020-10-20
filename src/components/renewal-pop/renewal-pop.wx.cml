@@ -1,0 +1,177 @@
+<template>
+  <view>
+   <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
+
+   
+  </view>
+</template>
+
+<script>
+
+import Dialog from '../../vant/dialog/dialog'
+import cml from 'chameleon-api';
+import store from '../../store'
+import { getBaseUserInfo } from "../../api/index";
+import { renewalGoods } from "../../api/grouping";
+import {momentTime} from '../../untils/moment.js' //引入拼团模块接口
+class RenewalPop implements RenewalPopInterface {
+  props = {
+    name: {
+      type: String,
+      default: '默认值'
+    }
+  }
+
+  data = {
+    goodsId:''
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+      dialog(mes){
+     Dialog.confirm({
+  title: '提示',
+  context:this,
+  message: mes
+}).then(() => {
+  if(this.goodsId){
+     cml.navigateTo({
+  path: '/pages/details/details',
+  query:{gid:this.goodsId}
+  })
+  }
+
+
+  
+ 
+ 
+}).catch(() => { 
+
+
+});
+
+   },
+
+
+     //获取用户的签到状态并设置
+  getUserInfo(){
+    let uname
+    cml.getStorage('uname').then((value)=>{
+    uname=value
+    getBaseUserInfo({uname:uname}).then(res=>{
+      if(res.code){
+      
+
+        const data =res.data[0]
+        this.checkDayDistance(data.endTime)
+
+
+
+
+
+      }
+    
+    }).catch(err=>{
+      // console.log('没获取到',res)
+    })
+     })
+  },
+  //校验到期时间是否与 当天时间间隔在30天之类
+
+  checkDayDistance(strDay){
+  
+    const tm=strDay+' 24:00:00'
+    const start = new Date().getTime()
+    const end=new Date(tm).getTime()
+    const valDis=end-start
+    const day30=30*24*60*60*1000
+    if(valDis-day30<0){
+      // 距到期时间在30天以内
+      renewalGoods().then(res=>{
+      
+        if(res.code){
+
+          this.goodsId=res.goodsId
+              const mes=`你的会员等级到期时间为 ${strDay}，请续约`
+          this.dialog(mes)
+
+
+
+        }
+
+      }).catch(err=>{})
+     
+  
+
+    }
+
+    
+
+
+    
+    
+ 
+
+    
+  }
+
+
+
+  
+
+
+   
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+
+    // this.dialog()
+
+    this.getUserInfo()
+
+    
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new RenewalPop();
+</script>
+
+<style >
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+         "van-dialog": "/vant/dialog/index"
+
+
+
+    }
+  }
+}
+</script>

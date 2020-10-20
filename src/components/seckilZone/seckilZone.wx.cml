@@ -301,6 +301,15 @@ background: #eee;
     padding: 8cpx 30cpx;
     border-radius: 30cpx;
 }
+
+
+::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+    color: transparent;
+    display:none;
+}
+
 </style>
 
 <script cml-type="json">

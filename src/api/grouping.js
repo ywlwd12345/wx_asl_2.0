@@ -683,3 +683,19 @@ export function indexShareInfo(data) {
         url: "/app/share/info"
     });
 }
+
+
+/**
+ * @desc  续约商品api
+ * @url /app/share/info
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function renewalGoods(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/renewal/goods"
+    });
+}

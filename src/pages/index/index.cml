@@ -61,10 +61,23 @@
 <!-- 推荐弹框 end-->
 
 <!--  首页弹屏-->
-<view class="home-popup" c-if="{{isShowRecommendPop}}">
+<!-- newsuser=1 表示新人注册 弹红包 -->
+<view class="home-popup" c-if="{{isShowRecommendPop && !newsuser}}">
 <home-popup ></home-popup>
 </view>
+
+
 <!--  首页弹屏 end -->
+
+<!-- 续约弹屏 start -->
+<view class="renewal-pop">
+<renewal-pop></renewal-pop>
+</view>
+<!-- 续约弹屏 end -->
+
+
+
+
   <c-tabbar 
     c-bind:onclick='handleTabbarClick' 
     c-model="{{currentComp}}"  
@@ -748,6 +761,7 @@ export default new Index();
       "personal-center": "/components/personal-center/personal-center",
       "live-pop": "/components/live-pop/live-pop",
       "recommende-pop": "/components/recommende-pop/recommende-pop",
+      "renewal-pop": "/components/renewal-pop/renewal-pop",
       "van-tab": "/vant/tab/index",
       "van-tabs": "/vant/tabs/index",
       "van-sticky": "/vant/sticky/index"

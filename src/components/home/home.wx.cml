@@ -956,6 +956,11 @@ showPop(){
     cml.getStorage('uname').then((value)=>{
     uname=value
     getBaseUserInfo({uname:uname}).then(res=>{
+
+      console.log(res,'猪猪56978')
+      if(res.code){
+         store.commit('personUserInfo',res.data[0])
+      }
       // 判断今天有没有签到
       if(res.data[0].sign==0){
         this.signTitle='签到'
