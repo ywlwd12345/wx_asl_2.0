@@ -1,7 +1,7 @@
 <template>
   <view class="container" >
     <view style="min-height:{{ viewPortHeight }};background:#eee;">
-      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput"></component>
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput" c-bind:charnewues="charnewues"></component>
     </view>
     <!-- 分类标题-->
     <view class="class_title"  c-if="{{ currentComp==='home'}}" >
@@ -139,6 +139,9 @@ class Index  {
     stickyTop:0,//吸顶距离
   }
   methods={
+    charnewues(e){
+      this.newsuser=e.detail.value
+    },
     scrolls(){
       return{
         scrollTop:"120cpx",
@@ -503,24 +506,16 @@ console.log('分享参数',gid)
   }
 
   beforeCreate(query) {
+    console.log('这里啊重点啊',query)
      if(query.currentComp==='shopping-cart'){
       this.currentComp='shopping-cart'
     }
-    this.newsuser=query.newsuser
+    if(query.newsuser){
+      this.newsuser=query.newsuser
+    }
+    
+    // this.newsuser=1
 //判断是否是iphoneX并处理
-
-
-
-
-
-
-
-
-
-
-
-
-   
   }
 
   onShow(){
