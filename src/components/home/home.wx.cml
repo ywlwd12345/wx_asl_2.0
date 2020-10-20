@@ -383,7 +383,7 @@ class Home implements HomeInterface {
     },
     newsuser:{
       type: String,
-      default:'',
+      default:'0',
     },
     indexLoading:{
       type: Boolean ,
@@ -453,16 +453,23 @@ class Home implements HomeInterface {
 
   methods = {
     noop(){},
-    //新用户登录去消息页面
+    //关闭红包弹窗
     onClose() {
         this.newUser=false;
+        this.$cmlEmit('charnewues',{
+          value:0
+        })
       },
     onCloseto() {
         this.newUserto=false;
       },
+      //开红包
     openNew(){
       this.newUser=false;
       this.newUserto=true;
+      this.$cmlEmit('charnewues',{
+          value:0
+      })
     },
     lookASL(){
       this.newUserto=false
@@ -1056,6 +1063,7 @@ showPop(){
 
 //初始化调用函数
   init(){
+   //首次登录传值
     if(this.newsuser==='1'){
       this.newUser=true
     }
