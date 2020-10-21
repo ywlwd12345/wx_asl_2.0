@@ -456,9 +456,9 @@ class Home implements HomeInterface {
     //关闭红包弹窗
     onClose() {
         this.newUser=false;
-        this.$cmlEmit('charnewues',{
-          value:0
-        })
+        // this.$cmlEmit('charnewues',{
+        //   value:0
+        // })
       },
     onCloseto() {
         this.newUserto=false;
@@ -467,9 +467,9 @@ class Home implements HomeInterface {
     openNew(){
       this.newUser=false;
       this.newUserto=true;
-      this.$cmlEmit('charnewues',{
-          value:0
-      })
+      // this.$cmlEmit('charnewues',{
+      //     value:0
+      // })
     },
     lookASL(){
       this.newUserto=false
@@ -956,7 +956,6 @@ showPop(){
     cml.getStorage('uname').then((value)=>{
     uname=value
     getBaseUserInfo({uname:uname}).then(res=>{
-
       console.log(res,'猪猪56978')
       if(res.code){
          store.commit('personUserInfo',res.data[0])

@@ -1,7 +1,7 @@
 <template>
   <view class="container" >
     <view style="min-height:{{ viewPortHeight }};background:#eee;">
-      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput" c-bind:charnewues="charnewues"></component>
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput" ></component>
     </view>
     <!-- 分类标题-->
     <view class="class_title"  c-if="{{ currentComp==='home'}}" >
@@ -152,9 +152,14 @@ class Index  {
     stickyTop:0,//吸顶距离
   }
   methods={
-    charnewues(e){
-      this.newsuser=e.detail.value
-    },
+    // charnewues(e){
+
+      
+
+     
+    //   this.newsuser=e.detail.value
+    //   console.log( this.newsuser,6655)
+    // },
     scrolls(){
       return{
         scrollTop:"120cpx",
@@ -300,6 +305,7 @@ goLive(){
   })
   },
    handleTabbarClick(e){
+    this.newsuser=''
      if(e.detail.compName!=='home'){
          store.commit('changeIndexAnmationFlag',false)
      }
@@ -526,8 +532,6 @@ console.log('分享参数',gid)
     if(query.newsuser){
       this.newsuser=query.newsuser
     }
-    
-    // this.newsuser=1
 //判断是否是iphoneX并处理
   }
 

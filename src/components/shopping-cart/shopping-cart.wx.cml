@@ -3,6 +3,9 @@
   <!--<head title="{{title}}"></head>-->
   <head-ver2 title="购物车"></head-ver2>
 
+
+
+
   <view class="car-show" c-if="{{!cartList.length}}">
    <image src="{{noCarImg}}" style="width:301cpx;height:301cpx"></image>
    <view class="cart-tip" style="margin-top:36cpx;font-size:24
@@ -241,6 +244,8 @@ isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
   }
 
   methods = {
+
+
 
     deleteCart(e){
       let id=e.currentTarget.dataset.id
