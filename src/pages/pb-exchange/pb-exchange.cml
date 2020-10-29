@@ -21,6 +21,7 @@
    <van-cell-group>
   <van-field
     clearable
+     border="{{ false }}"
     input-class="spec-input"
     bind:change="onChangePay"
   />
@@ -50,6 +51,7 @@ block bind:click="sure">提交</van-button>
 
  <van-field
     clearable
+   
     input-class="spec-input"
     bind:change="onChangePassword"
     type="password"

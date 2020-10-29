@@ -20,8 +20,9 @@
   <view class="input-coin">
    <van-cell-group>
   <van-field
+   border="{{ false }}"
     clearable
-    input-class="spec-input"
+   
     bind:change="onChangePay"
   />
 </van-cell-group>
