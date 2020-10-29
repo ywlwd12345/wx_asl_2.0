@@ -16,7 +16,8 @@
       shape="round"
     />
     <view >
-      <image src="{{newsimg}}" c-bind:tap="goNews"></image>
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png" c-bind:tap="goNews" c-if="{{isunRead==0}}"></image>
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/index/yxx@2x.png" c-bind:tap="goNews" c-else style="width: 44.3rpx;height: 44.3rpx;"></image>
     </view>
     </view>
     </van-sticky>
@@ -256,13 +257,15 @@ data-sort="{{item.sort}}" data-name="{{item.name}}">
 
 <view class="popups">
   <van-popup show="{{newUser}}" custom-style="background: none!important;">
-    <image src="{{imageStoreto}}" class="img1"></image>
+    <image src="{{imageStoreto}}" class="img1" c-bind:click="openNew"></image> 
     <image src="{{imageclos}}" class="img2" c-bind:click="onClose"></image>
-    <view class="popupas_text">
-      <view style="font-size: 37.45cpx;text-align: center;margin-bottom: 13rpx;">恭喜你</view>
-      <view style="font-size: 27.24cpx;text-align: center;">注册成功</view>
+    <view class="popupas_text"> 
+      <!--<view style="font-size: 37.45cpx;text-align: center;margin-bottom: 13rpx;">恭喜你</view>
+      <view style="font-size: 27.24cpx;text-align: center;">注册成功</view>-->
+      <view style="margin-bottom: 20cpx;text-align: center;font-size: 56cpx;font-family: PingFang SC;font-weight: 500;color: #FFDB8D;text-shadow: 1cpx 4cpx 3cpx rgba(232, 82, 157, 0.74);">爱生链</view>
+      <view style="text-align: center;font-size: 40cpx;font-family: PingFang SC;font-weight: 500;color: #FFDB8D;text-shadow: 1cpx 4cpx 3cpx rgba(232, 82, 157, 0.74);">给您发了一个红包</view>
     </view>
-    <view class="rewards_1" style="font-size: 66.06cpx;text-align: center;">奖励</view>
+    <!--<view class="rewards_1" style="font-size: 66.06cpx;text-align: center;">奖励</view>
     <view class="rewards_2" style="font-size: 64.71rpx;text-align: center;">ASL1:10个</view>
     <view class="shares_friend">分享好友</view>
 
@@ -271,7 +274,23 @@ data-sort="{{item.sort}}" data-name="{{item.name}}">
       custom-style="opacity:0;"
       open-type="share">普通按钮
       </van-button>
+    </view>-->
+  </van-popup>
+  <van-popup show="{{newUserto}}" custom-style="background: none!important;">
+    <image src="{{imageStoresucc}}" class="img1"></image>
+    <image src="{{imageclos}}" class="img2" c-bind:click="onCloseto"></image>
+    <view class="popupas_textto"> 
+      <image src="{{asllogo}}" style="margin:0 auto;text-align: center;width: 136cpx;height: 136cpx;"/>
+      <view style="margin:10cpx 0;text-align: center;font-size: 30cpx;font-family: PingFang SC;font-weight: 500;color: #FFDB8D;text-shadow: 1cpx 4cpx 3cpx rgba(232, 82, 157, 0.74);">爱生链</view>
+      <view style="margin-bottom:20cpx;text-align: center;font-size: 24cpx;font-family: PingFang SC;font-weight: 500;color: #FFDC8E;">—— 恭喜你拆开10元ASL1 ——</view>
+      <view style="margin:0 auto;text-align:center;display: flex;flex-direction: row;align-items: baseline;">
+        <view style="font-size: 89cpx;font-family: PingFang SC;font-weight: 600;color: #FFDC8E;">10.00</view>
+        <view style="font-size: 20cpx;color: #FFDC8E;padding-left:10cpx;">元</view>
       </view>
+      <view style="margin:0 auto;text-align:center;width: 257cpx;line-height:50cpx;background: #FFD680;border-radius: 8cpx;font-size: 21cpx;color: #EA484E;" c-bind:click="lookASL">
+        立即查看
+      </view>
+    </view>
   </van-popup>
 </view>
 </view>
@@ -289,7 +308,9 @@ data-sort="{{item.sort}}" data-name="{{item.name}}">
 
 <script>
 import Notify from '../../vant/notify/notify'
-
+// const handler=function(e) {
+//   e.preventDefault();
+// }
 const imgArray=[
   {
    imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/apb@2x.png',
@@ -338,7 +359,7 @@ const imgArray=[
 
 {
    imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/qd@2x.png',
-   text:'今日签到'
+   text:'签到'
 }
 
 ]
@@ -362,7 +383,7 @@ class Home implements HomeInterface {
     },
     newsuser:{
       type: String,
-      default:'',
+      default:'0',
     },
     indexLoading:{
       type: Boolean ,
@@ -373,6 +394,7 @@ class Home implements HomeInterface {
   }
 
   data = {
+    newUserto:false,
     marginTop:'',
     textTop:'',
     recordtitle:'清空历史记录',
@@ -385,8 +407,10 @@ class Home implements HomeInterface {
     img:imgArray,
     bottomOffset: 20,
     imageStore:'https://w.aishenglian.com/static/icon/ver2-icon/index/banner@2x.png',
-    imageStoreto:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/bj@3x.png',
+    imageStoreto:'https://w.aishenglian.com/static/icon/ward/bj@2x.png',
+    imageStoresucc:'https://w.aishenglian.com/static/icon/ward/bj1@2x.png',
     imageclos:'https://w.aishenglian.com/static/icon/ver2-icon/zhuce/gb@2x.png',
+    asllogo:'https://w.aishenglian.com/static/icon/ward/logo@2x.png',
     posImg:'',
     broadcast:require('../../assets/images/border-cast.png'),
     bannerList:[],
@@ -403,32 +427,67 @@ class Home implements HomeInterface {
     imageGroup:'',
     groupFlag:[],
     sinPopFlag:false,//签到弹框显隐
-    newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png'
+    newsimg:'https://w.aishenglian.com/static/icon/ver2-icon/index/xx@2x.png',
+    isunRead:0
    
   }
 
   computed = {
     indexAnmationFlag () {
       return store.state.indexAnmationFlag
+    },
+    f1() {
+        return store.state.Cancels
     }
 
 
   }
 
   watch = {
+    //监听数据变化  刷新数据
+    f1(curVal, oldVal) {
+      //数据变化 刷新消息状态
+      this.getUnread() 
+        }
   }
 
   methods = {
-    //新用户登录去消息页面
+    noop(){},
+    //关闭红包弹窗
     onClose() {
         this.newUser=false;
-      
+        // this.$cmlEmit('charnewues',{
+        //   value:0
+        // })
       },
+    onCloseto() {
+        this.newUserto=false;
+      },
+      //开红包
+    openNew(){
+      this.newUser=false;
+      this.newUserto=true;
+      // this.$cmlEmit('charnewues',{
+      //     value:0
+      // })
+    },
+    lookASL(){
+      this.newUserto=false
+      cml.navigateTo({
+        path: '/pages/ASL/ASL',
+        query:{title:'ASL1明细'}
+      })
+    },
     //该用户是否有未读消息
     getUnread(){
+      store.commit('changeCancel',true)
       getUnreadNews({}).then(res=>{
+        console.log(res)
         if(res.unRead==1){
-          this.newsimg='https://w.aishenglian.com/static/icon/ver2-icon/index/yxx@2x.png'
+          console.log(res.unRead)
+          this.isunRead=1
+        }else if(res.unRead==0){
+          this.isunRead=0
         }
 
       }).catch(err=>{})
@@ -599,13 +658,13 @@ goSpecifiedContent(name){
          case '积分专区':
           this.goRebateCredits(name)
         break;
-         case '拼吧特惠区':
+         case '特惠区':
           this.goRegionClassify(name)
         break;
          case '一键分享':
         this.goShare()
         break;
-        case '今日签到':
+        case '签到':
         this.sign(name)
         break;
         case '已签到':
@@ -619,8 +678,9 @@ goSpecifiedContent(name){
 },
 //去分类
 goRegionClassify(name){
-  // console.log(name)
-  // let pid=this.categoriesList.find(d=>d.name===name).id
+  if(name=='特惠区'){
+    name='拼吧特惠区'
+  }
   let sort='' 
    cml.navigateTo({
   path: '/pages/classify/classify',
@@ -812,8 +872,13 @@ goShare(){
 },
 //签到
 sign(name){
+    cml.navigateTo({
+  path: '/pages/sign-page/sign-page'
+      })
+  return 
+  
 
-  if(name==='今日签到'){
+  if(name==='签到'){
     //获取用户是否签到
     this.getBaseInfoData()
 
@@ -891,9 +956,13 @@ showPop(){
     cml.getStorage('uname').then((value)=>{
     uname=value
     getBaseUserInfo({uname:uname}).then(res=>{
+      console.log(res,'猪猪56978')
+      if(res.code){
+         store.commit('personUserInfo',res.data[0])
+      }
       // 判断今天有没有签到
       if(res.data[0].sign==0){
-        this.signTitle='今日签到'
+        this.signTitle='签到'
       }else{
         this.setSign('已签到')
       }
@@ -998,6 +1067,7 @@ showPop(){
 
 //初始化调用函数
   init(){
+   //首次登录传值
     if(this.newsuser==='1'){
       this.newUser=true
     }
@@ -1021,6 +1091,7 @@ showPop(){
   //获取胶囊按钮数据
   getCapluse(){
      const res=wx.getMenuButtonBoundingClientRect()
+      store.commit('menuButton',res)
       this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
       this.textTop=res.top + res.height/2-8
       this.getSearchHeight()//获取搜索款高度
@@ -1108,6 +1179,7 @@ padding:0 30cpx!important;
   width: 498.2cpx;
   height:640rpx;
   margin-top: 90rpx;
+  z-index: 999;
 }
 .popups .img2{
   width: 60.4cpx;
@@ -1118,11 +1190,17 @@ padding:0 30cpx!important;
 }
 .popups .popupas_text{
     position: absolute;
-    top: 29%;
+    top: 27%;
     left: 0;
     right: 0;
     color: #fff;
-
+}
+.popups .popupas_textto{
+    position: absolute;
+    top: 20%;
+    left: 0;
+    right: 0;
+    color: #fff;
 }
 .popups .rewards_1{
     position: absolute;
@@ -1154,6 +1232,7 @@ padding:0 30cpx!important;
 }
 .popups{
   position: relative;
+  
 }
 .shares{
   position: absolute;
@@ -1640,7 +1719,7 @@ font-size:24cpx;
 }
 
 .share-btn{
-  z-index: 999;
+  z-index: 99;
   position: absolute;
   left:262cpx;
   top:210cpx;
@@ -1835,7 +1914,9 @@ border-radius: 20cpx;
   letter-spacing: 2cpx;
   font-size: 34cpx;
 }
-
+.popclass{
+  z-index: 99;
+}
 
 
 

@@ -1,7 +1,7 @@
 <template>
   <view class="container" >
     <view style="min-height:{{ viewPortHeight }};background:#eee;">
-      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput"></component>
+      <component is="{{currentComp}}" newsuser="{{newsuser}}"  indexLoading="{{indexLoading}}" c-bind:onshowInput="onshowInput" ></component>
     </view>
     <!-- 分类标题-->
     <view class="class_title"  c-if="{{ currentComp==='home'}}" >
@@ -59,6 +59,25 @@
 <recommende-pop ></recommende-pop>
 </view>
 <!-- 推荐弹框 end-->
+
+<!--  首页弹屏-->
+<!-- newsuser=1 表示新人注册 弹红包 -->
+<view class="home-popup" c-if="{{isShowRecommendPop && !newsuser}}">
+<home-popup ></home-popup>
+</view>
+
+
+<!--  首页弹屏 end -->
+
+<!-- 续约弹屏 start -->
+<view class="renewal-pop">
+<renewal-pop></renewal-pop>
+</view>
+<!-- 续约弹屏 end -->
+
+
+
+
   <c-tabbar 
     c-bind:onclick='handleTabbarClick' 
     c-model="{{currentComp}}"  
@@ -71,7 +90,8 @@
 import cml from 'chameleon-api';
 import { checkLogin,  cachOpenid} from '../../untils/publicInterface.js'; 
 import store from '../../store'
-import {getIndexRecommendgoods,getShareInfo,getGoodCate,getclassificationgoods} from '../../api/index'
+import {getIndexRecommendgoods,getGoodCate,getclassificationgoods} from '../../api/index'
+import { indexShareInfo } from '../../api/grouping'
 import { dealStoreTitleName} from '../../untils/processData'
 class Index  {
   data = {
@@ -132,6 +152,14 @@ class Index  {
     stickyTop:0,//吸顶距离
   }
   methods={
+    // charnewues(e){
+
+      
+
+     
+    //   this.newsuser=e.detail.value
+    //   console.log( this.newsuser,6655)
+    // },
     scrolls(){
       return{
         scrollTop:"120cpx",
@@ -277,6 +305,7 @@ goLive(){
   })
   },
    handleTabbarClick(e){
+    this.newsuser=''
      if(e.detail.compName!=='home'){
          store.commit('changeIndexAnmationFlag',false)
      }
@@ -304,9 +333,26 @@ goLive(){
     }
     }
 
+
+    //商学院分享
+
+        if(res.target.id==='3'){
+          const data=res.target.dataset.studay
+        return {
+      title:data.title,
+      desc: data.introduce,
+      path: '/pages/index/index?studayId='+data.id,
+      imageUrl:data.icon
+    }
+    }
+
+
+
+
+
     if (res.from === 'button'){
         return {
-      title:'30亿拼团红包大放送，注册即送10元现金红包...',
+      title:this.title,
       desc: '',
       path: '/pages/share-registration/share-registration?id='+this.value,
       imageUrl:this.shareImg
@@ -318,15 +364,36 @@ goLive(){
     }
     }
     },
+    // //获取分享信息
+    // shareInfo(){
+    //   getShareInfo({}).then(res=>{
+    //     console.log(res,5566)
+    //     if(res.code){
+    //       this.shareImg=store.state.domainUrl+res.data.url    
+    //       this.title=res.data.txt
+    //     }
+    //   }).catch(err=>{})
+    // },
+
     //获取分享信息
+
     shareInfo(){
-      getShareInfo({}).then(res=>{
+      indexShareInfo({}).then(res=>{
         if(res.code){
-          this.shareImg=store.state.domainUrl+res.data.url    
-          this.title=res.data.txt
+          const data=res.data[0]
+          this.shareImg='https://'+data.pic
+          this.title=data.content
         }
+
+
+
       }).catch(err=>{})
+
+
     },
+
+
+    
 
     //监听小程序页面滚动
         onPageScroll:function(e){
@@ -370,6 +437,12 @@ onshowInput(e){
 
 
  created(res){
+
+   
+if(wx.getSystemInfoSync().model.indexOf("iPhone X")>=0){
+      this.tabbar.tabbarStyle="height:188cpx;background-color:#fff;"
+
+}
 
       cml.getSystemInfo().then(info => {
     //这里要减去tabbar的高度，默认是120cpx,如果tabbarStyle中设置了其他高度，则要减去对应的值；
@@ -415,6 +488,21 @@ console.log('分享参数',gid)
        })
 
      }
+//商学院分享
+
+  const studayId=res.studayId
+  if(/^\d+(?=\.{0,1}\d+$|$)/.test(studayId)){
+      cml.navigateTo({
+        path: '/pages/article-details/article-details',
+        query: {
+        id:studayId
+        }
+      })
+
+  }
+
+
+
   }
 
     mounted() {
@@ -425,19 +513,26 @@ console.log('分享参数',gid)
         this.value=value
       }
       })
+
+      this.shareInfo() //获取分享信息
       // this.getRecommendData()
       this.getClassifyItems()
       if(store.state.isCancelLogin){
         checkLogin()
       }
+
+
   }
 
   beforeCreate(query) {
+    console.log('这里啊重点啊',query)
      if(query.currentComp==='shopping-cart'){
       this.currentComp='shopping-cart'
     }
-    this.newsuser=query.newsuser
-   
+    if(query.newsuser){
+      this.newsuser=query.newsuser
+    }
+//判断是否是iphoneX并处理
   }
 
   onShow(){
@@ -662,6 +757,7 @@ export default new Index();
       "demo-com": "/components/demo-com/demo-com",
       "vant": "/components/vant/vant",
       "home": "/components/home/home",
+      "home-popup": "/components/home-popup/home-popup",
       "shopping-cart": "/components/shopping-cart/shopping-cart",
       "leaderboard": "/components/leaderboard/leaderboard",
       "business-school": "/components/business-school/business-school",
@@ -669,6 +765,7 @@ export default new Index();
       "personal-center": "/components/personal-center/personal-center",
       "live-pop": "/components/live-pop/live-pop",
       "recommende-pop": "/components/recommende-pop/recommende-pop",
+      "renewal-pop": "/components/renewal-pop/renewal-pop",
       "van-tab": "/vant/tab/index",
       "van-tabs": "/vant/tabs/index",
       "van-sticky": "/vant/sticky/index"

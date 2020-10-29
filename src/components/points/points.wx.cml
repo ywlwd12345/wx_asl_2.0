@@ -16,14 +16,15 @@
         >
           <view class="panel">
             <view class="item1">
-            <text>{{item.channel}}</text>
-            <text class="color2">{{item.fee}}</text>
+            <text class="integral">{{item.channel}}</text>
+            <text class="color2" c-if="{{item.typeMsg=='收入'}}">{{item.fee}}</text>
+            <text class="color3" c-else>{{item.fee}}</text>
             </view>
           <view class="item2">
-            <text>{{item.typeMsg}}</text>
-            <text>{{item.createTime}}</text>
+            <text class="expenditure">{{item.typeMsg}}</text>
+            <text class="creatime">{{item.createTime}}</text>
           </view>
-          </view>
+          </view> 
         </cell>
     </list>
   
@@ -154,7 +155,7 @@ export default new Points();
 .container{
   width: 750cpx;
   background: #eee;
-
+  margin-top: 20cpx;
 }
 
 .wrap{
@@ -166,7 +167,7 @@ export default new Points();
   width:750cpx;
   padding:20cpx 20cpx;
   background: #fff;
-  margin-top:10cpx;
+border-bottom: 1cpx solid #F3F3F3;
 
 }
 .item1,.item2{
@@ -182,14 +183,30 @@ export default new Points();
 
 }
 .color2{
-  color:#ff410f;
+  font-size: 28cpx;
+  color: #DC4D46;
 }
-
+.color3{
+  font-size: 28cpx;
+  color: #4E9100;
+}
 .loading{
   position: fixed;
   top:35%;
   left: 50%;
   transform: translate(-50%);
+}
+.integral{
+  font-size: 28cpx;
+  color: #222222;
+}
+.expenditure{
+font-size: 28cpx;
+color: #ADADAD;
+}
+.creatime{
+  font-size: 20cpx;
+  color: #ADADAD;
 }
 </style>
 
@@ -197,7 +214,7 @@ export default new Points();
 {
   "base": {
     "usingComponents": {
-        "nav":"/components/nav/nav",
+        "nav":"/components/nav-ver2/nav-ver2",
         "i-spin": "/iview/spin/index"
     }
   }

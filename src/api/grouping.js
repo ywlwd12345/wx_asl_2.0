@@ -514,3 +514,188 @@ export function isLogin(data) {
         url: "/app/islogin"
     });
 }
+
+
+
+/**
+ * @desc 商品页评论信息api
+ * @url /app/goods/page/comments
+ * @method GET
+ * @param { goodsId }
+ * @author ywl
+ */
+export function comments(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/goods/page/comments"
+    });
+}
+
+
+
+/**
+ * @desc 发表评论api
+ * @url app/goods/comment
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function newComments(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/goods/comment"
+    });
+}
+
+
+/**
+ * @desc  商品评论上传图片视频
+ * @url  app/oss/upload
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function commentsImg(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/oss/upload"
+    });
+}
+
+
+
+/**
+ * @desc  获取商品评论api	
+ * @url  /app/goods/comment
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function goodsComments(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/goods/comment"
+    });
+}
+
+
+
+/**
+ * @desc  拼吧确认收货api
+ * @url  app/groups/order/receive
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function confirmReceipt(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/groups/order/receive"
+    });
+}
+
+
+
+/**
+ * @desc  获取待评价商品信息api
+ * @url  /app/tobecomment/goods
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function commentGoodsList(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/tobecomment/goods"
+    });
+}
+
+
+
+/**
+ * @desc 首页弹屏api
+ * @url /app/indexpush
+ * @method GET
+ * @param {   }
+ * @author ywl
+ */
+export function homePopup(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/indexpush"
+    });
+}
+
+
+
+/**
+ * @desc 查看某月签到日期api
+ * @url /app/sign/info
+ * @method GET
+ * @param { year,month}
+ * @author ywl
+ */
+export function signOneMonth(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/sign/info"
+    });
+}
+
+
+
+/**
+ * @desc 拼吧币兑换asl币api
+ * @url /app/groupfee/to/asl
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function pbExchangeAsl1(data) {
+    return request({
+        method: "POST",
+        data,
+        url: "/app/groupfee/to/asl"
+    });
+}
+
+
+
+/**
+ * @desc  获取小程序分享图文信息api
+ * @url /app/share/info
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function indexShareInfo(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/share/info"
+    });
+}
+
+
+/**
+ * @desc  续约商品api
+ * @url /app/share/info
+ * @method GET
+ * @param { type,value}
+ * @author ywl
+ */
+export function renewalGoods(data) {
+    return request({
+        method: "GET",
+        data,
+        url: "/app/renewal/goods"
+    });
+}

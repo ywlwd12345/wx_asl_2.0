@@ -14,9 +14,22 @@
 type EventDetail = {
   value: String
 }
+//定义获取轮播图的真正高度
+type EventDetail1 = {
+  value: Number
+}
+
+
+//设置页面滚动距离
+type EventDetail2 = {
+  value: Number
+}
+
 interface DetailsInterface {
   name: String,
   gid: String,
   onshow(eventDetail: EventDetail): void;
+  onshowCarouselH(eventDetail: EventDetail1): void;
+  setScrollTop(eventDetail: EventDetail2): void;
 }
 </script>

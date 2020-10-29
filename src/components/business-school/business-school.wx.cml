@@ -7,13 +7,14 @@
     scroll-direction="{{scrollDirection}}"
     width="{{740}}"
     height="{{-1}}"
+    cstyle="overflow:hidden;"
   >
   <block c-for="{{listArray}}"
         c-for-index="i"
         c-for-item="item"
         c-key="id"
         >
-  <view class="panels" style="background:{{item.bgColor}}" c-bind:tap="chooseCategory" data-pid="{{item.id}}">
+  <view class="panels  "  c-bind:tap="chooseCategory" data-pid="{{item.id}}" style="opacity:{{item.checkFlag?'0.45':'1'}};">
   <view class="school-name"><text class="school-name-text">{{item.name}}</text></view>
   <view class="school-img"><image src="{{item.icon}}" style="width:272cpx;height:183cpx;border-radius:10cpx;" class="ani-img"></image></view>
   </view>
@@ -45,8 +46,8 @@
 <view class="right-3-l">{{item.createTime}}</view>
 <view class="right-3-r" style="margin-right:35cpx;"  c-catch:click="goShare($event)">
 <image src="{{shareIcon}}" style="width:45cpx;height:45cpx;"></image>
- <origin-button open-type='share' data-studayId=""
-   class="origin-share-btn" size="mini" type="primary" id="1">分享</origin-button>
+ <origin-button open-type='share' data-studay="{{item}}"
+   class="origin-share-btn" size="mini" type="primary" id="3">分享</origin-button>
 </view>
 
 </view>
@@ -105,22 +106,19 @@ class BusinessSchool implements BusinessSchoolInterface {
 
   methods = {
 getData(){
-
+  //学习分类
   studayCategory({}).then(res=>{
     if(res.code){
        this.listArray=res.data.map((d,key)=>{
-        d.icon&&(d.icon="https://"+d.icon)
+        d.icon && (d.icon="https://"+d.icon)
   if(key===0){
     this.id=d.id
+    d.checkFlag=true
     this.listData()
+  }else{
+     d.checkFlag=false
   }
-        // if(key%2===0){
-        //   d.bgColor='linear-gradient(132deg, #7FEBD2, #6AD0CB);'
-        // }else if(key%3===0){
-        //   d.bgColor='linear-gradient(135deg, #65B1F8, #5088F7);'
-        // }else{
-        //    d.bgColor='linear-gradient(135deg, #F7D256, #EFAB4C);'
-        // }
+       
          return d
        })
     }
@@ -156,6 +154,16 @@ const id=currentTarget.dataset.pid
 this.id=id
 this.lists=[]
 this.listData()
+
+this.listArray=this.listArray.map(d=>{
+  if(d.id===id){
+    d.checkFlag=true
+  }else{
+    d.checkFlag=false
+  }
+  return d
+})
+console.log(this.listArray,555666889)
 },
     onBottom(){
        cml.showToast({
@@ -408,6 +416,14 @@ line-height: 35cpx;
   right: 0;
   opacity: 0;
   z-index: 999;
+}
+
+
+::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+    color: transparent;
+    display:none;
 }
 
 

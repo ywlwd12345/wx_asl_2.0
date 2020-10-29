@@ -1,35 +1,49 @@
 <template>
   <view class="container">
-  <nav title="{{ title}}"></nav>
-  <view class="panel-list">
+  <nav title="{{ title}}" c-bind:onshowNav="onshowNav"></nav>
+  <van-sticky offset-top="{{ tp }}">
+  <view class="edit-text" c-bind:tap="showEdit" ><text>{{editTitle}}</text></view>
+  </van-sticky >
+
+  <view class="panel-list" >
     <cell
       class="cell"
       c-for="{{collectionList}}"
       c-for-index="i"
       c-for-item="items"
-      data-idx="{{i}}"
+    c-key="id"
     >
-      <view class="panel">
-        <view class="items items2"  data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)" >
-        <view>
-          <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
-        </view>
-        <view style="width:300cpx;">
-          <text class="spec-order-text" style="font-size:22cpx;">{{items.name}}</text> 
-          <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
-        </view>
-        <view>
-          <text class="spec-order-text">￥{{items.price}}</text>
-        </view>
+      <view class="{{i===0?'panel1':'panel'}}"   >
+      <van-checkbox value="{{ items.flag }}" bind:change="onChangeItem" 
+        data-id="{{items.id}}"
+       checked-color="#DE3A2C" c-if="{{isShowCheck}}"/>
+        <view class="panel-left" style="margin-left:10cpx;"  data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)">
+          <image src="{{items.thumb}}" style="width:220cpx;height:220cpx;border-radius:20cpx;"></image>
         </view>
 
+        <!--<view>
+          <text>{{items.name}}</text> 
+          <text   c-if="{{items.spec}}">{{items.spec}}</text>
+        </view>
+        -->
+        <view class="panel-right" data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)">
+        <view class="panel-right-top">{{items.name}}</view>
+        <view class="panel-right-bot">
+          <text>￥{{items.price}}</text>
+          <image src="{{cartImg}}" style="width:45cpx;height:45cpx; margin-right:10cpx; "
+           data-orderid="{{items.id}}"  c-bind:tap="goDetails(items.id)" c-if="{{false}}"></image>
+        </view>
+        </view>
+        <!-- panel-right end -->
 
-      <view class="items items4">
+
+    
+
+      <!--<view class="items4">
       <view style="margin-left:10cpx;" c-bind:tap="Cancel(items.id)" data-id="{{items.id}}" >
           <van-button round type="info" size="small" color="#f44336">取消收藏</van-button>
       </view>
-
-      </view>
+      </view>-->
           </view>
 
     </cell>
@@ -44,6 +58,13 @@
   <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
 
 
+  <view class="fixed-bot" c-if="{{isShowCheck}}">
+  <van-checkbox value="{{ checkedAll }}" bind:change="onChangeAll" 
+  checked-color="#DE3A2C" c-if="{{false}}">全选</van-checkbox>
+  <view class="sure-btn" c-bind:tap="sureCancel" hover-class="hover-btn">取消关注</view>
+  </view>
+
+
 
 
 
@@ -53,6 +74,7 @@
 <script>
 import cml from 'chameleon-api';
 import {get_Goods,deletesGoods} from '../../api/index'
+import {tip} from '../../untils/processData'
 import store from '../../store'
 class Collection_list implements  Collection_listInterface {
   props = {
@@ -67,7 +89,7 @@ class Collection_list implements  Collection_listInterface {
   }
 
   data = {
-    title:"收藏列表", 
+    title:"商品关注", 
     loading:false,
     detailsList:[],
     collectionList:[],
@@ -76,7 +98,12 @@ class Collection_list implements  Collection_listInterface {
     setBtnName:'取消订单',
     statuss:'',
     confirmReceipt:'确认收货',
-    returnGoods:'申请退货'
+    returnGoods:'申请退货',
+    cartImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/xsqb/buy.png',
+    checkedAll:false,
+    isShowCheck:false,
+    editTitle:'编辑',
+    tp:0
   }
 
   computed = {
@@ -93,6 +120,7 @@ class Collection_list implements  Collection_listInterface {
           if(res.code){
               this.collectionList=res.data.map(d=>{
                 d.thumb='http://'+d.thumb
+                d.flag=false
               return d
               })
           }
@@ -107,7 +135,7 @@ class Collection_list implements  Collection_listInterface {
     },
     //点击取消支付
     Cancel(val){
-      console.log(val)
+    
       deletesGoods({goodsId:val}).then(res=>{
           console.log("取消",res)
           if(res.code==1){
@@ -129,6 +157,56 @@ class Collection_list implements  Collection_listInterface {
         duration: 1500
       })
 
+    },
+  //全选
+    onChangeAll({detail}){
+      this.checkedAll=detail
+    },
+
+    onChangeItem({target,detail}){
+      const id=target.dataset.id
+       this.collectionList=this.collectionList.map(d=>{
+         if(d.id===id){
+           d.flag=detail
+         }else{
+           d.flag=false
+         }
+         return d
+       })
+    },
+//
+    sureCancel(){
+      cml.confirm({
+    message:'你确定取消当前选中条目?',
+    confirmTitle:"确认",
+    cancelTitle: "取消"
+}).then(value=>{
+  if(value==='确认'){
+    const id=this.collectionList.find(d=>d.flag)?this.collectionList.find(d=>d.flag).id:''
+    if(id){
+  this.Cancel(id)
+    }else{
+      tip('请选择一个条目')
+    }
+
+
+
+  }
+})
+
+
+
+    },
+//
+    showEdit(){
+      this.isShowCheck=!this.isShowCheck
+      this.editTitle= this.editTitle==='编辑'?'完成':'编辑'
+    },
+
+//获取导航栏高度
+    onshowNav({detail}){
+      this.tp=detail.value
+      
     }
 
 
@@ -159,101 +237,68 @@ export default new Collection_list();
 
 <style scoped >
 
-.container{
-  width:750cpx;
- 
-  
 
 
-}
-
-.items2{
-  padding:10cpx!important;
-}
-
-.num-posi{
-  margin-top:5cpx;
-}
 
 
 
 .panel-list{
-  /* position: absolute;
-  top: 250cpx;
-  left: 0;
-  right: 0;
-  bottom: 0; */
-
+  margin-top:21px;
+width:750cpx;
 }
 
 .panel{
   width:750cpx;
   min-height: 250cpx;
   background: #fff;
-  padding:10cpx;
-}
-
-.items{
+  padding:20cpx;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content:space-between;
   align-items: center;
-  margin-top:10cpx;
-  padding-bottom:5cpx;
-  border-bottom:2cpx solid #eee;
+  flex-direction: row;
+  border-bottom: 2cpx solid  #F3F3F3;
 }
-.cell{
-  border-bottom:1cpx solid #eee;
-  border-top:1cpx solid #eee;
+
+.panel1{
+  width:750cpx;
+  min-height: 250cpx;
+  background: #fff;
+  padding:20cpx;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  flex-direction: row;
+  border-bottom: 2cpx solid  #F3F3F3;
+  border-radius:20cpx 20cpx 0 0;
 }
-.items3{
-  padding:10cpx!important;
-  width: 100%;
-   display: flex;
+
+.panel-right{
+  margin-left: 20cpx;
+  width: 440cpx;
+  min-height: 230cpx;
+  display: flex;
+  justify-content: space-between;
+  align-items:flex-start;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-end;
-  border-bottom:2cpx solid #eee;
-
 }
-.top{
+
+
+.panel-right-bot{
+    width: 100%;
    display: flex;
-  flex-direction: row;
-  justify-content:space-between;
-  align-items: center;
-
-}
-
-.bottom{
-  margin-top:10cpx;
-   display: flex;
-  flex-direction: row;
-  justify-content:space-between;
-  align-items: center;
-
-}
-.real-total{
-  align-self:flex-end;
-position: relative;
-right: 120cpx;
-}
-
-view.items4{
-  border-bottom:none;
-    justify-content:flex-end;
-
-}
-
-.status{
-   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-direction: row;
+font-size: 38cpx;
+font-weight: 400;
+color: #DC4E47;
+
+
+
+
 }
 
-.cell{
-   /* margin-top:20cpx; */
-}
+
 
 .loading{
   position: fixed;
@@ -273,9 +318,65 @@ view.items4{
   background: #fff;
 }
 
-.spec-order-text{
-   letter-spacing: 2cpx;
-   font-size: 26cpx;
+
+
+
+.edit-text{
+  background: #fff;
+  width: 750cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+ 
+}
+
+.edit-text >text {
+margin-right:50cpx;
+font-size: 26cpx;
+font-weight: 400;
+color: #C1C1C1;
+margin-bottom:20cpx;
+}
+
+.container > text,.container > view{
+  letter-spacing: 2cpx;
+}
+
+.panel-right-top{
+font-size: 28cpx;
+color: #222222;
+}
+
+
+.fixed-bot{
+width: 750cpx;
+height: 110cpx;
+background: #FFFFFF;
+border-top: 2cpx solid #F0F0F0;
+padding: 10cpx;
+position: fixed;
+bottom: 0;
+display: flex;
+justify-content: flex-end;
+flex-direction: row;
+align-items: center;
+}
+
+.sure-btn{
+  width: 218cpx;
+height: 60cpx;
+background: linear-gradient(269deg, #FE583F, #E61B0A);
+border-radius: 30cpx;
+display: flex;
+justify-content: center;
+flex-direction: row;
+align-items: center;
+font-size: 29cpx;
+font-weight: 500;
+color: #FFFFFF;
+
+
 
 }
 
@@ -285,14 +386,17 @@ view.items4{
 {
   "base": {
     "usingComponents": {
-          "nav":"/components/nav/nav",
+          "nav":"/components/nav-ver2/nav-ver2",
            "van-tab": "/vant//tab/index",
             "van-tabs": "/vant/tabs/index",
             "details-panel":"/components/details-panel/details-panel",
              "i-spin": "/iview/spin/index",
               "van-icon": "/vant//icon/index",
               "van-button": "/vant/button/index",
-              "van-loading": "/vant/loading/index"
+              "van-loading": "/vant/loading/index",
+              "van-checkbox": "/vant/checkbox/index",
+              "van-checkbox-group": "/vant/checkbox-group/index",
+              "van-sticky": "/vant/sticky/index"
     }
   }
 }

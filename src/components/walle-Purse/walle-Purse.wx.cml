@@ -1,6 +1,6 @@
 <template>
   <view class="container" style="min-height:{{viewPortHeight}}cpx;">
-    <view class="nav">
+    <!--<view class="nav">
     <view class="purse-title">
     <view class="icon" ><van-icon name="arrow-left" size="24px" bind:click="goBack" color="#fff"/>
    </view>
@@ -14,7 +14,8 @@
     <image src="{{ userInfoObj.avatar }}" style="width:100cpx;height:100cpx;border-radius:50%;background:#e9eaec;"></image>
     </view>
     </view>
-    <!-- purse end-->
+
+   
     <view class="purse-bi">
     <view class="currency" c-bind:tap="goRecord(1)">
     <text>拼吧币</text>
@@ -25,12 +26,49 @@
     <text>{{userInfoObj.lowFee}}</text>
     </view>
     </view>
-    <!-- purse-bi end-->
+ 
     </view>
-    <!-- purse-wrap end-->
+ 
     </view>
-    <!--nav end-->
-  <view class="cell-wrap">
+    -->
+      <nav  title="{{ title}}"></nav>
+
+      <view class="content">
+
+      <view class="user-bg">
+      <view class="user-img">
+        <image src="{{userInfoObj.avatar?userInfoObj.avatar:avatar }}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+      </view>
+      <view class="user-info">
+      <text>{{userInfoObj.mobile}}</text>
+      <text class="user-vip">{{userInfoObj.level}}</text>
+      </view>
+      </view>
+      <!-- user-bg end -->
+
+      <view  class="user-cell">
+      <block   c-for="{{cellList}}"
+          c-for-item="item"
+            c-for-index="i"
+          c-key="text">
+      <van-cell title="{{item.text}}" is-link  bind:click="goOtherPage" 
+      border="{{i===3?false:true}}"
+       value="{{item.num}}" data-text="{{item.text}}"/>
+      </block>
+      </view>
+
+
+
+
+
+
+
+      
+      
+      </view>
+      <!-- content end -->
+
+ <!-- <view class="cell-wrap">
   <block  c-for="{{cellList}}"
           c-for-item="item"
           c-key="text">
@@ -44,7 +82,9 @@
 </view>
 </view>
 </block>
-</view>
+</view>-->
+
+
 </view>
 </template>
 
@@ -52,29 +92,24 @@
 import cml from 'chameleon-api';
 import {getWalletInfo} from '../../api/grouping.js' //引入拼团模块接口
 import store from '../../store'
-
 const objList=[
   {
-  text:'充值',
-  icon:require('../../assets/group-images/icon/cz.png'),
-  flag:false
+  text:'拼吧币',
+  num:''
   },
   {
-  text:'兑换',
-  icon:require('../../assets/group-images/icon/dh.png'),
-  flag:true
+  text:'低消币',
+  num:''
   },
 
    {
-  text:'提现',
-  icon:require('../../assets/group-images/icon/tx.png'),
-  flag:false
+  text:'ASL1兑换',
+  num:''
   },
-  {
-  text:'收支明细',
-  icon:require('../../assets/group-images/icon/szmx.png'),
-  flag:false
-  }
+   {
+  text:'拼吧币兑换',
+  num:''
+  },
 ]
 class WallePurse implements WallePurseInterface {
   props = {
@@ -91,7 +126,9 @@ class WallePurse implements WallePurseInterface {
     cellIcon3:require('../../assets/group-images/icon/tx.png'),
     cellIcon4:require('../../assets/group-images/icon/szmx.png'),
     userInfoObj:{},
-    cellList:objList
+    cellList:objList,
+    title:'拼团钱包',
+    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png'
   }
 
   computed = {
@@ -101,16 +138,28 @@ class WallePurse implements WallePurseInterface {
   }
 
   methods = {
-      goBack(){
-    cml.navigateBack(-1);
-  },
+ 
     getData(){
        cml.getStorage('uname').then((value)=>{
          if(value){
            getWalletInfo({uname:value}).then(res=>{
              if(res.code){
-               this.userInfoObj=res.data[0]
-               this.userInfoObj.avatar=store.state.domainUrl+ this.userInfoObj.avatar
+               const data=res.data[0]
+               this.userInfoObj=data
+               this.userInfoObj.avatar=data.avatar?store.state.domainUrl+ data.avatar:''
+               this.cellList=this.cellList.map(d=>{
+                 if(d.text==='拼吧币'){
+                   d.num=data.groupFee
+                  
+                 }else if(d.text==='低消币'){
+                    d.num=data.lowFee
+
+                 }
+
+                 return d
+
+               })
+              
              }
            }).catch(err=>{})
          }
@@ -120,36 +169,28 @@ class WallePurse implements WallePurseInterface {
   })
 
   },
-  goOther(e){
+ goOtherPage(e){
       let name=e.currentTarget.dataset.text
       this.choosePlace(name)
   },
 
   choosePlace(name){
     switch(name) {
-     case '充值':
-         cml.navigateTo({
-  path: '/pages/top-up/top-up'
-  })
+     case '拼吧币':
+     this.goRecord(1)
         break;
-     case '兑换':
+     case 'ASL1兑换':
         cml.navigateTo({
   path: '/pages/group-exchange/group-exchange'
   })
         break;
-      case '提现':
-             cml.navigateTo({
-    path: '/pages/group-withdrawal/group-withdrawal'
+        case '拼吧币兑换':
+        cml.navigateTo({
+  path:'/pages/pb-exchange/pb-exchange'
   })
         break;
-
-        case '收支明细':
-             cml.navigateTo({
-      path: '/pages/group-income/group-income'
-  })
-
-
-     
+      case '低消币':
+      this.goRecord(2)
         break;
      default:
       
@@ -203,108 +244,77 @@ class WallePurse implements WallePurseInterface {
 export default new WallePurse();
 </script>
 
-<style >
-.nav{
-width: 750cpx;
-height: 480cpx;
-background: #e43a15;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to left, #e65245, #e43a15);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to left, #e65245, #e43a15); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-display: flex;
-flex-direction:column;
-justify-content: start;
-align-items: center;
-border-radius: 0 0 80cpx 80cpx;
-position: relative;
-}
-.purse-title{
-  position: relative;
-  margin-top:80cpx;
-  width:750cpx;
-  min-height: 100cpx;
-display: flex;
-flex-direction:row;
-justify-content:flex-start;
-align-items: center;
+<style  scoped>
 
-}
-.icon{
-display: flex;
-flex-direction:row;
-justify-content:flex-start;
-align-items: center;
-flex-grow: 0.5
-
-}
-
-.purse-wrap{
-  width:710cpx;
-  /* margin:0 auto; */
-  position: absolute;
-  min-height: 350cpx;
-  background: #fff;
-  border-radius: 10cpx;
-  top:280cpx;
- border: 2cpx solid rgba(227, 227, 227, 1);
- box-shadow: 0 1.5cpx 20cpx rgba(0, 0, 0, 0.24), 0 1.5cpx 22cpx rgba(0, 0, 0, 0.12);
-}
-
-.purse{
-margin-top:25px;
-display: flex;
-padding:0 15cpx;
-flex-direction:row;
-justify-content:center;
-align-items: center;
-}
-
-.purse-bi{
-  margin-top:50px;
-display: flex;
-padding:0 15cpx;
-flex-direction:row;
-justify-content:space-around;
-align-items: center;
-}
-
-.currency{
-  display: flex;
-flex-direction:column;
-justify-content:center;
-align-items: center;
-transition: all 0.5s;
-
-}
-.currency:hover{
-  background-color: #f8f8f9;
-}
-.cell{
-display: flex;
-flex-direction:row;
-justify-content:space-between;
-align-items: center;
-border-bottom: 2cpx solid #eee;
-transition: all 0.5s;
-padding-bottom:8cpx;
-
-}
-
-.cell:hover{
-  background: #eee;
-}
-
-.cell-wrap{
+.content{
   width: 750cpx;
-  margin-top:180cpx;
-  padding:0 20cpx;
+background: #FFFFFF;
+min-height: 200cpx;
+padding: 20cpx;
+margin-top:20cpx;
+
 }
 
-.purse-qb-center{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%)
+
+.user-bg{
+  background-repeat:no-repeat;
+  margin:0 auto;
+  width: 680cpx;
+  height: 240cpx;
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/wallet/bj@2x.png');
+  background-size:contain;
+ display: flex;
+flex-direction: row;
+justify-content: flex-start;
+align-items: center;
 }
 
+.user-img{
+  width: 150cpx;
+height: 150cpx;
+background: #FFFFFF;
+border-radius: 50%;
+border:8cpx solid #ff9587;
+overflow: hidden;
+margin-left:35cpx;
+
+}
+
+
+.user-vip{
+min-width: 116cpx;
+min-height: 32cpx;
+background: linear-gradient(89deg, #FF8A00, #FFBE15);
+border-radius: 16cpx;
+font-size: 18cpx;
+font-weight: 500;
+color: #FFFFFF;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+.user-info{
+  display: flex;
+justify-content:center;
+align-items:flex-start;
+flex-direction: column;
+margin-left:21cpx;
+
+}
+
+.user-info > text:nth-child(1){
+font-size: 33cpx;
+font-weight: 500;
+color: #FFFFFF;
+margin-bottom:20cpx;
+}
+
+.container > text,.container > view{
+  letter-spacing: 2cpx;
+  
+}
 
 
 </style>
@@ -313,7 +323,10 @@ padding-bottom:8cpx;
 {
   "base": {
     "usingComponents": {
-    "van-icon": "/vant/icon/index"
+    "van-icon": "/vant/icon/index",
+     "nav":"/components/nav-ver2/nav-ver2",
+    "van-cell": "/vant/cell/index",
+    "van-cell-group": "/vant/cell-group/index"
 
     }
   }

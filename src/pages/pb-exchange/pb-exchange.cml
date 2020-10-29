@@ -1,0 +1,288 @@
+<template>
+ <view class="container" style="min-height:{{viewPortHeight}}cpx;">
+  <nav title="{{title}}"></nav>
+  <!-- payee end-->
+  <view class="coin">
+  <view ><text>账户</text></view>
+  <view>
+  <van-radio-group value="{{ type }}" bind:change="onChangeRdio">
+   <view class="rad2 rad"><van-radio  checked-color="#f4211a" name="asl1">拼吧币</van-radio>
+   <text class="spec-info">{{ userInfoObj.groupFee}}</text></view>
+  </van-radio-group>
+  </view>
+
+
+  </view>
+
+  <!-- coin end-->
+  <view class="money">
+  <view class="coin1"><text>填写兑换数量:</text></view>
+  <view class="input-coin">
+   <van-cell-group>
+  <van-field
+    clearable
+     border="{{ false }}"
+    input-class="spec-input"
+    bind:change="onChangePay"
+  />
+</van-cell-group>
+   </view>
+
+   <view><text class="spec-cash">可兑换的ASL1：{{userInfoObj.groupFee}}</text></view>
+  </view>
+  <!-- money end-->
+
+
+<view class="btn">
+<van-button type="primary" round 
+color="linear-gradient(to right, #e73827, #f85032)" 
+block bind:click="sure">提交</van-button>
+</view>
+<van-dialog
+  use-slot
+  title="输入支付密码"
+  show="{{ show }}"
+  show-cancel-button
+ bind:confirm="okSure"
+ bind:close="close"
+ bind:cancel="cancel"
+ 
+>
+
+ <van-field
+    clearable
+   
+    input-class="spec-input"
+    bind:change="onChangePassword"
+    type="password"
+  />
+  
+
+
+
+</van-dialog>
+
+
+  </view>
+</template>
+
+<script>
+
+import cml from 'chameleon-api';
+import {getWalletInfo , pbExchangeAsl1} from '../../api/grouping.js' //引入拼团模块接口
+
+class PbExchange   {
+
+  data = {
+    title:'拼吧币兑换',
+    viewPortHeight:'',
+    userInfoObj:'',
+    type:'asl1',
+    formData:{
+      type:'asl1',
+      value:''
+    }
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+
+     getData(){
+       cml.getStorage('uname').then((value)=>{
+         if(value){
+           getWalletInfo({uname:value}).then(res=>{
+
+           
+             if(res.code){
+               this.userInfoObj=res.data[0]
+               this.userInfoObj.avatar=store.state.domainUrl+ this.userInfoObj.avatar
+             }
+           }).catch(err=>{})
+         }
+
+
+
+  })
+
+  },
+  onChangePay(e){
+    this.formData.value=e.detail
+
+  },
+
+  sure(){
+
+  pbExchangeAsl1(this.formData).then(res=>{
+    if(res.code){
+      this.getData()
+    }
+      this.tip(res.msg)
+
+
+
+
+    }).catch(err=>{})
+    
+
+    
+
+
+
+  },
+
+    tip(msg){
+        cml.showToast({
+        message: msg,
+        duration: 1000
+      })
+
+    },
+
+  init(){
+
+    this.getData()
+
+  }
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+    this.init()
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new PbExchange();
+</script>
+
+<style scoped>
+.container{
+  width:750cpx;
+  background: #eee;
+}
+
+
+
+.coin{
+  width:710cpx;
+  margin:20cpx auto;
+  min-height: 150cpx;
+  display: flex;
+  justify-content:space-around;
+  align-items: flex-start;
+  flex-direction:column;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+
+}
+
+.rad{
+ 
+   display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction:row;
+
+
+}
+
+.input-coin{
+  width: 100%;
+}
+
+.spec-input{
+  width: 100%;
+ border-bottom: 2cpx solid #000;
+}
+
+.money{
+  width:710cpx;
+  margin:20cpx auto;
+  display: flex;
+  justify-content: space-around;
+  align-items:flex-start;
+  flex-direction: column;
+  background: #fff;
+  padding:10cpx 20cpx;
+  border-radius: 10cpx;
+}
+
+ .cash{
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content:space-between;
+   align-items:center;
+   
+ }
+
+ .coin1{
+  color:#f44336;
+ 
+
+}
+
+.btn{
+  width: 710cpx;
+  margin:0 auto;
+  margin-top:50cpx;
+}
+
+.spec-info{
+  color: #ff410f;
+  margin-left:40cpx;
+}
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+        "nav":"/components/nav/nav",
+        "van-field": "/vant/field/index",
+         "van-radio": "/vant/radio/index",
+        "van-radio-group": "/vant/radio-group/index",
+        "van-button": "/vant/button/index",
+        "van-dialog": "/vant/dialog/index"
+
+    }
+  },
+  "wx": {
+     "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

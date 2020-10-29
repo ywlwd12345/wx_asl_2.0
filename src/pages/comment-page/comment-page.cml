@@ -4,8 +4,8 @@
    <view class="content">
    <view class="goods-detail">
    <view class="top">
-   <view class="top-img">这是一张图片</view>
-   <text class="top-text">逩腾剃须刀电动刮胡刀男士迷你小巧便携双刀头水 洗车载USB充电式</text>
+   <view class="top-img"><image src="{{'https://'+goodsData.thumb}}" style="width: 130cpx;height:130cpx;"></image></view>
+   <text class="top-text">{{goodsData.name}}</text>
    </view>
    <!-- top end-->
    <view class="bottom">
@@ -30,16 +30,14 @@
     placeholder="请输入留言"
     input-class="text-area"
     border="{{ false }}"
+    bind:change="changeComment"
   />
 </van-cell-group>
 
 <view class="file-upload">
-
-<van-uploader file-list="{{ fileList }}" bind:after-read="afterRead" />
-
-
-
-
+<van-uploader file-list="{{ fileList }}" bind:after-read="afterRead"  
+bind:delete="deleteImg"
+ multiple  deletable="{{ true }}" />
 </view>
 
 <!-- file-upload end -->
@@ -51,24 +49,38 @@
 
 
    </view>
-   <view class="btn-custom">
-
+   <view class="{{ flag || formData.comment? 'btn-custom':'btn-custom1'}}" c-bind:tap="submit" hover-class="hover-btn">
    发表评论
-
    </view>
-
- 
-
   </view>
 </template>
 
 <script>
 
+import cml from 'chameleon-api';
+import {getGoodDetails} from '../../api/index'
+import {commentsImg,newComments} from '../../api/grouping'
+import store from '../../store'
+import {tip} from '../../untils/processData'
 class CommentPage  {
 
   data = {
-    value: 3,
-    fileList: [{url:'https://w.aishenglian.com/static/icon/ver2-icon/my/tx@2x.png'}],
+    value:3,
+    fileList:[],
+    flag:false,
+    formData:{
+      videoUrl:[],
+      imgUrl:[],
+      orderId:'',
+      goodsId:'',
+      comment:'',
+      star:3
+    },
+    posImg:{
+      type:'JPG',
+      goodsId:'',
+    },
+    goodsData:{},//商品数据
   }
 
   computed = {
@@ -80,20 +92,144 @@ class CommentPage  {
   methods = {
       afterRead(event) {
     const { file } = event.detail;
+ 
     // 当设置 mutiple 为 true 时, file 为数组格式，否则为对象格式
-    wx.uploadFile({
-      url: 'https://example.weixin.qq.com/upload', // 仅为示例，非真实的接口地址
-      filePath: file.path,
-      name: 'file',
-      formData: { user: 'test' },
-      success(res) {
-        // 上传完成需要更新 fileList
-        const { fileList = [] } = this.data;
-        fileList.push({ ...file, url: res.data });
-        this.setData({ fileList });
-      },
-    });
+      wx.showToast({
+            title: '上传中...',
+            icon: 'loading'
+        });
+
+    cml.getStorage('token').then((value) => {
+        // 处理获取到的键值
+       const token = value
+           file.map(d=>{
+         wx.uploadFile({
+      url: 'https://w.aishenglian.com/app/oss/upload', 
+      name: 'files',
+      filePath: d.path,
+      formData:this.posImg,
+      header: {
+                       'content-type': 'application/json',
+                        'From': 'App',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'bearer ' + token
+                    },
+      success:(res)=>{
+          wx.hideToast();
+        const response =JSON.parse(res.data)
+        if(response.code){
+          this.fileList.push({ ...file, url:response.data[0] })
+            if(this.fileList.length){
+              this.flag=true
+            }else{
+              this.flag=false
+            }
+        }
+         // 上传完成需要更新 fileList
+        // const { fileList = [] } = this.data;
+      }
+
+
+    })
+    return d
+
+    })
+        })
+
+
+ 
+
+
+   
+
+
+  },
+  // 添加称述
+  changeComment({detail}){
+    this.formData.comment=detail
+  },
+
+  getData(){
+getGoodDetails({id:this.formData.goodsId}).then(res=>{
+ 
+  if(res.code){
+    this.goodsData=res.data[0]
   }
+
+}).catch(err=>{})
+
+  },
+    onChange({detail}) {
+    this.value=detail
+    this.formData.star=detail
+  },
+
+
+
+
+
+//删除图片事件
+  deleteImg({detail}){
+    this.fileList=this.fileList.filter((d,index)=>{
+      return index!==detail.index
+    })
+     if(this.fileList.length){
+              this.flag=true
+            }else{
+              this.flag=false
+            }
+  },
+
+  submit(){
+     this.formData.imgUrl=[]
+    if(!this.fileList.length && !this.formData.comment){
+      tip('请添加评论内容')
+    }else{
+      this.fileList.map(d=>{
+         this.formData.imgUrl.push(d.url)
+         return d
+      })
+      newComments(this.postData()).then(res=>{
+        console.log(res,'提交的顺序')
+        if(res.code){
+          tip('发表成功',3000)
+        }else{
+          tip(res.msg)
+        }
+      }).catch(err=>{})
+    }
+
+  },
+
+  postData(){
+    let obj={}
+
+    for(let key in this.formData){
+      if(key==='videoUrl' || key==='imgUrl'){
+        obj[key]=JSON.stringify(this.formData[key])
+      }else{
+        obj[key]=this.formData[key]
+      }
+
+    }
+    return obj
+
+
+
+
+  },
+
+
+
+  init(){
+    this.formData.goodsId=store.state.globalId.goodsId
+    this.posImg.goodsId=store.state.globalId.goodsId
+    // this.posImg.goodsId=5497
+    this.formData.orderId=store.state.globalId.orderId
+    this.getData()
+  }
+
+
   }
 
   beforeCreate(query) {
@@ -109,6 +245,8 @@ class CommentPage  {
   }
 
   mounted() {
+    this.init()
+
   }
 
   onHide() {
@@ -137,8 +275,6 @@ padding: 20cpx;
 min-height: 267cpx;
 background: #FFFFFF;
 border-radius: 20cpx;
-
-
 }
 
 .top-img{
@@ -186,7 +322,7 @@ line-height: 46cpx;
 padding: 20cpx;
 margin-top:18cpx;
 width: 750cpx;
-height: 517cpx;
+min-height: 517cpx;
 background: #FFFFFF;
 border-radius: 20cpx;
 }
@@ -204,6 +340,23 @@ width: 581cpx;
 height: 80cpx;
 background: #E9210F;
 box-shadow: 0cpx 0cpx 25cpx 0cpx rgba(205, 26, 10, 0.3);
+border-radius: 40cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+font-size: 30cpx;
+font-weight: 500;
+color: #FFFFFF;
+margin-top:92cpx;
+}
+
+
+.btn-custom1{
+margin:0 auto;
+width: 581cpx;
+height: 80cpx;
+background: #E7E7E7;
 border-radius: 40cpx;
 display: flex;
 justify-content: center;

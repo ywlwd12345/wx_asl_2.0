@@ -16,11 +16,13 @@
          <view class="list-wrap">
   <view class="top">
   <text class="top-text1">{{item.channel}}</text>
-  <text class="top-text2">{{item.type==="收入"?'+':'-'}} {{item.fee}}</text>
+  <text class="top-text2" c-if="{{item.type=='收入'}}">{{item.type==="收入"?'+':'-'}} {{item.fee}}</text>
+  <text class="top-text3" c-if="{{item.type=='支出'}}">{{item.type==="收入"?'+':'-'}} {{item.fee}}</text>
+  
   </view>
   <view class="bottom">
   <text class="spec-type">{{item.type}}</text>
-  <text class="bottom-text1 spec-type">{{item.createTime}}</text>
+  <text class="bottom-text1">{{item.createTime}}</text>
   </view>
   </view>
         </cell>
@@ -184,13 +186,13 @@ export default new ASL();
 <style >
 .container{
 width: 750cpx;
+padding-top: 20cpx;
 }
 
 .list-wrap{
   margin:0 auto;
   min-height:150cpx;
   width: 750cpx;
-  margin-bottom: 20cpx;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -198,6 +200,7 @@ width: 750cpx;
   background: #fff;
   border-bottom: 5cpx solid #fff;
   padding:20cpx;
+  border-bottom: 1cpx solid #F3F3F3;
 }
 
 .top{
@@ -222,9 +225,15 @@ width: 750cpx;
 }
 
 .top-text2{
-  color: #ff0000;
-  font-weight: bold;
 
+font-size: 28cpx;
+color: #DC4E47;
+}
+.top-text3{
+
+font-size: 28cpx;
+
+color: #4E9200;
 }
 
 .loading{
@@ -236,17 +245,25 @@ width: 750cpx;
 
 .spec-type{
   font-size: 28cpx;
-  color:#5f5f5f
+color: #AEAEAE;
 
 }
-
+.top-text1{
+  font-size: 28cpx;
+  color: #222222;
+}
+.bottom-text1{
+  
+font-size: 20cpx;
+color: #AEAEAE;
+}
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-      "nav":"/components/nav/nav",
+      "nav":"/components/nav-ver2/nav-ver2",
       "van-nav-bar": "/vant/nav-bar/index",
        "van-icon": "/vant/icon/index",
         "i-spin": "/iview/spin/index"

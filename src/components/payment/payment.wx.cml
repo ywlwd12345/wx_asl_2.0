@@ -95,6 +95,7 @@
 <script>
 import {getOrderInfo,payMoney,getOpenid,appletPay,cancellationpay,preferential} from '../../api/index'
 import cml from 'chameleon-api';
+ import {tip} from '../../untils/processData'
 
 class Payment implements PaymentInterface {
   props = {
@@ -226,28 +227,32 @@ class Payment implements PaymentInterface {
         if(this.payDatas.goodsData[0].isLow!=1){
           appletPay(this.Submission).then(res=>{
             let that=this
-            if(res.code==2){
-              wx.requestPayment({
-                timeStamp:res.data[0].timestamp,
-                nonceStr: res.data[0].nonceStr,
-                package:res.data[0].package,
-                signType: "MD5",
-                paySign:res.data[0].sign,
-                success (res) {
-                  cml.redirectTo({
-                path: '/pages/pay-succeed/pay-succeed'
-              })
-              },
-              fail (res) {
-                that.quxiao()
-                console.log(res)
-                cml.showToast({
-                    message:'取消支付',
-                    duration: 2000
-                })
-              }
+            if(res.code===2){
+              // wx.requestPayment({
+              //   timeStamp:res.data[0].timestamp,
+              //   nonceStr: res.data[0].nonceStr,
+              //   package:res.data[0].package,
+              //   signType: "MD5",
+              //   paySign:res.data[0].sign,
+              //   success (res) {
+              //     console.log(res,7889654)
+              //     cml.redirectTo({
+              //   path: '/pages/pay-succeed/pay-succeed'
+              // })
+               
+              // },
+              // fail (res) {
+              //   that.quxiao()
+              //   console.log(res)
+
+              //   cml.showToast({
+              //       message:'取消支付',
+              //       duration: 2000
+              //   })
+              // }
     
-              })
+              // })
+              that.allWxpay(res.data[0])
             }else if(res.code==1){
                 cml.showToast({
                     message:res.msg,
@@ -269,28 +274,40 @@ class Payment implements PaymentInterface {
           preferential(this.Submission).then(res=>{
             console.log('特惠区支付',res)
             let that=this
-            if(res.code==2){
-              wx.requestPayment({
-                timeStamp:res.data[0].timestamp,
-                nonceStr: res.data[0].nonceStr,
-                package:res.data[0].package,
-                signType: "MD5",
-                paySign:res.data[0].sign,
-                success (res) {
-                  cml.redirectTo({
-                path: '/pages/pay-succeed/pay-succeed'
-              })
-              },
-              fail (res) {
-                that.quxiao()
-                console.log(res)
-                cml.showToast({
-                    message:'取消支付',
-                    duration: 2000
-                })
-              }
+            if(res.code===2){
+              // wx.requestPayment({
+              //   timeStamp:res.data[0].timestamp,
+              //   nonceStr: res.data[0].nonceStr,
+              //   package:res.data[0].package,
+              //   signType: "MD5",
+              //   paySign:res.data[0].sign,
+              //   success (res) {
+                 
+
+                 
+              //     cml.redirectTo({
+              //   path: '/pages/pay-succeed/pay-succeed'
+              // })
+              // },
+              // fail (res) {
+              //     console.log(res,'失败状态')
+
+              //   if(res.errMsg==='requestPayment:fail cancel'){
+              //       that.quxiao()
+
+              //   }
+
+              
+              
+              //   // cml.showToast({
+              //   //     message:'取消支付',
+              //   //     duration: 2000
+              //   // })
+              // }
     
-              })
+              // })
+
+              that.allWxpay(res.data[0])
             }else if(res.code==1){
                 cml.showToast({
                     message:res.msg,
@@ -312,7 +329,13 @@ class Payment implements PaymentInterface {
     },
     quxiao(){
       cancellationpay({orderId:this.payDatas.orderId}).then(res=>{
+        
         if(res.code){
+
+          tip('取消成功',5000)
+
+        
+         
 
         }else{
 
@@ -384,6 +407,7 @@ class Payment implements PaymentInterface {
         duration: 1000
       })
 
+
       }
 
 
@@ -421,6 +445,38 @@ class Payment implements PaymentInterface {
         message:msg,
         duration: 1500
       })
+
+    },
+    allWxpay(data){
+    
+        let that=this
+       wx.requestPayment({
+                timeStamp:data.timestamp,
+                nonceStr: data.nonceStr,
+                package:data.package,
+                signType: "MD5",
+                paySign:data.sign,
+                success (res) {
+                  //真正支付的成功
+                  if(res.errMsg==='requestPayment:ok'){
+                       cml.redirectTo({
+                path: '/pages/pay-succeed/pay-succeed'
+              })
+                  }else{
+                     tip(res.errMsg,15000)
+                  }
+              },
+              fail (res) {
+                //用户自己人为点击支付密码框取消按钮才去调用后端的取消接口
+                if(res.errMsg==='requestPayment:fail cancel'){
+                    that.quxiao()
+                }else{
+                  tip(res.errMsg,15000)
+                }
+              }
+    
+              })
+
 
     }
     

@@ -3,6 +3,9 @@
   <!--<head title="{{title}}"></head>-->
   <head-ver2 title="购物车"></head-ver2>
 
+
+
+
   <view class="car-show" c-if="{{!cartList.length}}">
    <image src="{{noCarImg}}" style="width:301cpx;height:301cpx"></image>
    <view class="cart-tip" style="margin-top:36cpx;font-size:24
@@ -144,7 +147,7 @@
   button-text="{{'结算('+num+')'}}"
   bind:submit="yesCart"
   tip="{{ true }}"
-  custom-class="add-height"
+  custom-class="{{isIphoneX>=0?'add-height1':'add-height'}}"
   loading="{{false}}"
   button-class="submit-btn"
 >
@@ -157,7 +160,7 @@
 
 </view>
 <!-- submit end-->
-<view class="spec-column"></view>
+<view class="spec-column" ></view>
 <view c-if="{{loading}}" class="loading">
 <van-loading   type="spinner" />
 </view>
@@ -229,7 +232,8 @@ class ShoppingCart implements ShoppingCartInterface {
   },
 
 id:'',//商品id
-noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png'
+noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png',
+isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
 
   }
 
@@ -240,6 +244,8 @@ noCarImg:'https://w.aishenglian.com/static/icon/ver2-icon/car/che@2x.png'
   }
 
   methods = {
+
+
 
     deleteCart(e){
       let id=e.currentTarget.dataset.id
@@ -693,7 +699,12 @@ width: 100%;
 .add-height{
   width: 750cpx;
   margin-bottom: 120cpx;
+}
 
+
+.add-height1{
+  width: 750cpx;
+  margin-bottom: 174cpx;
 }
 
 .submit-btn{
@@ -726,14 +737,13 @@ background: linear-gradient(269deg, #FE573F, #E61A09)!important;
 width: 100cpx;
 background: #F7A226;
 box-shadow: 1px 5px 10px 0px rgba(183, 183, 183, 0.22);
- display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
 color:#fff;
 
 }
-
 
 .i-swipeout-demo-button2{
 width: 100cpx;

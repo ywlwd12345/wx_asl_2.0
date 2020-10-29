@@ -2,7 +2,7 @@
   <view> 
   <nav title="{{title}}"></nav>
   <view class="bg">
-  <image src="{{imageSrc}}" style="width:400cpx;height:400cpx;" ></image>
+  <image src="{{imageSrc}}" style="width: 290cpx;height: 250cpx;" ></image>
   </view>
 
   <view class="gf-about">
@@ -14,12 +14,16 @@
    <text class="spec-text">客服电话</text>
   <text class="spec-text">400-8567-085</text>
   </view>
+  <view class="gf gf2">
+   <text class="spec-text">版本号</text>
+  <text class="spec-text">V1.1.4</text>
+  </view>
   </view>
 
   <view class="bq">
-  <view><text class="spec-text">爱生链共享服务有限公司版权所有</text></view>
+  <!--<view><text class="spec-text">爱生链共享服务有限公司版权所有</text></view>
   <view><text class="spec-text">Copyright 02018 Aishenglian.com</text></view>
-  <view><text class="spec-text">All Rights Reserves</text></view>
+  <view><text class="spec-text">All Rights Reserves</text></view>-->
   </view>
    
 
@@ -38,7 +42,7 @@ class AboutUs implements AboutUsInterface {
 
   data = {
     title:'关于我们',
-    imageSrc: require('../../assets/images/linkIcon/login/gy.png'),
+    imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/level-2/about-us/gywm.png',
   }
 
   computed = {
@@ -79,11 +83,13 @@ export default new AboutUs();
 
 .bg{
   width: 750cpx;
-  margin-top:30cpx;
+  padding-top:50cpx;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
+  margin-bottom: 100cpx;
+  border-top: 1cpx solid #F9F9F9;
 }
 
 .gf-about{
@@ -123,6 +129,8 @@ export default new AboutUs();
 }
 .spec-text{
   letter-spacing: 2cpx;
+  font-size: 28cpx;
+  color: #222222;
 }
 
 </style>
@@ -131,7 +139,7 @@ export default new AboutUs();
 {
   "base": {
     "usingComponents": {
-        "nav":"/components/nav/nav"
+        "nav":"/components/nav-ver2/nav-ver2"
     }
   }
 }

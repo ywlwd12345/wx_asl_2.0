@@ -20,8 +20,9 @@
   <view class="input-coin">
    <van-cell-group>
   <van-field
+   border="{{ false }}"
     clearable
-    input-class="spec-input"
+   
     bind:change="onChangePay"
   />
 </van-cell-group>
@@ -76,7 +77,7 @@ class GroupExchange implements GroupExchangeInterface {
   }
 
   data = {
-    title:'兑换',
+    title:'ASL1兑换',
     viewPortHeight:'',
     userInfoObj:'',
     type:'asl1',

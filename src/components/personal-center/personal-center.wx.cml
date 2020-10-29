@@ -79,8 +79,8 @@
           c-key="text"
 >
 
-<view>
-<view class="section-icon"  c-bind:tap="goSection" data-name="{{item.text}}">
+<view  c-bind:tap="goSection" data-name="{{item.text}}">
+<view class="section-icon" >
  <image src="{{item.imageSrc}}" style="width:55cpx;height:55cpx;" ></image>
 </view>
 <view class="section"><text class="icon-text">{{item.text}}</text></view>
@@ -89,7 +89,9 @@
 </block>
 
 </view>
- <image src="{{vipImg}}" style="width:710cpx;height:125cpx;"  class="my-vip"></image>
+ <image src="{{vipImg}}" style="width:710cpx;height:125cpx;"  class="my-vip" c-bind:tap="goMyVip"></image>
+
+
   <view class="set-person">
   <view class="order-management">
    <view >  
@@ -201,7 +203,7 @@
   
   </view>
    <!-- set-person end-->
-<view class="cml-btn">
+<view class="cml-btn" style="margin-bottom:{{isIphoneX >= 0?88:20}}cpx;">
  <van-button 
  type="primary"
  block
@@ -242,19 +244,19 @@ const imgArrayOrder=[
  {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfk@2x.png',
    text:'待付款',
-   type:3
+   type:1
 
-},
-{
-   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfh@2x.png',
-   text:'待发货',
-   type:1  ,
-   num:''
 },
 {
    imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dsh@2x.png',
    text:'待收货',
    type:2  ,
+   num:''
+},
+{
+   imageSrc:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfh@2x.png',
+   text:'已完成',
+   type:3  ,
    num:''
 }
 
@@ -411,7 +413,7 @@ class PersonalCenter implements PersonalCenterInterface {
     imgInfo:imgInfo,
     imgSection:imgSection,
     userObj:{},
-    avatar:'',
+    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png',
     vipSign:require('../../assets/images/qd@2x.png'),
     bgImg:'https://w.aishenglian.com/static/icon/ver2-icon/mine/bj@2x.png',
     vipImg:'https://w.aishenglian.com/static/icon/ver2-icon/asl-vip/ASL@2x.png',
@@ -433,6 +435,7 @@ class PersonalCenter implements PersonalCenterInterface {
     realNamed:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/ysm@2x.png',
     specLevel:'',
     levelInfo:'',//店主等级判断字段
+    isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
 
   }
 
@@ -623,11 +626,14 @@ class PersonalCenter implements PersonalCenterInterface {
       })
         break;
         case "实名认证":
-        if(this.levelInfo<2){
-          tip('店主及以上才能实名认证',2000)
-        }else{
-            cml.navigateTo({path: '/pages/verified-page/verified-page'})
-        }
+            cml.navigateTo({
+  path: '/pages/verified-page/verified-page'
+      })
+        // if(this.levelInfo<2){
+        //   tip('店主及以上才能实名认证',2000)
+        // }else{
+        //     cml.navigateTo({path: '/pages/verified-page/verified-page'})
+        // }
         break;
         case "商学院":
           this.xuexi()
@@ -720,27 +726,27 @@ class PersonalCenter implements PersonalCenterInterface {
   query:{title:name}
       })
   },
-    getInfo(){
+//     getInfo(){
 
-      cml.getStorage('userInfo').then((value)=>{
-        console.log(value,'用户信息')
-    // 处理获取到的键值
+//       cml.getStorage('userInfo').then((value)=>{
+//         console.log(value,'用户信息')
+//     // 处理获取到的键值
 
-    // this.isStandard(value.userinfo)
-    this.userObj=value.userinfo
+//     // this.isStandard(value.userinfo)
+//     this.userObj=value.userinfo
     
-    if(value.userinfo.avatar.substr(0,5)==='https'){
-       this.avatar=value.userinfo.avatar
+//     if(value.userinfo.avatar.substr(0,5)==='https'){
+//        this.avatar=value.userinfo.avatar
        
-    }else{
-       this.avatar=store.state.domainUrl+value.userinfo.avatar
+//     }else{
+//        this.avatar=store.state.domainUrl+value.userinfo.avatar
 
-    }
+//     }
     
    
-})
+// })
 
-    },
+//     },
     //退出登录
     quit(){
       let self=this
@@ -842,14 +848,17 @@ class PersonalCenter implements PersonalCenterInterface {
             message: "登录失效",
             duration: 2000
           })
+           return 
         }
+       
       }
       this.usersinfo=res.data[0]
       this.specLevel=res.data[0].level
-      this.avatar='https://'+this.usersinfo.avatar
+      this.avatar=this.usersinfo.avatar?'https://'+this.usersinfo.avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my-ver2/tx@2x.png'
       //是否实名验证
             const data=res.data[0]
             console.log(res.data[0],'草包')
+            store.commit('personUserInfo',res.data[0])
             this.isCertification=data.authentication
             this.levelInfo=res.data[0].levelInfo
       // this.isCertification && (this.setCertificationUi())
@@ -892,6 +901,11 @@ showPop(){
 
   //设置用户签到模块功能
   sign(){
+    cml.navigateTo({
+  path: '/pages/sign-page/sign-page'
+      })
+    return 
+
      if(this.signTitle==='今日签到'){
     //获取用户是否签到
     this.getBaseUserData()
@@ -899,8 +913,7 @@ showPop(){
   }else{
     this.tip('你已经签到过了')
 
-    console.log('1223')
-
+  
   }
 
 
@@ -951,6 +964,8 @@ showPop(){
 
   },
 
+
+
  
 
 
@@ -999,13 +1014,13 @@ showPop(){
             })
         this.OrderCarousel=data
        this.img =this.img.map(d=>{
-          if(d.type===1){
+          if(d.type===3){
             //设置待发货角标
           d.num=data.toBeDelivered
           }else if(d.type===2){
               //设置待收货角标
                d.num=data.toBeReceived
-          }else if(d.type===3){
+          }else if(d.type===1){
              d.num=data.toBePay
 
           }else{
@@ -1027,7 +1042,51 @@ showPop(){
      const res=wx.getMenuButtonBoundingClientRect()
       this.marginTop=res.top + res.height// 让搜索框位于离胶囊按钮的中间
     
+  },
+  //去我的会员页面
+  goMyVip(){
+
+    const level=store.state.personUserInfo.levelInfo
+    switch (level) {
+         case 1:
+               this.goVipPage('/pages/my-vip-asl/my-vip-asl')
+        
+        break;
+         case 2:
+               this.goVipPage('/pages/my-vip-senior/my-vip-senior')
+        
+        break;
+         case 3:
+               this.goVipPage('/pages/my-vip-senior/my-vip-senior')
+        break;
+         case 4:
+               this.goVipPage('/pages/my-vip-leader/my-vip-leader')
+        
+        break;
+         case 5:
+               this.goVipPage('/pages/my-vip-district/my-vip-district')
+        break;
+
+          case 6:
+            tip('目前没有省代页面')
+        break;
+    
+      default:
+        break;
+    }
+
+
+    
+
+  },
+
+  goVipPage(page){
+     cml.navigateTo({
+            path: page,
+          }) 
   }
+
+
 
 
 
@@ -1337,6 +1396,7 @@ border-radius: 10cpx;
 .cml-btn{
   width: 580cpx; 
   margin:20cpx auto;
+  margin-bottom:88cpx;
 
 }
 

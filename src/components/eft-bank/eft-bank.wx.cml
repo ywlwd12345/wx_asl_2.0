@@ -2,18 +2,42 @@
   <view class="container" style="min-height:{{viewPortHeight}}cpx;">
   <nav title="{{title}}"></nav>
   <view class="payee">
-  <van-cell-group>
-  <van-field
-    clearable
-    label="收款人"
-    placeholder="请输入对方账户名"
-    border="{{false}}"
-      bind:change="onChangeAccount"
-  />
-</van-cell-group>
+    <image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/zz/sk@2x.png" style="width: 33cpx;height: 33cpx;"/>
+    <van-cell-group>
+      <van-field
+        clearable
+        label="收款人"
+        placeholder="请输入对方账户名"
+        border="{{false}}"
+          bind:change="onChangeAccount"
+      />
+    </van-cell-group>
+  </view>
+  <view class="adds" style="margin: 0 25cpx;background: #fff;border-radius: 0 0 10cpx 10cpx;padding-left: 20cpx;"> 
+    <view class="curs">
+      <view class="title_left">
+        <view class="icons"><image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/tx/tx@2x.png"/></view>
+        <view class="withdrawal_title">转账币种</view>
+        <view class="withdrawal_title" style="color:#999999;margin-left: 30cpx;">{{aslName}}</view>
+      </view>
+    </view>
+    <view class="classification">
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="1" checked-color="#DD392B" icon-size="15" label-class="{{addcur==1?'radio_textto':'radio_text'}}">现金币</van-radio>
+      </van-radio-group>
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="2" checked-color="#DD392B" icon-size="15" label-class="{{addcur==2?'radio_textto':'radio_text'}}">ASL1</van-radio>
+      </van-radio-group>
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="3" checked-color="#DD392B" icon-size="15" label-class="{{addcur==3?'radio_textto':'radio_text'}}">ASL2</van-radio>
+      </van-radio-group>
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="4" checked-color="#DD392B" icon-size="15" label-class="{{addcur==4?'radio_textto':'radio_text'}}">积分</van-radio>
+      </van-radio-group>
+    </view>
   </view>
 
-  <!-- payee end-->
+  <!-- payee end
   <view class="coin">
   <view class="item item1"><text>转账币种</text></view>
   <view class="item item2">
@@ -24,12 +48,13 @@
    <view class="rad4 rad"><van-radio  checked-color="#f4211a" name="score">积分</van-radio></view>
   </van-radio-group>
   </view>
-  </view>
+  </view>-->
 
   <!-- coin end-->
   <view class="money">
   <view class="coin1"><text>转账金额</text></view>
   <view class="input-coin">
+  <view style="font-size: 28cpx;color:#222222;">¥</view>
    <van-cell-group>
   <van-field
     clearable
@@ -41,15 +66,17 @@
    </view>
 
    <view><text class="spec-cash">可用余额</text></view>
-   <view class="cash1 cash coin1"><text>现金币：{{coinObj.fee1}}</text> <text>ASL1：{{coinObj.fee2}}</text></view>
-   <view class="cash1 cash coin1"><text>ASL2：{{coinObj.fee3}}</text> <text>积分：{{coinObj.score}}</text></view>
+   <view class="cash1 cash"><text style="width: 300rpx;">现金币：{{coinObj.fee1}}</text> <text>ASL1：{{coinObj.fee2}}</text></view>
+   <view class="cash1 cash"><text style="width: 300rpx;">ASL2：{{coinObj.fee3}}</text> <text>积分：{{coinObj.score}}</text></view>
   </view>
   <!-- money end-->
+
+  <view style="font-size: 32cpx;color: #EA2210;text-align: center;margin-top: 20cpx;" c-if="{{accounts}}">转账失败，请核对收款人账号！</view>
 
 
 <view class="btn">
 <van-button type="primary" round 
-color="linear-gradient(to right, #e73827, #f85032)" 
+color="#E92210" 
 block bind:click="sure">提交</van-button>
 </view>
 <van-dialog
@@ -74,7 +101,14 @@ block bind:click="sure">提交</van-button>
 
 
 </van-dialog>
-
+<van-popup show="{{ shows }}" bind:close="onClose" custom-class="popclass">
+  <view style="width:431cpx;height:453cpx;">
+    <view style="margin-top: 100cpx;">
+      <image src="https://w.aishenglian.com/static/icon/ver2-icon/level-2/zz/zz@3x.png" style="width: 159cpx;height: 159cpx;margin: 0 auto;"/>
+    </view>
+    <view style="font-size: 37cpx;color: #222222;text-align: center;margin-top: 30rpx;">转账成功</view>
+  </view>
+</van-popup>
 
   </view>
 </template>
@@ -92,6 +126,8 @@ class EftBank implements EftBankInterface {
   }
 
   data = {
+    accounts:false,
+    shows:false,
     title:'转账',
     type:'fee1',
     coinObj:{},
@@ -101,7 +137,11 @@ class EftBank implements EftBankInterface {
     show:false,
     word:'',
     id:'',
-    viewPortHeight:''
+    viewPortHeight:'',
+    add:0,
+    aslName:'请选择',
+    radio:'5',
+    addcur:''
   }
 
   computed = {
@@ -111,6 +151,34 @@ class EftBank implements EftBankInterface {
   }
 
   methods = {
+    onClose() {
+    this.shows=false
+  },
+  xuanzhong(){
+    if(this.add==0){
+      this.add=1
+    }else{
+      this.add=0
+    }
+  },
+      onChange(e){
+      this.radio=e.detail
+      this.addcur=this.radio
+      console.log(this.radio)
+      if(this.radio==1){
+        this.aslName='现金币'
+        this.type='fee1'
+      }else if(this.radio==2){
+        this.aslName='ASL1'
+        this.type='fee2'
+      }else if(this.radio==3){
+        this.aslName='ASL2'
+        this.type='fee3'
+      }else{
+        this.aslName='积分'
+        this.type='score'
+      }
+    },
     onChangeRdio(e){
         this.type=e.detail
 
@@ -163,11 +231,12 @@ class EftBank implements EftBankInterface {
     putPay({sender:uname,receiver:this.to,value:this.money,type:this.type,pass2:this.password}).then(res=>{
       console.log(res)
       if(res.code==1){
-        this.tip(res.msg)
+        this.shows=true
+        this.accounts=false
         this.password=''
         this.getInfo()
       }else{
-        this.tip(res.msg)
+        this.accounts=true
         this.password=''
       }
 
@@ -261,18 +330,21 @@ export default new EftBank();
 .container{
   width:750cpx;
   background: #eee;
+  height: 100vh;
 }
 
 .payee{
-  width:710cpx;
-  margin:20cpx auto;
+  
+  width:704cpx;
+  margin:0 auto;
   display: flex;
-  justify-content: space-around;
   align-items: center;
   flex-direction: row;
   background: #fff;
   padding:10cpx 20cpx;
-  border-radius: 10cpx;
+  border-radius: 10cpx 10cpx 0 0;
+  margin-top: 20rpx;
+  border-bottom: 1cpx solid #EFEFEF;
 
 }
 
@@ -295,12 +367,18 @@ export default new EftBank();
 }
 
 .input-coin{
-  width: 100%;
+    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1cpx solid #EFEFEF;
+  margin-bottom: 20cpx;
 }
 
 .spec-input{
   width: 100%;
- border-bottom: 2cpx solid #000;
+  font-size: 58cpx;
+  height: 80cpx;
 }
 
 .money{
@@ -319,37 +397,103 @@ export default new EftBank();
    width: 100%;
    display: flex;
    flex-direction: row;
-   justify-content:space-between;
    align-items:center;
    
  }
+ .cash text{
+   font-size: 22cpx;
+   color: #ED422A;
+  padding-bottom:10cpx;
+ }
 
  .coin1{
-  color:#f44336;
+font-size: 28cpx;
+color: #9A9A9A;
  
 
 }
 
 .btn{
-  width: 710cpx;
+  width: 581cpx;
   margin:0 auto;
-  margin-top:50cpx;
+  margin-top:80cpx;
 }
-
-
-
+.adds{
+    height: 150rpx;
+    overflow: hidden;
+}
+.addsto{
+    height: 75rpx;
+    overflow: hidden;
+}
+.curs{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1cpx solid #EFEFEF;
+  padding: 20cpx 0;
+  
+}
+.title_left{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.value_title{
+  font-size: 28cpx;
+  color: #999999;
+}
+.values{
+  font-size: 28cpx;
+  color: #212121;
+}
+.withdrawal_title{
+  font-size: 28cpx;
+  color: #212121;
+  padding-left: 20cpx;
+}
+.radio_text{
+  font-size: 22cpx;
+  color: #999999;
+}
+.radio_textto{
+  font-size: 22cpx;
+  color: #f44336;
+}
+.classification{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20cpx 0;
+}
+.icons image{
+    width: 31rpx;
+    height: 31rpx;
+    margin-right: 10rpx;
+}
+.spec-cash{
+  font-size: 22cpx;
+  color: #9A9A9A;
+  padding: 20cpx 0;
+}
+.popclass{
+  border-radius: 20cpx;
+}
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-        "nav":"/components/nav/nav",
+        "nav":"/components/nav-ver2/nav-ver2",
         "van-field": "/vant/field/index",
          "van-radio": "/vant/radio/index",
         "van-radio-group": "/vant/radio-group/index",
         "van-button": "/vant/button/index",
-        "van-dialog": "/vant/dialog/index"
+        "van-dialog": "/vant/dialog/index",
+         "van-popup": "/vant/popup/index"
         
 
 

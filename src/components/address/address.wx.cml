@@ -12,13 +12,14 @@
   bind:click-right="onClickRight"
   safe-area-inset-top="{{true}}"
 >
-<van-icon name="arrow-left"  slot="left" color="#fff" size="64rpx" custom-class="icon-nav"/>
+<!--<van-icon name="arrow-left"  slot="left" color="#AAAAAA" size="64rpx" custom-class="icon-nav"/>-->
+<image src="{{back}}" style="width:24cpx;height:37cpx;" slot="left"></image>
 <text slot="right" class="slot-text">添加</text>
 </van-nav-bar>
   </view>
-  <!--nav end-->
 
-   <block 
+
+  <!-- <block 
          c-for="{{lists}}"
           c-for-index="i"
           c-for-item="item"
@@ -40,13 +41,12 @@
   <view class="info-name"><text>{{item.receiver}}</text></view>
   <view class="info-phone"><text>{{item.mobile}}</text></view>
   </view>
-    <!--info-top end-->
+
 
    <view class="info-bottom" style="width:400cpx;">
    <view class="user-addres" ><text>{{item.province+item.city+item.district+item.place}}</text></view>
   </view>
 
-   <!--info-bottom end-->
   
   
   </view>
@@ -55,14 +55,36 @@
   <van-icon name="edit" size="30px" bind:tap="edit" data-id="{{item.id}}"/>
   </view>
   </view>
-  <!-- cell-content-->
+
   <view slot="right" class="spec-delete"
   c-bind:tap="deleteItem(item.id)"  data-id="{{item.id}}" ><text >删除</text></view>
 </van-swipe-cell>
   </view>
-  </block>
-
-  <!-- swipe-cell end-->
+  </block>-->
+<block 
+         c-for="{{lists}}"
+          c-for-index="i"
+          c-for-item="item"
+      >
+<view class="list" c-bind:tap="Changeadd(item)">
+  <view class="name_phone">
+      <view class="name">{{item.receiver}}</view>
+      <view class="phone">{{item.mobile}}</view>
+  </view>
+  <view class="citys">{{item.province  +item.city  +item.district  +item.place}}</view>
+  <view class="operation">
+    <view c-bind:tap="setDefault(item.id)">
+      <van-radio-group value="{{ item.isDefault }}">
+        <van-radio name="1" label-class="address" icon-size="15" checked-color="#DD3A2C">默认地址</van-radio>
+      </van-radio-group>
+    </view>
+    <view class="bianji">
+      <view class="oper" style="padding-right:30cpx;" c-bind:tap="edit(item.id,item.receiver,item.mobile)">编辑</view>
+      <view class="oper" c-bind:tap="deleteItem(item.id)">删除</view>
+    </view>
+  </view>
+</view>
+</block>
  
  
   
@@ -72,7 +94,7 @@
 <script>
 import cml from 'chameleon-api';
 import store from '../../store'
-import {getAddrlist,deleteAddr} from '../../api/index'
+import {getAddrlist,deleteAddr,setDefaultAddr} from '../../api/index'
 class Address implements AddressInterface {
  props = {
     name: {
@@ -88,7 +110,9 @@ class Address implements AddressInterface {
   data = {
     title:"收货地址",
     lists:[],
-    checked:false
+    checked:false,
+    radio:'1',
+    back:require('../../assets/images/fanhui.png')
   }
 
   computed = {
@@ -130,31 +154,56 @@ class Address implements AddressInterface {
         getAddrlist({uname:uname}).then(res=>{
           console.log(res,888444666)
           if(res.code==1){
-            this.lists=res.data
+          this.lists=res.data.map((d,index)=>{
+            if(d.isDefault==true){
+              d.isDefault='1'
+            }
+            return d
+          })
           }
         }).catch(err=>{})
       })
 
     },
+  //设置默认地址
+  setDefault(id){
+    let uname
+    cml.getStorage("uname").then(value => {
+    uname=value
+    setDefaultAddr({id:id,uname:uname}).then(res=>{
+      if(res.code==1)
+      this.tip("设置成功")
+      this.getData()
+    }).catch(err=>{})
+    })
+  },
+    //删除收货地址
     deleteItem(id){
       console.log(id)
       this.confirmTip(id)
     },
-    //点击修改
-    edit(e){
-      let areaId=e.currentTarget.dataset.id
-      this.lists.forEach((value)=>{
-        if(value.id==areaId){
+    //编辑收货地址
+    edit(id,receiver,mobile){
           cml.navigateTo({
             path:'/pages/add-location/add-location',
             query:{
-              areaId:value.id,
-              value1:value.receiver,
-              value2:value.mobile,
+              areaId:id,
+              value1:receiver,
+              value2:mobile,
             }
           })
-        }
-      });
+      // this.lists.forEach((value)=>{
+      //   if(value.id==areaId){
+      //     cml.navigateTo({
+      //       path:'/pages/add-location/add-location',
+      //       query:{
+      //         areaId:value.id,
+      //         value1:value.receiver,
+      //         value2:value.mobile,
+      //       }
+      //     })
+      //   }
+      // });
       
     },
     //点击选择地址
@@ -235,13 +284,13 @@ width: 750cpx;
 }
 
 .nav-root{
- background: linear-gradient(to right, #e73827, #f85032);
+ background: #fff;
 padding-bottom: 60cpx;
 }
 
 .title-style{
   margin-top:55cpx;
-  color:#fff;
+  color:#000;
 }
 
 .icon-nav{
@@ -250,10 +299,11 @@ padding-bottom: 60cpx;
 
 
 .slot-text{
-  color: #fff;
+  color: #C1C1C1;
+  font-size: 26cpx
 }
 
-.swipe-cell{
+/* .swipe-cell{
   width: 750cpx;
   border-bottom:5cpx solid #eee;
 }
@@ -304,8 +354,57 @@ padding-bottom: 60cpx;
 
 .update{
   width:150cpx;
+} */
+.list{
+    margin-top: 30cpx;
+    background: #fff;
+    padding: 30cpx 40cpx;
 }
+.name_phone{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.citys{
+    margin-top: 10cpx;
+    margin-bottom: 30cpx;
+}
+.operation{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1cpx solid #F3F3F3;
+    padding-top: 20cpx;
 
+}
+.bianji{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+.name{
+    font-size: 24cpx;
+    color: #222222;
+}
+.phone{
+    color: #999999;
+    font-size: 24cpx;
+    margin-left: 20cpx;
+}
+.citys{
+    font-size: 24cpx;
+    color: #222222;
+}
+.oper{ 
+  font-size: 20cpx;
+  color: #999999;
+}
+.address{
+  font-size: 20cpx;
+  color: #999999;
+}
 </style>
 
 <script cml-type="json">
@@ -320,7 +419,9 @@ padding-bottom: 60cpx;
         "van-checkbox": "/vant/checkbox/index",
         "van-checkbox-group": "/vant/checkbox-group/index",
         "i-tag": "/iview/tag/index",
-        "van-icon": "/vant/icon/index"
+        "van-icon": "/vant/icon/index",
+        "van-radio": "/vant/radio/index",
+        "van-radio-group": "/vant/radio-group/index"
 
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <view>
+  <view class="container">
 <change-pay></change-pay>
   </view>
 </template>
@@ -48,7 +48,12 @@ class ChangePay   {
 export default new ChangePay();
 </script>
 
-<style>
+<style scoped>
+.container{
+  background: #eee;
+  width: 750cpx;
+  min-height: 100vh;
+}
 
 </style>
 

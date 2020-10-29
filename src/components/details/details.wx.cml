@@ -1,8 +1,24 @@
 <template>
    <view class="container">
-   <nav title="{{title}}"></nav>
+   <!--<nav title="{{title}}"></nav>-->
+   <view class="fixed-list" style="padding-top:{{marginTop}}px;height:{{fixListH}}px;opacity:{{navOpacity}};">
+   <view class="arrow" style="margin-left:32cpx;" c-bind:tap="goBack"><image src="{{fixListImg}}" 
+   style="width:47cpx;height:47cpx;"></image></view>
+     <block
+         c-for="{{ fixeList}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="value"
+      >
+   <view class="fix-list-goods" c-bind:tap="selectSlide" data-id="{{item.value}}">
+   <text>{{item.label}}</text>
+   <view class="{{item.flag?'fix-border-bottom':'fix-border-bottom1'}}"></view>
+   </view>
+  </block>
+   </view>
   <!--nav end-->
   <view class="store-detail">
+  <view class="carousel-wrap">
   <carousel class="wrap-img" indicator-dots="{{true}}"  current="{{0}}" circular="{{true}}" autoplay="{{true}}">
       <block
          c-for="{{ storeList}}"
@@ -16,49 +32,139 @@
       </carousel-item>
       </block>
       </carousel>
-      <view class="desc">
+      <view class="pos-img" style="top:{{marginTop}}px;opacity:{{1-navOpacity}};" c-bind:tap="goBack">
+        <image src="{{posImg}}" style="width:58cpx;height:58cpx;opacity:{{1-navOpacity}};"></image>
+      </view>
+</view>
+<!-- carousel-wrap end-->
+  </view>
+
+  <!-- store-detail end-->
+
+
+
+     <view class="desc">
       <view class="price">
-      <text class="now-price spec-text">￥{{allDetails.price}}</text>
-      <text class="original-price spec-text" style="margin-left:100cpx;">￥{{allDetails.marketPrice}}</text>
+      <view class="price-desc">
+      <text class="now-price">￥{{allDetails.price}}</text>
+      <text class="original-price">￥{{allDetails.marketPrice}}</text>
       </view>
+
+      <view class="favorites"  c-bind:tap="coolect_p">
+      <van-icon name="{{iconss}}" color="{{colors}}" size="20px"/>
+      <text class="favorites-text" >收藏</text>
+      </view>
+      <!-- favorites end-->
+
+      </view>
+
+      <!-- price end-->
+
       <view class="ASL">
-      <text class="als-text spec-text">可获取的ASL3数量：{{allDetails.getAsl3}}</text>
-      <text class="als-text spec-text">可抵扣的ASL1数量：{{allDetails.useAsl1}}</text>
+      <text class="als-text-als3">可获取的ASL3数量：{{allDetails.getAsl3}}</text>
+      <text class="als-text-als1">可抵扣的ASL1数量：{{allDetails.useAsl1}}</text>
       </view>
-      <view class="product-name"><text class="spec-name">{{allDetails.name}}</text></view>
+      <view class="product-name"><text >{{allDetails.name}}</text></view>
       </view>
+      <!-- desc end -->
+
+
+      <view class="introduce-2">
+  <view class="js1">
+  <view class="ms"><view>销量：</view><view class="js-color">999+</view></view>
+  <view class="ms"><view>收藏：</view><view class="js-color">999+</view></view>
+  <view class="ms"><view>库存：</view><view class="js-color">999+</view></view>
+  </view>
+   <view class="js2">
+  <view class="ms"><image src="{{iconSpec}}"
+   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text>全国包邮</text></view>
+  <view class="ms"><image src="{{iconSpec}}"
+   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text>假一赔十</text></view>
+  <view class="ms"><image src="{{iconSpec}}"
+   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text>正品保证</text></view>
+  <view class="ms"><image src="{{iconSpec}}"
+   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text>源头供货</text></view>
   </view>
 
-  <view class="js js1">
-  <view class="ms"><text class="spec-text">销量:</text><text class="js-color">999+</text></view>
-  <view class="ms"><text class="spec-text">收藏:</text><text class="js-color">999+</text></view>
-  <view class="ms"><text class="spec-text">库存:</text><text class="js-color">充足</text></view>
   </view>
+  <!--  introduce-2 end-->
 
-   <view class="js js2">
-  <view class="ms"><image src="{{iconSpec}}"
-   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text class="spec-text">全国包邮</text></view>
-  <view class="ms"><image src="{{iconSpec}}"
-   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text class="spec-text">假一赔十</text></view>
-  <view class="ms"><image src="{{iconSpec}}"
-   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text class="spec-text">正品保证</text></view>
-  <view class="ms"><image src="{{iconSpec}}"
-   style="width:22cpx;height:22cpx;margin-right:8cpx;"></image><text class="spec-text">源头供货</text></view>
-  </view>
-
-  <view class="js js3">
+  <!--<view class="js js3">
   <view class="ms"><text class="spec-text">详情介绍</text></view>
   <view class="ms"><text class="spec-text">好评度:</text><text class="js-color spec-text" >100%</text></view>
-  </view>
+  </view>-->
 
+  <view class="evaluation">
+
+  <view class="eval-title">
+  <view class="eval-title-left">
+  <view class="divider"></view>
+  <text style="margin-left:10cpx;">评价 {{commentData.count}}</text>
+  </view>
+  <view class="eval-title-right">好评率 {{commentData.favorableComments}}</view>
+  </view>
+  <block  c-for="{{commentsArray}}"
+          c-for-index="i"
+          c-for-item="item"
+          c-key="i">
+  <view class="eval-user">
+  <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-raius:50%;"></image>
+  <view class="rate">
+  <text>{{item.uname}}</text>
+  <van-rate value="{{item.star}}"  readonly />
+  </view>
+  </view>
+  <!-- eval-user end-->
+  <view class="eval-user-desc">
+  <view class="eval-desc-say">{{item.comment}}</view>
+  <view class="eval-img-wrap">
+  <view class="img-wrap-one"  
+          c-for="{{item.imgs}}"
+          c-for-index="i"
+          c-for-item="img"
+          c-key="i" >
+          
+
+          <image src="{{img}}" style="width:150cpx;height:150cpx;border-raius:8cpx;"></image>
+          
+          
+          
+          </view>
+  </view>
+  <!-- eval-img-wrap end-->
+
+  <view class="eval-desc-like">
+  <view class="like-btn">
+  <image src="{{likeImg}}" style="width:22cpx;height:21cpx;margin-right:8cpx;" ></image>
+  <text>{{item.like}}</text>
+  </view>
+  </view>
+  <!-- eval-desc-like end-->
+  </view>
+  <!-- eval-user-desc end -->
+
+  </block>
+
+  <view class="more-eval-btn"  c-bind:tap="moreComment" data-id="{{gid}}"> 查看更多评价</view>
+
+
+
+
+  </view>  <!-- 评价 -->
 
   <view class="details-content">
-    <origin-rich-text nodes="{{ allDetails.content }}"></origin-rich-text>
+      <view class="eval-title">
+  <view class="eval-title-left">
+  <view class="divider"></view>
+  <text style="margin-left:10cpx;">商品介绍</text>
+  </view>
+  </view>
+    <origin-rich-text nodes="{{ allDetails.content }}" style="margin-top:10cpx;"></origin-rich-text>
   </view>
 
 
 
-  <view class="goods-action">
+  <view class="goods-action"  c-if="{{false}}">
   <van-goods-action>
   <van-goods-action-icon
     icon="chat-o"
@@ -88,7 +194,9 @@
 
 
 </van-goods-action>
-  </view><!--goods-action end-->
+  </view>
+  
+  <!--goods-action end-->
 
   <!--选择商品规格-->
    <view class="pane">
@@ -149,19 +257,52 @@
 </view>
 <van-dialog id="van-dialog" confirm-button-color="#ff410f" />
 <share-pop obj="{{passObj}}" c-if="{{objFlag}}" c-bind:onshow="setBackground"></share-pop>
-<view class="pop-back" style="{{popStyle}}"></view>
+<view class="pop-back" style="{{popStyle}}"></view>  <!-- 设置分享弹框背景色-->
+
+<view class="{{isIphoneX>=0?'bottom-btn-cart1':'bottom-btn-cart'}}" >
+<view class="cart-customer" c-bind:tap="onClickIconTel"  hover-class="hover-btn">
+ <image src="{{cartImg}}" style="width:45cpx;height:38cpx;"></image>
+  <text>客服</text>
+</view>
+
+<view class="cart-bus"  c-bind:tap="onClickIconCart" hover-class="hover-btn">
+ <image src="{{cartBus}}" style="width:45cpx;height:38cpx;"></image>
+  <text>购物车</text>
+</view>
+
+<view class="join-cart"  c-bind:tap="onClickButtonCart"  hover-class="hover-btn">加入购物车</view>
+<view class="now-buy" c-bind:tap="onClickButtonNow" hover-class="hover-btn">立即购买</view>
+</view>
+
+
   </view>
 </template>
 
 <script>
 import cml from 'chameleon-api';
 import {getGoodDetails,getStyle,addCartData,getBaseUserInfo,CollectiongGoods,deletesGoods} from '../../api/index'
-
-import {getErWeiData} from '../../api/grouping.js' //引入拼团模块接口
-
+import {getErWeiData,comments} from '../../api/grouping.js' //引入拼团模块接口
 import { dealDetailsStrData,arrayChangeObj,dealImg,dealDetailsStyle} from '../../untils/processData'
 import store from '../../store'
 import Dialog from '../../vant/dialog/dialog'
+
+const fixeList=[
+  {
+  value:1,
+  label:'商品',
+  flag:true,
+},
+  {
+  value:2,
+  label:'评价',
+  flag:false,
+},
+  {
+  value:3,
+  label:'详情',
+  flag:false
+}
+]
 class Details implements DetailsInterface {
   props = {
     name: {
@@ -175,15 +316,24 @@ class Details implements DetailsInterface {
   }
 
   data = {
-    iconss:'like-o',
-    colors:'rgb(100,101,102)',
+    fixListH:'',
+    fixeList:fixeList,
+    marginTop:'',
+    iconss:'star-o',
+    colors:'#666666',
     purchase:0,//判断是加入购物车还是直接购买  直接购买为1
     login:'',
     guige_price:'',
     guige:'100',
     ceshi:[1,2,3,4,5],
     title:"详情",
-    iconSpec:require('../../assets/images/linkIcon/gou.png'),
+    likeImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/dz/dz@2x.png',
+    iconSpec:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/dg@2x.png',
+    cartImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/kf@2x.png',
+    posImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/fh@2x.png',
+    cartBus:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/gwc@2x.png',
+    fixListImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/fh1@2x.png',
+    evalUserImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/details/fh@3x.png',
     storeList:[],
     allDetails:{},
     ensureSrc:'',//产品首页原图
@@ -216,17 +366,60 @@ class Details implements DetailsInterface {
     passObj:{},// 传送给分享弹框的对象
     objFlag:false, // 为了传异步的值给弹框组件
     popStyle:'',
-    erWeiMaUrl:''
+    erWeiMaUrl:'',
+    commentsArray:[],//评价数组
+    commentData:{}, // 评价数据
+    goodsTp:'',
+    commentTp:'',
+    detailsTp:'',
+    tapFlag:true,
+    isIphoneX: wx.getSystemInfoSync().model.indexOf("iPhone X")
   }
 
-  computed = {
+  computed =  store.mapState({
+    // 箭头函数可使代码更简练
+   navOpacity: state => state.navOpacity,
+   detailTop(state){
+     const distance= state.detailTop
+     return state.detailTop
+
+   }
+
+     // 传字符串参数 'count' 等同于 `state => state.count`
+    // countAlias: 'count',
+
+     // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+    // countPlusLocalState (state) {
+    //   return state.count + this.localCount
+    // }
+  })
+
+
+  watch ={
+     detailTop:function(newV,oldV){
+
+      //  console.log(668899)
+       this.tapFlag && (this.setDis(newV))
+     }
+
   }
 
-  watch = {
-  }
 
   methods = {
     //分享弹框之后设置背景颜色
+
+    setDis(distance){
+       if(distance<this.goodsTp){
+       this.setSlectScroll(1)
+     }else if(this.goodsTp<distance && distance<  this.commentTp){
+    this.setSlectScroll(2)
+     }else  if(distance>this.detailsTp){
+       this.setSlectScroll(3)
+     }else{
+
+     }
+      
+    },
     setBackground(e){
       this.popStyle=e.detail.value
 
@@ -238,8 +431,7 @@ class Details implements DetailsInterface {
 
      return getErWeiData(data).then(res=>{
 
-       
-       
+      
         if(res.code){
           this.erWeiMaUrl='https://'+res.data
         }
@@ -255,8 +447,8 @@ class Details implements DetailsInterface {
         deletesGoods({goodsId:this.allDetails.goodsId}).then(res=>{
           console.log("取消",res)
           if(res.code==1){
-            this.iconss='like-o'
-            this.colors='rgb(100,101,102)'
+            this.iconss='star-o'
+            this.colors='#666666'
             this.allDetails.isCollect=0
             cml.showToast({
               message: "取消成功",
@@ -274,7 +466,7 @@ class Details implements DetailsInterface {
         CollectiongGoods(data).then(res=>{
           console.log("收藏",res)
           if(res.code==1){
-            this.iconss='like'
+            this.iconss='star'
             this.colors='red'
             this.allDetails.isCollect=1
             cml.showToast({
@@ -306,10 +498,6 @@ class Details implements DetailsInterface {
           this.allDetails=res.data[0]
           // this.allDetails.getAsl1=Number(this.allDetails.getAsl1)
           // console.log( this.allDetails.getAsl1,335566)
-
-         
-
-
           this.allDetails.thumb='https://'+this.allDetails.thumb
           const passObj={id:this.allDetails.goodsId,thumb:this.allDetails.thumb,
           title:this.allDetails.name,erWeiMa:this.erWeiMaUrl,price:this.allDetails.price}
@@ -318,7 +506,7 @@ class Details implements DetailsInterface {
           this.objFlag=true //让数据传输到弹框组件 通过组件的显隐
         
           if(this.allDetails.isCollect===1){
-            this.iconss='like'
+            this.iconss='star'
             this.colors='red'
           }
           this.$cmlEmit('onshow',{
@@ -578,7 +766,153 @@ return flag
   })
 
 
+  },
+   //获取胶囊按钮数据
+  getCapluse(){
+     const res=wx.getMenuButtonBoundingClientRect()
+      this.marginTop=res.top + res.height/2-14// 让搜索框位于离胶囊按钮的中间
+      this.fixListH=res.top+res.height+10
+  },
+
+
+  
+
+  goBack(){
+    cml.navigateBack(-1)
+  },
+
+  // 获取评论
+
+  getComments(){
+    comments({goodsId:this.gid}).then(res=>{
+      console.log(res,'商品评论')
+      if(res.code){
+          this.commentData=res.data
+          this.commentsArray=res.data.commentData.map(d=>{
+          d.avatar='https://'+d.avatar
+          return  d
+        })
+      }    
+    }).catch(err=>{})
+
+
+  },
+  moreComment({currentTarget}){
+      store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
+      cml.navigateTo({
+            path: '/pages/product-review/product-review'
+          })
+  },
+
+    // 获取轮播图高度
+  getCarouselHeight(){
+  const query=wx.createSelectorQuery().in(this)
+  query.select('.carousel-wrap').boundingClientRect(res => {
+    console.log(res,'轮播图高度')
+    // this.navHeight=res.height
+    const H=res.height
+    this.goodsTp=H
+
+        this.$cmlEmit('onshowCarouselH',{
+      value:H
+    })
+
+}).exec()
+
+ 
+
+  },
+  //选择滑动
+  selectSlide({currentTarget}){
+    this.tapFlag=false
+    setTimeout(() => {
+      this.tapFlag=true
+    }, 1500);
+const value=currentTarget.dataset.id
+if(this.fixeList.find(d=>d.value===value).flag){
+  return 
+}
+this.fixeList=this.fixeList.map(d=>{
+  if(d.value===value){
+    d.flag=true
+  }else{
+    d.flag=false
   }
+    return d
+    })
+    if(value===1){
+         this.$cmlEmit('setScrollTop',{value:0})
+    }else if(value===2){
+      this.setScrollH('.evaluation')
+    }else{
+       this.setScrollH('.details-content')
+
+    }
+
+  },
+
+    // 设置 滚动高度
+   setScrollH(str){
+  const query=wx.createSelectorQuery().in(this)
+ query.select(str).boundingClientRect(res => {
+      const Tp=res.top
+      this.$cmlEmit('setScrollTop',{value:Tp+10})
+}).exec()
+  },
+
+
+//页面滚动的时候 选择条目
+  setSlectScroll(value){
+    this.fixeList=this.fixeList.map(d=>{
+  if(d.value===value){
+    d.flag=true
+  }else{
+    d.flag=false
+  }
+   return d
+  })
+  },
+
+  //获取相关距顶部参数
+
+  gteTopDistance(str,name){
+     const query=wx.createSelectorQuery().in(this)
+ query.select(str).boundingClientRect(res => {
+      const Tp=res.top
+      this[name]=Tp
+}).exec()
+
+  },
+
+//设置自身实列参数
+
+  setSelfArug(){
+    const arr=[
+      {str:'.evaluation',name:'commentTp'},
+      {str:'.details-content',name:'detailsTp'},
+    ]
+    arr.map(d=>{
+       this.gteTopDistance(d.str,d.name)
+       return d
+    })
+
+   
+
+  },
+
+
+
+
+  init(){
+     this.getCapluse() //获取胶囊按钮的一些数据
+     this.getDetailsData({id:this.gid})//获取商品详细数据
+     this.getComments()//获取商品评论
+     this.getCarouselHeight()//获取轮播图高度
+     this.setSelfArug()
+
+  },
+
+  
     }
 
   beforeCreate(query) {
@@ -598,7 +932,7 @@ return flag
   }
 
   mounted() {
-     this.getDetailsData({id:this.gid})
+    this.init()
     //  setTimeout(() => {
     //    this.objFlag=true
     //  }, 1000);
@@ -678,42 +1012,69 @@ background: #eee;
 
 .desc{
   width: 750cpx;
-  background: #eaeaea;
+  background: #fff;
   display: flex;
+  padding:0 20cpx;
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start;
-  min-height: 150cpx;
-  padding:15cpx 15cpx;
-
+  min-height: 295cpx;
+  border-radius:0 0 20cpx 20cpx;
+  margin-bottom:20cpx;
+  border-top:4cpx solid #EFEFEF;
 }
 
 .price{
+  width: 100%;
   display: flex;
-  justify-content: start;
+  justify-content:space-between;
   align-items: center;
   flex-direction: row;
 }
+
+
+.favorites-text{
+  font-size:18cpx;
+  color: #666666;
+  
+}
+
+
+.favorites{
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction:column;
+}
+
+
+.price-desc{
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+
+}
 .original-price{
-  text-decoration:line-through;
-  color:#b0bec5;
+text-decoration:line-through;
+font-size: 34cpx;
+font-weight: 300;
+color: #C1C1C1;
+margin-left:10cpx;
+
 }
 .now-price{
-  color:#ff0000;
-  font-weight: bold;
+font-size: 36cpx;
+font-weight: 600;
+color: #ED422A;
 }
 
 .ASL{
   width:100%;
-  height: 40cpx;
-
-  padding:8cpx 0;
-  margin:10cpx 0;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content:flex-start;
   align-items: center;
-
 }
 
 .als-text{
@@ -722,6 +1083,44 @@ background: #eee;
   color: #fff;
   font-size: 24cpx;
   line-height: 24cpx;
+}
+
+.als-text-als3{
+padding: 0 10cpx;
+min-width: 219cpx;
+min-height: 40cpx;
+background: #DE3A2C;
+border-radius: 8cpx;
+font-size: 21cpx;
+font-weight: 500;
+color: #FFFFFF;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+}
+
+.als-text-als1{
+  padding: 0 10cpx;
+ min-width: 185cpx;
+min-height: 40cpx;
+border: 2cpx solid #ED422A;
+border-radius: 8cpx;
+font-size: 21cpx;
+font-weight: 500;
+color: #ED422A;
+display: flex;
+margin-left:20cpx;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+}
+
+
+.product-name > text{
+font-size: 30cpx;
+font-weight: 600;
+color: #222222;
 }
 
 .goods-img{
@@ -783,6 +1182,7 @@ background: #eee;
   margin-bottom:15cpx;
   letter-spacing: 2cpx;
   font-size: 20cpx;
+ 
 }
 
 
@@ -796,11 +1196,15 @@ background: #eee;
 }
 
 .details-content{
-  width:750cpx;
-  padding-bottom:130cpx;
+margin-top:20cpx;
+width:750cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+padding:20cpx;
+overflow: hidden;
 }
 .rich-img{
-  width:750cpx;
+  width:710cpx;
   height: auto;
 }
 
@@ -810,49 +1214,52 @@ background: #eee;
 
 }
 
-.js{
-  width:750cpx;
-  height: 100cpx;
-  background: #fff;
-  margin-bottom:20cpx;
-  /* border-bottom: 20cpx #eee solid; */
+.js1{
+  width:100%;
+  min-height: 92cpx;
+  padding:0 20cpx;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content:space-between;
   align-items: center;
+  border-bottom: 4cpx solid #EFEFEF;
+}
 
+.js2{
+  width:100%;
+  min-height: 76cpx;
+  padding:0 20cpx;
+  display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+}
+.js2 > .ms{
+  margin-right:20cpx;
 
 }
 
+.js2 > .ms text{
+font-size: 22cpx;
+color: #AAAAAA;
+
+
+  
+  
+}
+
+
+.ms{
+   display: flex;
+  flex-direction: row;
+  justify-content:flex-start;
+  align-items: center;
+}
 .js-color{
-  color: #cd4a50;
-
+color: #ED422A;
 }
 
-.js2 .ms{
-   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: row;
-}
 
-.js1 .ms{
-   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: row;
-}
-
-.js3 .ms{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: row;
-}
-
-.js3{
-  margin-bottom:0cpx;
-}
 .pecifications{
   padding: 10cpx;
 }
@@ -900,10 +1307,314 @@ background: #eee;
   width:100vw;
   height: 100vh;
   display: none;
+}
+.bottom-btn-cart{
+  width:750cpx;
+  min-height: 98cpx;
+  background: #fff;
+  position: fixed;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
 
-  
+
+.bottom-btn-cart1{
+   width:750cpx;
+  min-height: 132cpx;
+  background: #fff;
+  position: fixed;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+}
+
+
+.join-cart{
+  min-width: 220cpx;
+min-height: 60cpx;
+background: linear-gradient(89deg, #F59625, #FDC127);
+border-radius: 30cpx;
+font-size: 29cpx;
+font-weight: 500;
+color: #FFFFFF;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+.now-buy{
+width: 220cpx;
+height: 60cpx;
+background: linear-gradient(269deg, #FE573F, #E61A09);
+border-radius: 30cpx;
+font-size: 29cpx;
+font-weight: 500;
+color: #FFFFFF;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+}
+
+
+.cart-customer{
+  display: flex;
+justify-content: space-between;
+align-items: center;
+flex-direction:column;
 
 }
+
+.cart-bus{
+  display: flex;
+justify-content: space-between;
+align-items: center;
+flex-direction:column;
+}
+
+
+.cart-customer > text{
+font-size: 25cpx;
+font-weight: 300;
+color: #DD3A2C;
+margin-top:5cpx;
+}
+
+
+.cart-bus > text{
+font-size: 25cpx;
+font-weight: 300;
+color: #666666;
+margin-top:5cpx;
+}
+
+
+.container view,.container text{
+  letter-spacing: 2cpx;
+
+}
+
+
+.carousel-wrap{
+  width: 750cpx;
+  position: relative;
+
+}
+
+
+.pos-img{
+  position: absolute;
+  left:30cpx;
+  z-index: 2;
+  transition: all 0.6s
+}
+
+.pos-img > image{
+  opacity: 0.65;
+}
+
+
+.fixed-nav{
+  position: fixed;
+  transition: all 0.3s;
+}
+
+
+.fixed-list{
+  width: 750cpx;
+  position:fixed;
+  z-index: 1;
+  top:0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  background: #FFFFFF;
+  border-radius:0 0 20cpx 20cpx;
+  transition: all 0.6s;
+}
+
+
+.fixed-list > view{
+  margin-left:80cpx;
+}
+
+
+.fix-list-goods{
+font-size: 30cpx;
+font-weight: 400;
+}
+
+
+.fix-border-bottom{
+  width:100%;
+height: 6cpx;
+background: linear-gradient(90deg, #D62B1D, #F8715D);
+border-radius: 1cpx;
+transition: all 0.6s;
+opacity: 1;
+}
+
+
+.fix-border-bottom1{
+  width:100%;
+height: 6cpx;
+background: linear-gradient(90deg, #D62B1D, #F8715D);
+border-radius: 1cpx;
+opacity: 0;
+transition: all 0.6s;
+}
+
+
+
+.introduce-2{
+width: 750cpx;
+height: 170cpx;
+background: #FFFFFF;
+border-radius: 20cpx;
+}
+
+.evaluation{
+  width:750cpx;
+  padding:20cpx 20cpx;
+  background: #FFF;
+  min-height: 350cpx;
+  margin-top:20cpx;
+  border-radius: 20cpx;
+}
+
+.eval-title{
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+
+.divider{
+  width: 5cpx;
+height: 30cpx;
+background: linear-gradient(180deg, #D62C1D, #F8725E);
+border-radius: 1cpx;
+}
+
+.eval-title-left{
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+}
+
+.eval-title-left > text{
+font-size: 30cpx;
+font-weight: 550;
+color: #222222;
+}
+
+.eval-title-right{
+font-size: 2c2px;
+font-weight: 500;
+color: #AAAAAA;
+}
+
+.eval-user{
+  margin-top:20cpx;
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.rate{
+  margin-left:20cpx;
+  display: flex;
+  justify-content:space-between;
+  align-items: flex-start;
+  flex-direction:column;
+}
+.img-wrap-one{
+  width: 150cpx;
+height: 150cpx;
+background:pink;
+border-radius: 8cpx;
+margin-top:20cpx;
+margin-right: 10cpx;
+}
+
+.eval-img-wrap{
+  display: flex;
+  justify-content:flex-start;
+  align-items: flex-start;
+  flex-direction:row;
+  flex-wrap: wrap;
+}
+
+.eval-desc-say{
+  margin-top:20cpx;
+
+}
+
+.eval-desc-like{
+  width:100%;
+  display: flex;
+justify-content:flex-end;
+align-items: center;
+flex-direction:row;
+margin-top:20cpx;
+padding-bottom:20cpx;
+border-bottom:2cpx solid #EFEFEF;
+}
+
+
+
+
+.like-btn{
+min-width: 101cpx;
+min-height: 40cpx;
+background: linear-gradient(89deg, #F59626, #FDC227);
+border-radius: 20cpx;
+font-size: 26cpx;
+color: #FFFFFF;
+display: flex;
+justify-content:center;
+align-items: center;
+flex-direction:row;
+}
+
+
+.more-eval-btn{
+margin: 20cpx auto;
+ min-width: 238cpx;
+height: 58cpx;
+border: 2cpx solid #D0D0D0;
+border-radius: 29cpx;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: row;
+padding:0 10cpx;
+font-size: 26cpx;
+color: #666666;
+}
+
+
+
+
+
+
+
 </style>
 
 <script cml-type="json">
@@ -920,7 +1631,8 @@ background: #eee;
            "van-icon": "/vant/icon/index",
            "van-button": "/vant/button/index",
            "van-dialog": "/vant/dialog/index",
-            "share-pop":"/components/share-pop/share-pop"
+            "share-pop":"/components/share-pop/share-pop",
+            "van-rate": "/vant/rate/index"
     }
   }
 }

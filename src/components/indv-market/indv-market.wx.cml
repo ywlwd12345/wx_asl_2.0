@@ -1,5 +1,6 @@
 <template>
   <view class="container">
+  <nav title="{{title}}"></nav>
     <!-- <view class="nav">
    <van-nav-bar
   title="{{title}}"
@@ -14,46 +15,37 @@
   </view>-->
   <!--nav end-->
 
-  <view class="top-wrap">
-  <image src="{{marketUrl}}" style="width:750cpx;height:350cpx;border-radius:0 0 100cpx 100cpx;" ></image>
-  <view class="nav"><van-icon name="arrow-left" color="#ffffff" size="30px" bind:click="goBefore"/> <text class="spec-nav">个人市场</text></view>
-  </view>
-
-  <view class="panel">
+  <!--<view class="panel">
 
    <image src="{{imgBg}}" style="width:710cpx;height:350cpx;" ></image>
    <view class="panel-wrap">
   <view class="item item1">
-  <view class="img">
-  <image src="{{lists.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
-  </view>
+    <view class="img">
+      <image src="{{lists.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+      <view class="name">
+        <text class="weight-color">{{lists.uname}}</text>
+        <text class="slow-color" style="font-weight:bold;">{{lists.level}}</text>
+      </view>
+    </view>
 
-  <view class="name"> 
-  <text class="weight-color">{{lists.uname}}</text>
-  <text class="slow-color" style="font-weight:bold;">{{lists.level}}</text>
-  </view>
-<view class="logo">
-<view class="icon" c-if="{{false}}">
-<van-icon name="fire-o" />
-</view>
+    <view class="logo">
+      <view class="icon" c-if="{{false}}">
+        <van-icon name="fire-o" />
+      </view>
 
-<view class="go-btn">
-<van-button round type="info"
-color="#ffffff;" 
-custom-style="color:#713e2b;"
-custom-class="spec-btn-up"
-hairline="{{true}}"
-size="mini" bind:tap="goUp">我要升级</van-button>
-</view>
-
-
-
-</view>
-<!--logo end-->
-  
+      <view class="go-btn">
+        <van-button round type="info"
+        color="#ffffff;" 
+        custom-style="color:#713e2b;"
+        custom-class="spec-btn-up"
+        hairline="{{true}}"
+        size="mini" bind:tap="goUp">我要升级
+        </van-button>
+      </view>
+    </view>
 
   </view>
-  <!-- item1 end-->
+
 
   <view class="item item2">
   <view><text class="weight-color"> 手机号码:{{lists.mobile}}</text></view>
@@ -64,7 +56,7 @@ size="mini" bind:tap="goUp">我要升级</van-button>
    custom-class="spec-btn"
    >我要提现</van-button></view>
   </view>
-  <!-- item2 end-->
+
 
   <view class="item item3">
 <view class="coin">
@@ -91,7 +83,7 @@ size="mini" bind:tap="goUp">我要升级</van-button>
 <text class="slow-color">ASL5</text>
 </view>
 <view>
-<!--item3  end-->
+
   </view>
   
   
@@ -102,17 +94,67 @@ size="mini" bind:tap="goUp">我要升级</van-button>
 
 </view>
 
-  </view>
+  </view>-->
 
   <!-- panel end-->
+  <!--新UI-->
+  <view class='tops'>
+    <view class="infors">
+      <view class='test'>
+        <view class="infor_top">
+          <view style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+            <view style="display: flex;flex-direction: row;align-items: center;">
+              <image src="{{lists.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;border: 5cpx solid #D0DAEA;" c-if="{{lists.avatar!='https://'}}"></image>
+              <image src="{{touimg}}" style="width:100cpx;height:100cpx;border-radius:50%;border: 5cpx solid #D0DAEA;" c-else></image>
+              <view class="phone">
+                <view style="font-size:28cpx;color:#fff;padding-bottom: 5cpx;">{{lists.uname}}</view>
+                <view style="display: flex;flex-direction: row;align-items: center;">
+                  <image src="{{vips}}" style="width:24cpx;height:21cpx;" ></image>
+                  <view style="font-size:18cpx;color:#fff;padding-left:10cpx;">{{lists.level}}</view>
+                </view>
+              </view>
+            </view>
+            <view class="upgrade" c-bind:tap="goUp">我要升级</view>
+          </view>
+        </view>
+        <view class="infor_bot">
+          <view style="font-size: 22cpx;color: #fff;">手机号码:   {{lists.mobile}}</view>
+          <view class="Withdrawal" c-bind:tap="goPay">我要提现</view>
+        </view>
+      </view>
+    </view>
+    <view class="aslNum">
+      <view class='aslmoney'>
+        <view class="cursto">{{lists.fee1}}</view>
+        <view class="curs">现金币</view>
+      </view>
+      <view class='aslmoney'>
+        <view class="cursto">{{lists.asl1}}</view>
+        <view class="curs">ASL1</view>
+      </view>
+      <view class='aslmoney'>
+        <view class="cursto">{{lists.asl2}}</view>
+        <view class="curs">ASL2</view>
+      </view>
+      <view class='aslmoney'>
+        <view class="cursto">{{lists.asl3}}</view>
+        <view class="curs">ASL3</view>
+      </view>
+      <view class='aslmoney'>
+        <view class="cursto">{{lists.asl5}}</view>
+        <view class="curs">ASL5</view>
+      </view>
+    </view>
+  </view>
 
+  <view style="height:10cpx;background-color: #F4F4F4;"></view>
   <view class="bg-f">
   <view style="margin:10cpx;flex-direction: row;align-items:center;justify-content:space-between;">
     <view style="margin:10cpx;flex-direction: row;align-items:center;">
       <text>我的下级</text>
       <text class="returns" c-if="{{subordinate>1}}" c-bind:click="returnto">返回上一级</text>
     </view>
-    <view style="margin-right: 40cpx;">人数</view>
+  
   </view>
   <list
       bottom-offset="{{20}}"
@@ -131,19 +173,18 @@ size="mini" bind:tap="goUp">我要升级</van-button>
         <view class="demo">
         <view class="num">{{i+1}}</view>
         <view class="img" style="width:100cpx;" c-bind:click="gosub(item)">
-          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-if="{{item.avatar!='https://null'}}"></image>
+          <image src="{{touimg}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-else></image>
         </view>
-        <view class="year" style="width:200cpx;position:relative;right:15cpx;" >
+        <view class="year" style="width:200cpx;position:relative;right:15cpx;color:#999999;" >
           <view style="flex-direction: row;align-items:center;">
-            <text c-bind:click="gosub(item)">{{item.uname}}</text>
-            <text class="remarks" c-bind:click="remarks(item.uname)" c-if="{{item.remark==null}}">[备注姓名]</text>
-            <text class="remarks" c-bind:click="remarks(item.uname)" c-else>[ {{item.remark}} ]</text>
+            <text c-bind:click="gosub(item)" style="color:#999999;">{{item.uname}}</text>
+
           </view>
           <view>
-            <text class="titles">{{item.level}}</text>
           </view>
         </view>
-        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;"><text style="text-align: center;">{{item.subCount}}</text></view>
+        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;"><text style="text-align: center;color:#999999;">{{item.level}}</text></view>
         </view>
         </cell>
 
@@ -159,17 +200,18 @@ size="mini" bind:tap="goUp">我要升级</van-button>
         <view class="demo">
         <view class="num">{{i+1}}</view>
         <view class="img" style="width:100cpx;" c-bind:click="gosubto(item)">
-          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-if="{{item.avatar!='https://null'}}"></image>
+          <image src="{{touimg}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-else></image>
         </view>
-        <view class="year"  style="width:200cpx;position:relative;right:15cpx;">
+        <view class="year"  style="width:200cpx;position:relative;right:15cpx;color:#999999;">
           <view style="flex-direction: row;align-items:center;">
-            <text c-bind:click="gosubto(item)">{{item.uname}}</text>
+            <text c-bind:click="gosubto(item)" style="color:#999999;">{{item.uname}}</text>
           </view>
           <view>
-            <text class="titles">{{item.level}}</text>
+
           </view>
         </view>
-        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;"><text style="text-align: center;">{{item.subCount}}</text></view>
+        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;"><text style="text-align: center;color:#999999;">{{item.level}}</text></view>
         
         </view>
         </cell>
@@ -186,17 +228,18 @@ size="mini" bind:tap="goUp">我要升级</van-button>
         <view class="demo">
         <view class="num" >{{i+1}}</view>
         <view class="img" style="width:100cpx;">
-          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+          <image src="{{item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-if="{{item.avatar!='https://null'}}"></image>
+          <image src="{{touimg}}" style="width:100cpx;height:100cpx;border-radius:50%;" c-else></image>
         </view>
-        <view class="year" style="width:200cpx;position:relative;right:15cpx;">
+        <view class="year" style="width:200cpx;position:relative;right:15cpx;color:#999999;">
           <view style="flex-direction: row;align-items:center;">
-            <text>{{item.uname}}</text>
+            <text style="color:#999999;">{{item.uname}}</text>
           </view>
           <view>
-            <text class="titles">{{item.level}}</text>
+
           </view>
         </view>
-        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;" ><text style="text-align: center;">{{item.subCount}}</text></view>
+        <view class="vip"  style="width:150cpx; margin-left:100cpx;position:relative;left:10cpx;" ><text style="text-align: center;color:#999999;">{{item.level}}</text></view>
         
         </view>
         </cell>
@@ -250,7 +293,9 @@ class IndvMarket implements IndvMarketInterface {
     subordinate:1,
     show:false,
     remarks_name:'',
-    remark_sub:''
+    remark_sub:'',
+    vips:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/grsc/vip@2x.png',
+    touimg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/grsc/tx@2x.png'
   }
 
   computed = {
@@ -387,10 +432,80 @@ export default new IndvMarket();
 </script>
 
 <style scoped>
+/* 2.0 */
+.tops{
+  
+}
+.infors{
+  background: linear-gradient(0deg, #454651, #4C4C52,#32333c);
+}
+.aslNum{
+  background: linear-gradient(0deg, #464652, #40404A, #3A3A42);
+}
+.infor_top{
+  position: relative;
+  padding-bottom: 20cpx;
+  border-bottom: 1cpx solid #9AA8BD;
+}
+.test{
+  margin: 40cpx 25cpx 0 25cpx;
+  border-radius: 20cpx 20cpx 0 0;
+  padding: 20cpx 30cpx 18cpx 30cpx;
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/grsc/bj@2x.png');
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+.phone{
+  margin-left: 20cpx;
+}
+.upgrade{
+  font-size: 18cpx;
+  color: #fff;
+  background:#43434D;
+  padding: 8cpx 25cpx;
+  border-radius: 8cpx;
+}
+.infor_bot{
+  padding-top: 20cpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.Withdrawal{
+  font-size: 18cpx;
+  border: 1cpx solid #9AA8BD;
+  padding:8cpx 25cpx;
+  border-radius: 8cpx;
+  color:#fff;
+}
+.aslNum{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20cpx 30cpx;
+    color: #fff;
+}
+.curs{
+  font-size: 28cpx;
+}
+.cursto{
+  font-size: 28cpx;
+  padding-bottom: 10cpx;
+}
+
+.num{
+  color: #999999;
+}
+
+
 
 .container{
-width: 750cpx;
-background: #eee;
+/* width: 750cpx;
+background: #eee; */
+
+
 
 }
 
@@ -428,11 +543,12 @@ background: #eee;
   top:130cpx;
   left: 50%;
   transform: translateX(-50%);
-  width: 710cpx;
   min-height: 350cpx;
   margin-top:15cpx;
   padding: 20cpx 0;
   position: absolute;
+  width: 100%;
+  background: linear-gradient(0deg, #454651, #4C4C52,#32333c);
 
 }
 
@@ -467,7 +583,6 @@ background: #eee;
    width: 710cpx;
    margin: 0 auto;
    background:red;
-   margin-top:180cpx;
    min-height:500cpx;
    position: relative;
    background: #fff;
@@ -519,6 +634,7 @@ background: #eee;
  }
 .titles{
   font-size: 20cpx;
+  color: #999999;
 }
 .remarks{
   font-size: 30cpx;
@@ -535,6 +651,7 @@ background: #eee;
 {
   "base": {
     "usingComponents": {
+      "nav":"/components/nav-ver2/nav-ver2",
         "van-nav-bar": "/vant/nav-bar/index",
         "van-icon": "/vant/icon/index",
          "van-button": "/vant/button/index",

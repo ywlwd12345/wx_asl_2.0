@@ -1,0 +1,269 @@
+<template>
+  <view class="container">
+    <nav title="{{title}}"></nav>
+  <!-- 列表-->
+  <view class="list">
+    <list
+      bottom-offset="{{20}}"
+      c-bind:scrolltobottom="onBottom"
+      height="{{-1}}"
+    >
+    <!-- 顶部海报-->
+    <view class="poster">
+      <image src="{{skillimg}}"></image>
+    </view>
+
+    <view style="padding:0 30cpx;margin-top: -100cpx;">
+      <view class="list_num" c-for="{{list}}" c-for-index="index" c-for-item="item" c-bind:click="goDetails(item.id)">
+        <view class="lift">
+          <image src="{{item.thumb}}"></image>
+        </view>
+        <view class="right">
+          <view style="font-size: 29rpx">{{item.name}}</view>
+          <view class="price">
+            <view class="price_s">
+              <view class="price_s">
+                <view class="rmb">¥</view>
+                <view class="rmb_p">{{item.price}}</view>
+              </view>
+              <view style="color: #999;font-size: 28rpx;text-decoration:line-through;">¥{{item.marketPrice}}</view>
+            </view>
+            <view class="purchase">立即抢购</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    </list>
+
+  </view>
+
+  </view>
+</template>
+
+<script>
+import cml from 'chameleon-api';
+import {secondkilltime,secondkillproduct,getIndexgoods} from '../../api/index.js'
+import {momentTime} from '../../untils/moment.js'
+import { dealStoreTitleName } from '../../untils/processData'
+class Timeactivities   {
+
+  data = {
+    title:'限时活动',
+    scrollDirection:'horizontal',
+    listArray:[], 
+    specTime:'',
+    skillimg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/xsqb/time.png',
+    list:[],
+    status:'',
+    statusindex:'',
+    purchase:1,
+    purchasetime:1,
+    page:1
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+    goDetails(id){
+      console.log(id)
+      cml.navigateTo({
+      path: '/pages/details/details',
+      query:{gid:id}
+      })
+    },
+    getClassifiyData(){
+      getIndexgoods({isActivity:1,isActive:0,isRef:0,isScore:0,pageNum:this.page,isNew:0}).then(res=>{
+        console.log('限时活动',res)
+        if(res.code==1){
+          this.list= this.list.concat(res.data.map(d=>{
+            d.thumb='https://'+d.thumb
+            d.name=dealStoreTitleName(d.name,25)
+            return d
+          }))
+          if(this.list.length==0){
+            cml.showToast({
+              message: "暂无限时活动产品",
+              duration: 1000
+            })
+          }
+        }
+      }).catch(err=>{
+
+      })
+    },
+    onBottom(){
+       cml.showToast({
+        message: "加载更多...",
+        duration: 1000
+      })
+      setTimeout(() => {
+        this.page++
+      this.getClassifiyData()
+      }, 800)
+
+    },
+
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+    this.getClassifiyData()
+
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new Timeactivities();
+</script>
+
+<style>
+.container{
+width: 750cpx;
+background: #EFEFEF;
+height: 100vh;
+}
+.poster{
+  /* padding: 30cpx; */
+  margin-top: 100cpx;
+}
+.poster image{
+  width: 100%;
+  height: 350cpx;
+  /* border-radius: 20cpx; */
+}
+.period{
+  z-index:99999; 
+  background: #fff;
+  width: 100%;
+  margin:0 atuo;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 120cpx;
+}
+.panels{
+  min-width:152cpx;
+  min-height:50cpx;
+  display: inline-block;
+  margin-right: 5cpx;
+  padding:10cpx;
+}
+.panel-text{
+  margin-top:10cpx;
+}
+.remaining{
+  width: 100%;
+   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.curtitle{
+  color: #ED4129;
+}
+.cur{
+    background: #ED4129;
+    color: #fff!important;
+    font-size: 25cpx!important;
+    border-radius: 20rpx;
+    padding: 2rpx 0;
+}
+.list{
+  margin-top: -100cpx;
+}
+.list_num{
+    background: #fff;
+    border-radius: 15cpx;
+    margin-top: 30cpx;
+    padding: 20cpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.list_num image{
+    width: 200cpx;
+    height: 200cpx;
+    border-radius: 10cpx;
+}
+.right{
+  width: 62%;
+  height: 200cpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.price{
+  width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.price_s{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+.rmb{
+    color: #ED4129;
+    padding-right: 5cpx;
+    font-size: 25cpx;
+}
+.rmb_p{
+    color: #ED4129;
+    padding-right: 15cpx;
+    font-size: 38cpx;
+}
+.purchase{
+    font-size: 20cpx;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
+    color: #fff;
+    padding: 8cpx 30cpx;
+    border-radius: 30cpx;
+}
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+      "nav":"/components/nav-ver2/nav-ver2"
+    }
+  },
+  "wx": {
+      "navigationStyle":"custom"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>

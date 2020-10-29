@@ -1,52 +1,55 @@
 <template>
   <view class="wrap-2">
    <nav-ver2  title="{{'商品评价'}}"></nav-ver2>
-
-
    <view class="content">
    <view class="search-column">
    <view class="view-btn"   c-for="{{searchArray }}"
           c-for-index="i"
           c-for-item="item"
-          c-key="id" >
-   <text class="desc">{{item.desc}}</text>
+          c-key="id" 
+          data-id="{{item.id}}"
+          c-bind:tap="select"
+          >
+
+    <van-icon name="success" color="#ED4229" size="12px" c-if="{{item.flag}}" />
+   <text class="{{item.flag?'desc1':'desc'}}">{{item.desc}}</text>
    </view>
    </view>
    <!-- search-column end-->
    <view class="review-wrap">
 
    <view class="panel" c-for-index="i"
-          c-for="{{ 8 }}"
+          c-for="{{listData }}"
           c-for-item="item"
         c-key="i" >
    <view class="desc-top">
    <view class="desc-img">
-    <image src="{{avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
+    <image src="{{'https://'+item.avatar}}" style="width:100cpx;height:100cpx;border-radius:50%;" ></image>
     <view class="desc-level">
-   <text>123456</text>
+   <text>{{item.uname}}</text>
       <van-rate
-  value="{{ value }}"
+  value="{{ item.star }}"
   size="{{ 13 }}"
   color="#ee0a24"
   void-color="#eee"
   void-icon="star"
-  bind:change="onChange"
+  readonly
 />
    </view>
    </view>
-   <view class="desc-time">2017-01-01</view>   
+   <view class="desc-time">{{item.createTime}}</view>   
    </view>
 
    <!-- desc-top end-->
    <view class="desc-middle">
-   <text>收到了，非常好，已经试用，推荐！</text>
+   <text>{{item.comment}}</text>
    <view class="desc-mid-img">
    <view class="panel-img"  c-for-index="i"
-        c-for="{{ 8 }}"
-          c-for-item="item"
-        c-key="i" ></view>
-   
-   
+        c-for="{{ item.imgs }}"
+          c-for-item="itemImg"
+        c-key="i" >
+         <image src="{{itemImg}}" style="width:155cpx;height:155cpx;border-radius:8cpx;" ></image>
+        </view>
    </view>
   <!-- desc-middle end-->
 
@@ -54,12 +57,25 @@
    
    </view>
    <view class="desc-bottom">
-   <view class="like"> 
-   
-   <text class="like-text">5</text>
+   <view class="like">
+
+   <image src="{{likeImg}}" style="width:22cpx;height:21cpx;margin-right:8cpx;" ></image>
+   <text class="like-text">{{item.like}}</text>
    </view>
-   
    </view>
+   <!--  desc-bottom end -->
+
+   <view class="shopkeeper" c-if="{{item.reply.length}}">
+   <view class="shopkeeper-title">掌柜回复</view>
+   <view class="replay" c-for-index="i"
+        c-for="{{ item.reply }}"
+          c-for-item="itemChild"
+        c-key="i" >
+        {{itemChild.comment}}
+        </view>
+   </view>
+
+
   
    </view>
    
@@ -72,21 +88,29 @@
 </template>
 
 <script>
+import cml from 'chameleon-api';
+import {goodsComments} from '../../api/grouping'
+import store from '../../store'
+import {tip} from '../../untils/processData'
 
 class ProductReview   {
 
   data = {
     searchArray:[
-      {id:1,desc:'全部'},
-      {id:2,desc:'最新'},
-      {id:3,desc:'带图评价'},
-      {id:4,desc:'好评'},
-      {id:5,desc:'差评'}
+      {id:1,desc:'全部',flag:true},
+      {id:2,desc:'最新',flag:false},
+      {id:3,desc:'带图评价',flag:false},
+      {id:4,desc:'好评',flag:false},
+      {id:5,desc:'差评',falg:false}
     ],
-    avatar:'https://w.aishenglian.com/static/icon/ver2-icon/my/dfk@2x.png',
-    value:2
+    formData:{
+      goodsId:'',
+      pageNum:1,
+      type:1
 
-
+    },
+    likeImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/dz/dz@2x.png',
+    listData:[]
   }
 
   computed = {
@@ -96,6 +120,57 @@ class ProductReview   {
   }
 
   methods = {
+    getData(){
+         wx.showToast({
+            title: '加载中...',
+            icon: 'loading'
+        });
+      goodsComments(this.formData).then(res=>{
+        wx.hideToast();
+
+        console.log(res,'评论数据')
+        if(res.code && res.data.length){
+          this.listData=this.listData.concat(res.data)
+        }else{
+          tip('暂无数据')
+        }
+
+      }).catch(err=>{})
+
+
+    },
+
+  onReachBottom:function(){
+    this.formData.pageNum++
+    this.getData()
+},
+
+    init(){
+      this.getData()
+    },
+
+    select({currentTarget}){
+      const id=currentTarget.dataset.id
+      this.searchArray=this.searchArray.map(d=>{
+        if(d.id===id){
+          d.flag=true
+        }else{
+          d.flag=false
+        }
+        return d
+      })
+      this.formData.type=id
+
+      this.formData.pageNum=1
+      this.listData=[]
+      this.getData()
+     
+      
+
+    }
+  
+
+    
   }
 
   beforeCreate(query) {
@@ -111,6 +186,9 @@ class ProductReview   {
   }
 
   mounted() {
+      this.formData.goodsId=store.state.globalId.goodsId
+      this.init()
+  
   }
 
   onHide() {
@@ -156,22 +234,36 @@ flex-direction: row;
 }
 
 .desc{
+  padding:0 10cpx;
 font-size: 19cpx;
 font-weight: 400;
 color: #222222;
+transition: all 0.5s;
+}
+
+
+.desc1{
+  padding:0 12cpx;
+font-size: 21cpx;
+font-weight: 400;
+color: #ED4229;
+transition: all 0.5s;
 }
 
 .panel{
-width: 750cpx;
+   width: 750cpx;
+   padding:20cpx;
 background: #FFFFFF;
-padding:20cpx;
-border-radius: 20cpx;
 border-bottom: 4cpx solid  #EFEFEF;
 }
 
 .review-wrap{
   margin-top:20cpx;
-  
+ 
+}
+
+.review-wrap > view:nth-child(1){
+  border-radius: 20cpx 20cpx 0 0;
 
 }
 
@@ -202,7 +294,7 @@ border-bottom: 4cpx solid  #EFEFEF;
 .desc-mid-img{
   margin-top:13cpx;
   display: flex;
-  justify-content:space-between;
+  justify-content:flex-start;
   align-items: center;
   flex-direction: row;
   flex-wrap: wrap;
@@ -212,9 +304,10 @@ border-bottom: 4cpx solid  #EFEFEF;
 .panel-img{
 width: 155cpx;
 height: 155cpx;
-background:pink;
+/* background:pink; */
 border-radius: 8cpx;
 margin-bottom:10cpx;
+margin-right: 10cpx;
 }
 
 .like{
@@ -244,6 +337,31 @@ flex-direction: row;
 }
 
 
+.shopkeeper{
+  width: 100%;
+  min-height: 153cpx;
+  background: #F4F4F4;
+  border-radius: 10cpx;
+  margin-top:20cpx;
+  padding:0 10cpx;
+}
+
+.shopkeeper-title{
+  margin-top:20cpx;
+  font-size: 20cpx;
+  font-weight: 400;
+  color: #222222;
+}
+
+.replay{
+  margin-top:20cpx;
+font-size: 24cpx;
+color: #666666;
+
+
+
+}
+
 
 
 
@@ -254,12 +372,14 @@ flex-direction: row;
   "base": {
     "usingComponents": {
       "nav-ver2":"/components/nav-ver2/nav-ver2",
-      "van-rate": "/vant/rate/index"
+      "van-rate": "/vant/rate/index",
+       "van-icon": "/vant/icon/index"
 
     }
   },
   "wx": {
-    "navigationStyle":"custom"
+    "navigationStyle":"custom",
+    "onReachBottomDistance":20
   },
   "tt": {
     "navigationBarTitleText": "index",

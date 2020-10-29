@@ -1,7 +1,7 @@
 <template>
 
   <view class="container">
-  <nav title="{{title}}"></nav>
+  <!--<nav title="{{title}}"></nav>-->
    
   <!-- nav end-->
 
@@ -1092,13 +1092,15 @@ width: 750cpx!important;
   transform:translateX(-50%);
 }
 
+
+
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-       "nav":"/components/nav/nav"
+       "nav":"/components/nav-ver2/nav-ver2"
     }
   }
 }

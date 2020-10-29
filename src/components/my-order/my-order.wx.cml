@@ -4,9 +4,11 @@
  
 <van-tabs active="{{ active }}" bind:click="onChange" border="{{false}}">
   <van-tab title="全部"></van-tab>
-  <van-tab title="待发货"></van-tab>
-  <van-tab title="待收货"></van-tab>
+  <!--<van-tab title="待发货"></van-tab>-->
   <van-tab title="待付款"></van-tab>
+  <van-tab title="待收货"></van-tab>
+  <van-tab title="已完成"></van-tab>
+  <van-tab title="已取消"></van-tab>
 </van-tabs>
 
   <view class="panel-list">
@@ -24,47 +26,78 @@
           data-idx="{{i}}"
         >
       <view class="panel">
-      <view class="items items1">
-      <view class="order-number"><text style="color:#ff410f;" class="spec-order-text">{{item.orderId}}</text></view>
-      <view class="status"><text class="spec-order-text">{{item.statusMsg}}</text></view>
+      <view class="items items1" style="border-bottom: 1cpx solid #eee;padding-bottom: 10cpx;justify-content: space-between;">
+        <view class="order-number"><text class="order-textid">订单编号:{{item.orderId}}</text></view>
+        <view class="status"><text class="spec-order-status">{{item.statusMsg}}</text></view>
       </view>
 
       <cell c-for="{{item.goodsInfo}}"
           c-for-index="j"
           c-for-item="items"
           data-idx="{{j}}">
-        <view class="items items2"  data-orderid="{{items.id}}"  c-bind:tap="goOrderDetails(item.orderId)" >
-        <view>
-          <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;border-radius:20cpx;"></image>
-        </view>
-        <view style="width:300cpx;"><text class="spec-order-text" style="font-size:22cpx;">{{items.goodsName}}</text> 
-        <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text></view>
-        <view ><text class="spec-order-text">￥{{items.price}}</text> <text class="spec-order-text">x{{items.totalCount}}</text>
-        </view>
+        <view class="items2"  data-orderid="{{items.id}}"  c-bind:tap="goOrderDetails(item.orderId)" >
+          <view class="items">
+            <view>
+              <image src="{{items.thumb}}" style="width: 200cpx;height:200cpx;"></image>
+            </view>
+            <view style="margin-left: 20cpx;display: flex;flex-direction: column;justify-content: space-between;width: 70%">
+              <view>
+                <text class="spec-order-goodsName">{{items.goodsName}}</text> 
+                <text class="spec-order-text" style="font-size:22cpx;color:#9e9e9e;margin-top:10cpx;" c-if="{{items.spec}}">{{items.spec}}</text>
+              </view>
+              <view style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+                <text class="spec-order-totalCount">x{{items.totalCount}}</text>
+                <view style="display: flex;flex-direction: row;align-items: center;">
+                  <text style="font-size:23cpx;color: #ED4229;">￥</text>
+                  <text class="spec-order-price">{{items.price}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+       <!--    <view class="btn" c-if="{{item.statusMsg==='已完成'}}"  data-orderid="{{item.orderId}}"
+      data-id="{{items.goodsId}}" c-catch:click="goComment($event)">
+      <van-button round type="default" size="small" >去评价</van-button>
+      </view> -->
+
+
         </view>
       </cell>
 
+
       <view class="items3">
-      <view class="top">
-      <text class="spec-order-text">共{{item.totalCount}}件</text>
-      <text style="margin-left:10cpx;" class="spec-order-text" >应付总额:</text>
-      <text class="now-price">￥{{item.totalMoney}}</text>
-      </view>
-      <view class="bottom"  c-if="{{item.pay_status}}">
-      <text class="spec-order-text">实付总额:</text>
-      <text class="now-price">{{item.real_money}}</text>
-      </view>
+        <view class="top">
+          <!--<text class="spec-total">总价￥{{item.totalMoney}}</text>-->
+          <view class="topto">
+            <text class="spec-total">共计{{item.totalCount}}件商品</text>
+            <text style="margin-left:10cpx;" class="spec-order-text" ></text>
+          </view>
+          <view class="topto">
+            <text class="now-price">应付款</text>
+            <span style="font-size:30cpx;">￥{{item.totalMoney}}</span>
+            <text class="now-price" style="padding-left:20cpx;">实付款</text>
+            <span style="font-size:30cpx;" c-if="{{item.statusMsg==='待支付'}}">￥0.00</span>
+            <span style="font-size:30cpx;" c-else>￥{{item.totalMoney}}</span>
+          </view>
+        </view>
+        <!--<view class="bottom"  c-if="{{item.pay_status}}">
+          <text class="spec-order-text">实付总额:</text>
+          <text class="now-price">{{item.real_money}}</text>
+        </view>-->
       </view>
 
-      <view class="items items1">
 
-      <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"
-      data-id="{{item.id}}"
-      ><van-icon name="delete" size="20" color="#f5222d"/></view>
+      <view class="items items1" style="align-items: center;border-top: 2cpx solid #eee;justify-content: space-between;">
+
+      <view class="icon" style="margin-left:10cpx;" c-bind:tap="dialog(item.orderId)"data-id="{{item.id}}" c-if="{{item.statusMsg==='已完成'||item.statusMsg==='已取消'}}">
+        <image src="{{ delImg }}" style="width:23cpx;height:27cpx;"></image>
+      </view>
+      <view c-else> </view>
 
       <view class="items5">
       <view class="btn" c-if="{{item.statusMsg==='待支付'}}" c-bind:tap="canceldialog(item.orderId,item.statusMsg)">
       <van-button round type="default" size="small"
+      custom-class="buttons"
        data-tip="{{item.statusMsg}}"
        data-btntip="{{setBtnName}}"
       data-id="{{item.id}}">
@@ -72,29 +105,71 @@
       </van-button>
       </view>
 
+      <view class="btn" c-if="{{item.statusMsg==='待发货'}}" c-bind:tap="reminddialog(item.orderId,item.statusMsg)">
+      <van-button round type="default" size="small"
+      custom-class="buttonsto"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       提醒发货
+      </van-button>
+      </view>
+
+
+      <view class="btn" c-if="{{item.status==3||item.status==4}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
+      <van-button round type="default" size="small"
+      custom-class="buttons"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       查看物流
+      </van-button>
+      </view>
+
       <view class="btn" c-if="{{item.statusMsg==='已发货' }}" c-bind:tap="confirmReceipts(item.orderId,item.statusMsg)">
       <van-button round type="default" size="small"
+      custom-class="buttonsto"
        data-tip="{{item.statusMsg}}"
        data-btntip="{{setBtnName}}"
       data-id="{{item.id}}">
        {{confirmReceipt}}
       </van-button>
       </view>
+
+      <view class="btn" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}">
+      <van-button round type="default" size="small"
+      custom-class="buttons"
+       data-tip="{{item.statusMsg}}"
+       data-btntip="{{setBtnName}}"
+      data-id="{{item.id}}">
+       再次购买
+      </van-button>
+      </view>
+
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已完成'}}" data-orderid="{{item.orderId}}"
+      c-catch:click="goComment($event)">
+      <van-button round type="info" size="small" custom-class="button_payment">评价</van-button></view>
+
+       <view style="margin-left:10cpx;" c-if="{{item.statusMsg==='已取消'||item.statusMsg==='已退货'|| item.statusMsg==='已评价'}}" data-orderid="{{item.orderId}}"
+      c-catch:click="goOrderDetails(item.orderId)">
+      <van-button round type="info" size="small" custom-class="button_payment">查看详情</van-button></view>
       
       <view style="margin-left:10cpx;" c-if="{{item.status==1}}" c-bind:tap="getNumber(item.orderId)" data-id="{{item.id}}" >
-      <van-button round type="info" size="small" color="#f44336">立即付款</van-button></view>
+      <van-button round type="info" size="small" custom-class="button_payment">付款</van-button></view>
 <!--
       <view style="margin-left:10cpx;" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
       <van-button round type="info" size="small" color="#fff">查看物流</van-button></view>
 -->
-
-      <view class="btn" c-if="{{item.status==3||item.status==4||item.status==5}}" c-bind:tap="logistics(item.goodsInfo[0].expNum)">
-      <van-button round type="default" size="small">查看物流</van-button>
-      </view>
+     
 
 
-      <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
-      <van-button round type="info" size="small" color="#f44336">再来一单</van-button></view>
+
+
+
+
+<!--      <view style="margin-left:10cpx;" c-if="{{item.status==5}}" c-bind:tap="anotherOne(item.orderId)" data-id="{{item.id}}" >
+      <van-button round type="info" size="small" color="#f44336">再来一单</van-button></view>-->
+
 
       </view>
       </view>
@@ -107,6 +182,21 @@
     <view class="loading">
     <i-spin  c-if="{{ loading}}"  size="large"></i-spin>
   </view>
+
+  <van-popup show="{{ isShow }}" bind:close="onClose" z-index="{{2}}" custom-class="de_popup">
+    <view class="pop-conternt">
+      <view class="pop-conternt-top">
+        <text>温馨提示</text>
+        <text>确认删除此订单</text>
+      </view>
+
+      <view class="pop-conternt-bot">
+        <view class="pop-btn1" c-bind:tap="cancel" hover-class="hover-btn">取消</view>
+        <view class="pop-btn2" c-bind:tap="sure"  hover-class="hover-btn">删除</view>
+      </view>
+    </view> 
+  </van-popup>
+
 
 
   <view c-if="{{otherLoading}}"><van-loading type="spinner" color="#1989fa" /></view>
@@ -137,6 +227,8 @@ class MyOrder implements MyOrderInterface {
   }
 
   data = {
+    id:0,
+    isShow:false,
     title:"我的订单",
     active:0,
     loading:false,
@@ -146,7 +238,8 @@ class MyOrder implements MyOrderInterface {
     setBtnName:'取消订单',
     statuss:'',
     confirmReceipt:'确认收货',
-    returnGoods:'申请退货'
+    returnGoods:'申请退货',
+    delImg:require('../../assets/images/delet.png'),
   }
 
   computed = {
@@ -156,6 +249,13 @@ class MyOrder implements MyOrderInterface {
   }
 
   methods = {
+  //关闭
+    onClose(){
+      this.isShow=false
+    },
+    cancel(){
+       this.isShow=false
+    },
     logistics(expNum){
       console.log('打印',expNum)
       if(expNum===''||expNum===null){
@@ -167,25 +267,35 @@ class MyOrder implements MyOrderInterface {
         })
       }
     },
-   dialog(id){
-      Dialog.confirm({
-      title: '提示',
-      context:this,
-      message: '您确认要删除该订单吗？'
-    }).then(() => {
-      this.deleteOrderData(id)
-    }).catch(() => { 
-    });
-   },
+  //  dialog(id){
+  //     Dialog.confirm({
+  //     title: '提示',
+  //     context:this,
+  //     message: '您确认要删除该订单吗？'
+  //   }).then(() => {
+  //     this.deleteOrderData(id)
+  //   }).catch(() => { 
+  //   });
+  //  },
+  dialog(id){
+    this.id=id
+    this.isShow=true
+  },
+  sure(){
+    this.isShow=false
+      this.deleteOrderData()
+    },
     
     onChange(e){
       console.log(e)
       if(e.detail.index==1){
-        this.statuss=2
+        this.statuss=1
       }else if(e.detail.index==2){
         this.statuss=3
       }else if(e.detail.index==3){
-         this.statuss=1
+         this.statuss=5
+      }else if(e.detail.index==4){
+         this.statuss=6
       }else{
         this.statuss=''
       }
@@ -201,9 +311,7 @@ class MyOrder implements MyOrderInterface {
         uname=value
         getOrderLists({pageNum:this.page,status:this.statuss,uname:uname}).then(res=>{
           this.loading=false
-
           console.log(res,'哈哈123')
-         
           if(res.code){
             this.detailsList= this.detailsList.concat(res.data.map(d=>{
               // d.goodsInfo.forEach(element => {
@@ -272,8 +380,7 @@ class MyOrder implements MyOrderInterface {
      default:
       
 } 
-        
-
+      
       },
        onBottom(){
        cml.showToast({
@@ -382,6 +489,10 @@ class MyOrder implements MyOrderInterface {
     }).catch(() => { 
     });
    },
+   //提醒发货
+   reminddialog(id,stats){
+     console.log('提醒发货',id,stats)
+   },
     //取消订单
     cancelOeder(orderId,stats){
       let status=6
@@ -450,11 +561,11 @@ class MyOrder implements MyOrderInterface {
     //   this.deleteOrderData(id)
 
     // },
-    deleteOrderData(id){
+    deleteOrderData(){
       let uname
       cml.getStorage('uname').then((value)=>{
       uname=value
-      deleteOrder({orderId:id,uname:uname}).then(res=>{
+      deleteOrder({orderId:this.id,uname:uname}).then(res=>{
         if(res.code==1){
           cml.showToast({
             message: "删除成功",
@@ -555,7 +666,16 @@ class MyOrder implements MyOrderInterface {
         duration: 1500
       })
 
+    },
+//去评价
+    goComment({currentTarget}){
+      // store.commit('changeGlobalId',{key:'goodsId',value:currentTarget.dataset.id})
+
+      console.log(currentTarget,567)
+      store.commit('changeGlobalId',{key:'orderId',value:currentTarget.dataset.orderid})
+      cml.navigateTo({path: '/pages/evaluation-list/evaluation-list'})     
     }
+    
 
 
   }
@@ -572,11 +692,11 @@ class MyOrder implements MyOrderInterface {
   mounted() {
     this.active=this.type
       if(this.type==1){
-        this.statuss=2
+        this.statuss=1
       }else if(this.type==2){
         this.statuss=3
       }else if(this.type==3){
-         this.statuss=1
+         this.statuss=5
       }else{
         this.statuss=''
       }
@@ -599,14 +719,10 @@ export default new MyOrder();
 
 .container{
   width:750cpx;
- 
-  
-
-
 }
 
 .items2{
-  padding:10cpx!important;
+  padding:0 10cpx 10cpx 10cpx!important;
 }
 
 .num-posi{
@@ -616,8 +732,6 @@ export default new MyOrder();
 
 
 .panel-list{
-  position: absolute;
-  top: 250cpx;
   left: 0;
   right: 0;
   bottom: 0;
@@ -628,17 +742,18 @@ export default new MyOrder();
   width:750cpx;
   min-height: 250cpx;
   background: #fff;
-  padding:10cpx;
+  padding: 10cpx 30cpx;
+  border-radius: 20cpx;
 }
 
 .items{
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top:10cpx;
-  padding-bottom:5cpx;
-  border-bottom:2cpx solid #eee;
+  /* justify-content: space-between; */
+  margin-top:20cpx;
+  padding-top: 10cpx;
+  padding-bottom: 5cpx;
+
 }
 .items5{
   display: flex;
@@ -647,20 +762,28 @@ export default new MyOrder();
   align-items: center;
   margin-top:10cpx;
   padding-bottom:5cpx;
-  border-bottom:2cpx solid #eee;
 }
 
 .items3{
-  padding:10cpx!important;
+  border-top: 1px solid #eee;
+  padding-top: 20cpx;
   width: 100%;
    display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
-  border-bottom:2cpx solid #eee;
+
 
 }
 .top{
+  width: 100%;
+   display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  align-items: center;
+
+}
+.topto{
    display: flex;
   flex-direction: row;
   justify-content:space-between;
@@ -707,10 +830,10 @@ view.items4{
 }
 
 .now-price{
-  color:#ff0000;
   display: inline-block;
   letter-spacing: 2cpx;
-  font-size:26cpx;
+  font-size: 23cpx;
+  color: #222222;
 }
 
 .tab{
@@ -719,17 +842,135 @@ view.items4{
 
 .spec-order-text{
    letter-spacing: 2cpx;
-   font-size: 26cpx;
+   font-size: 24cpx;
+
+}
+.order-textid{
+  font-size: 24cpx;
+  color: #9A9A9A;
+}
+.spec-order-status{
+  
+font-size: 24cpx;
+color: #ED4229;
+}
+.spec-order-goodsName{
+  font-size: 26rpx;
+  color: #222222;
+}
+.spec-order-price{
+  font-size: 33.8cpx;
+  color: #ED4229;
+}
+.spec-order-totalCount{
+  font-size: 23cpx;
+  color: #D2D2D2;
+  text-align: right;
+  padding-top: 5cpx;
+}
+.spec-total{
+  font-size: 23cpx;
+  color: #222222;
+  margin-right: 20cpx;
+}
+.buttons{
+  font-size: 26cpx;
+  color: #999999;
+  padding: 0 40cpx;
+  border: 1cpx solid #CACACA;
+  margin-right: 20cpx;
+}
+.buttonsto{
+  font-size: 26cpx;
+  color: #ED4229;
+  padding: 0 40cpx;
+  border: 1cpx solid #ED4229;
+}
+.button_payment{
+  border: 1cpx solid #DD3A2C;
+  font-size: 26cpx;
+  color: #ED4229;
+  padding: 0 20cpx;
+  background: none!important;
+}
+.pop-conternt{
+margin:0 auto;
+width: 431cpx;
+height: 273cpx;
+background: #FFFFFF;
+box-shadow: 0cpx 0cpx 24cpx 0cpx rgba(5, 5, 5, 0.1);
+ display: flex;
+flex-direction: column;
+justify-content: space-around;
+align-items: center;
+}
+.pop-conternt-top{
+   display: flex;
+flex-direction: column;
+justify-content: space-around;
+align-items: center;
 
 }
 
+
+.pop-conternt-top > text:nth-child(1){
+font-size: 37cpx;
+font-weight: 500;
+color: #222222;
+
+
+}
+.pop-conternt-top > text:nth-child(2){
+font-size: 27cpx;
+font-weight: 400;
+color: #AAAAAA;
+}
+
+.pop-conternt-bot{
+    width: 100%;
+     display: flex;
+flex-direction: row;
+justify-content: space-around;
+align-items: center;
+
+}
+.pop-btn1{
+width: 148cpx;
+height: 49cpx;
+border: 2cpx solid #DD3A2C;
+border-radius: 24cpx;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+font-size: 23cpx;
+font-weight: 500;
+color: #ED4229;
+}
+
+.pop-btn2{
+width: 148cpx;
+height: 49cpx;
+background: linear-gradient(269deg, #FE573F, #E61A09);
+border-radius: 24cpx;
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+font-size: 23cpx;
+font-weight: 500;
+color: #fff;
+}
+.de_popup{
+  border-radius: 17cpx;
+}
 </style>
 
 <script cml-type="json">
 {
   "base": {
     "usingComponents": {
-          "nav":"/components/nav/nav",
+          "nav":"/components/nav-ver2/nav-ver2",
            "van-tab": "/vant//tab/index",
             "van-tabs": "/vant/tabs/index",
             "details-panel":"/components/details-panel/details-panel",
@@ -737,7 +978,8 @@ view.items4{
               "van-icon": "/vant//icon/index",
               "van-button": "/vant/button/index",
               "van-dialog": "/vant/dialog/index",
-              "van-loading": "/vant/loading/index"
+              "van-loading": "/vant/loading/index",
+              "van-popup": "/vant/popup/index"
     }
   }
 }

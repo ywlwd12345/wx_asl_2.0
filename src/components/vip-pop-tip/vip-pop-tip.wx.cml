@@ -1,0 +1,148 @@
+<template>
+  <view class="container" c-if="{{true}}">
+  <view class="pop-img-wrap">
+   <image src="{{obj.url}}" style="width:492cpx;height:606cpx;"></image>
+
+   <view class="pop-btn-text-wrap">
+   <text style="width:364cpx;">{{obj.text}}</text>
+   <view class="view-btn"  hover-class="hover-btn" c-bind:tap="close">确定</view>
+   </view>
+
+  </view>
+  
+
+
+  </view>
+</template>
+
+<script>
+
+class VipPopTip implements VipPopTipInterface {
+  props = {
+    obj: {
+      type: Object,
+      default: ''
+    }
+  }
+
+  data = {
+    popImg:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/other/pop1.png'
+  }
+
+  computed = {
+  }
+
+  watch = {
+  }
+
+  methods = {
+
+    close(){
+
+      this.$cmlEmit('onshow',{
+      value: false
+    })
+
+    }
+  }
+
+  beforeCreate() {
+  }
+
+  created() {
+  }
+
+  beforeMount() {
+  }
+
+  mounted() {
+    // this.$cmlEmit('onshow',{
+    //   value: this.name
+    // })
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new VipPopTip();
+</script>
+
+<style >
+
+.container{
+  width: 750cpx;
+  background:rgba(0,0,0,.3);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  
+}
+
+.pop-img-wrap{
+  width:492cpx;
+  height: 606cpx;
+  margin:0 auto;
+  position: relative;
+}
+
+.pop-btn-text-wrap{
+  width: 400cpx;
+  height: 180cpx;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom:46cpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.pop-btn-text-wrap> text{
+font-size: 20cpx;
+font-weight: 300;
+color: #FFFFFF;
+line-height: 32cpx;
+opacity: 0.8;
+ overflow: hidden;
+word-break: break-all;
+
+
+}
+
+.view-btn{
+  width: 364cpx;
+height: 66cpx;
+background: #FFFFFF;
+box-shadow: 0cpx -1cpx 0cpx 0cpx #B6BACB;
+border-radius: 33cpx;
+text-align: center;
+line-height: 66cpx;
+font-size: 24cpx;
+font-weight: 400;
+color: #343434;
+
+
+}
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {}
+  }
+}
+</script>

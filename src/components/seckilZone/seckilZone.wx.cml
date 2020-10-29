@@ -22,7 +22,7 @@
           <text class="{{i==statusindex?'curtitle':''}}" style="text-align:center;font-size:35cpx;">{{item.time}}</text>
         </view>
         <view  class="panel-text" >
-          <text class="{{i==statusindex?'cur':''}}" style="text-align:center;font-size:23cpx;color:#999999;">{{item.status}}</text>
+          <text class="{{i==statusindex?'cur':''}}" style="text-align:center;font-size:23cpx;color: #9A9A9A;">{{item.status}}</text>
         </view>
         </view>
       </block>
@@ -104,7 +104,7 @@ class SeckilZone implements SeckilZoneInterface {
             d.name=dealStoreTitleName(d.name,14)
             d.time=this.dealTimePeriod(d.time)
             d.flag=false
-            if(d.status=='进行中'){
+            if(d.status=='抢购中'){
               d.flag=true
               this.statusindex=index
               this.getClassifiyData(d.time,index,d.status)
@@ -124,7 +124,7 @@ class SeckilZone implements SeckilZoneInterface {
       if(index>=0){
         this.statusindex=index
       }
-      if(status=='进行中'){
+      if(status=='抢购中'){
         this.purchasetime=1
       }else{
         this.purchasetime=0
@@ -135,7 +135,7 @@ class SeckilZone implements SeckilZoneInterface {
             this.list=res.data.map((d,index)=>{
            
             d.thumb='https://'+d.thumb
-            d.goodsName=dealStoreTitleName(d.goodsName,14)
+            d.goodsName=dealStoreTitleName(d.goodsName,25)
             return d
           })
           if(this.list.length==0){
@@ -150,10 +150,10 @@ class SeckilZone implements SeckilZoneInterface {
     dealStatus(status){
     switch(status) {
      case 0:
-        return '待开售'
+        return '即将开始'
         break;
      case 1:
-         return '进行中'
+         return '抢购中'
         break;
       default:
       return '已结束'
@@ -240,7 +240,7 @@ background: #eee;
   color: #ED4129;
 }
 .cur{
-    background: #ED4129;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
     color: #fff!important;
     font-size: 25cpx!important;
     border-radius: 20rpx;
@@ -281,11 +281,13 @@ background: #eee;
 .price_s{
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
+
 }
 .rmb{
     color: #ED4129;
     padding-right: 5cpx;
+    font-size: 25cpx;
 }
 .rmb_p{
     color: #ED4129;
@@ -294,11 +296,20 @@ background: #eee;
 }
 .purchase{
     font-size: 25cpx;
-    background: #ED4129;
+    background: linear-gradient(269deg, #FE583F, #E61B0A);
     color: #fff;
     padding: 8cpx 30cpx;
     border-radius: 30cpx;
 }
+
+
+::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+    color: transparent;
+    display:none;
+}
+
 </style>
 
 <script cml-type="json">

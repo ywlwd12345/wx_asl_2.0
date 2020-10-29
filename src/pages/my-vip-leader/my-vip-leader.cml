@@ -1,0 +1,445 @@
+<template>
+<view class="container">
+  <view class="head" >
+  <view class="head-nav"  style="margin-top:{{ menuButton.top+menuButton.height/3}}px;">
+  <view c-bind:tap="goBack" hover-class="hover-btn" > 
+  <image src="{{backIcon}}" style="width:24cpx;height:37cpx;" ></image>
+  </view>
+  <text>会员中心</text>
+  </view>
+  <!-- head-nav end-->
+  <view class="user-level">
+   <view class="user-img">
+        <image src="{{personUserInfo.avatar?'https://'+personUserInfo.avatar:avatar}}" style="width:145cpx;height:145cpx;border-radius:50%;"></image>
+  </view>
+
+  <view class="time-tip">
+  <text>{{personUserInfo.mobile}}</text>
+  <text>{{personUserInfo.endTime}}  到期时间></text>
+  </view>
+  <view class="view-btn" hover-class="hover-btn" c-bind:tap="showPop">立即升级</view>
+  </view>
+
+  <!-- user-level end --> 
+
+
+
+
+
+
+  </view>
+  <!--head end -->
+
+<view class="level-info">
+<view class="level-center-wrap">
+<view class="level-c-w-1">
+<text>{{personUserInfo.level}}</text>
+<text>会员等级</text>
+</view>
+<view class="level-c-w-2"></view>
+<view class="level-c-w-3">
+<text>11</text>
+<text>会员特权</text></view>
+</view>
+<!-- level-center-wrap end-->
+</view>
+
+<!-- level-info end -->
+
+
+<view class="level-column">
+<view class="level-c-wrap"  c-for="{{levelData}}"
+          c-for-item="item"
+            c-for-index="i"
+          c-key="text"  style="margin-bottom:{{i<8?40:0}}cpx;">
+ <image src="{{item.img}}" style="width:75cpx;height:74cpx;"></image>
+
+ <text class="break-text">{{item.text}}</text>
+
+</view>
+
+</view>
+
+
+  
+    <vip-pop-tip c-if="{{show}}" obj="{{obj}}" c-bind:onshow="onshow"></vip-pop-tip>
+  
+  
+  </view>
+</template>
+
+<script>
+
+
+
+import cml from 'chameleon-api';
+import store from '../../store'
+import {  } from '../../api/grouping'
+import { tip} from '../../untils/processData'
+import { backIcon,avatar} from '../../untils/icon'
+
+
+
+const levelData=[
+  {
+  text:'分享拿收益',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/fxnsy@2x.png'
+},
+ {
+  text:'拥有创富系统',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/yycfxt@2x.png'
+},
+ {
+  text:'教育系统',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/jyxt@2x.png'
+},
+ {
+  text:'自购省',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/zgs@2x.png'
+},
+ {
+  text:'共享平台利润',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/gxptlr@2x.png'
+},
+
+ {
+  text:'享受平台分红',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/xsptfh@2x.png'
+},
+ {
+  text:'产品实物回报',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/cpswhb@2x.png'
+}, {
+  text:'分享收益',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/fxsy@2x.png'
+},
+ {
+  text:'推荐店主获得40%-60%奖励',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/tjdz@2x.png'
+},
+ {
+  text:' 一级消费利润15%',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/yjxf@2x.png'
+},
+ {
+  text:'二级消费利润10%',
+  img:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/ejxf@2x.png'
+}
+
+
+]
+
+class MyVipLeader   {
+
+  data = {
+
+menuButton:{},
+backIcon:backIcon,
+avatar:avatar,
+levelData:levelData,
+show:false,
+obj:{
+  url:'https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/other/pop2.png',
+  text:'请直接联系所属推荐人或致电4008567085咨询客服'
+},
+personUserInfo:{}
+  }
+
+  computed = {
+  }
+
+  watch  = {
+  }
+
+  methods = {
+        showPop(){
+      this.show=true
+    },
+    onshow({detail}){
+      this.show=detail.value
+      // console.log(e,'65897456')
+    },
+       goBack(){
+  cml.navigateBack(-1)
+ }
+  }
+
+  beforeCreate(query) {
+  }
+
+  created(query) {
+  }
+
+  beforeMount(query) {
+  }
+
+  onShow() {
+  }
+
+  mounted() {
+     this.menuButton=store.state.menuButton
+    this.personUserInfo=store.state.personUserInfo
+  }
+
+  onHide() {
+  }
+
+  beforeDestroy() {
+  }
+
+  destroyed() {
+  }
+}
+
+export default new MyVipLeader();
+</script>
+
+<style scoped>
+
+
+.container{
+  width:750cpx;
+  height: 100vh;
+  background: #eee;
+}
+
+.head{
+  width: 750cpx;
+min-height: 360cpx;
+background: linear-gradient(90deg, #454653, #444452);
+position: relative;
+
+}
+
+.head-nav{
+   width:750cpx;
+  text-align: center;
+
+}
+
+
+
+
+.head-nav > text{
+
+font-size: 34cpx;
+font-weight: 400;
+color: #FFFFFF;
+text-align: center;
+}
+
+
+.container view,.container text{
+  letter-spacing: 2cpx;
+}
+
+
+.head-nav > view{
+   width: 100cpx;
+  height: 60cpx;
+  position: absolute;
+  top:0cpx;
+  left:32cpx;
+  z-index: 5;
+}
+
+.user-level{
+  padding:0 40cpx;
+  position: absolute;
+    bottom:0;
+   width:696cpx;
+  height: 190cpx;
+ background-repeat:no-repeat;
+  margin:0 auto;
+  background-image:url('https://w.aishenglian.com/static/icon/ver2-icon/level-2/my-vip/mz/bj@2x.png');
+  background-size:contain;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+
+}
+
+.user-img{
+  width: 150cpx;
+height: 150cpx;
+background: #FFFFFF;
+border-radius: 50%;
+border:8cpx solid #FAD2D1;
+overflow: hidden;
+}
+
+.view-btn{
+  width: 125cpx;
+height: 40cpx;
+background: #FFFFFF;
+border-radius: 8cpx;
+font-size: 26cpx;
+font-weight: 500;
+color: #444452;
+text-align: center;
+line-height: 40cpx;
+
+}
+
+.time-tip>text{
+  margin-bottom:10cpx;
+  
+}
+
+.time-tip>text:nth-child(1){
+
+font-size: 28cpx;
+font-weight: 500;
+color: #FFFFFF;
+
+
+}
+
+.time-tip>text:nth-child(2){
+font-size: 19cpx;
+font-weight: 500;
+color: #FFFFFF;
+
+
+
+}
+
+
+
+
+.level-info{
+  width: 750cpx;
+height: 142cpx;
+background: linear-gradient(90deg, #454653, #444452);
+margin-bottom:30cpx;
+
+
+}
+
+
+.level-center-wrap{
+  min-height: 100cpx;
+  width: 440cpx;
+  margin: 20cpx auto;
+ 
+
+
+}
+
+.level-c-w-2{
+  width: 2cpx;
+height: 32cpx;
+background: #969BA5;
+border-radius: 1cpx;
+
+
+}
+
+.level-center-wrap{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+ .level-c-w-1,.level-c-w-3{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+
+ .level-c-w-1 >text:nth-child(1), .level-c-w-3 >text:nth-child(1){
+  font-size: 36cpx;
+  font-weight: bold;
+  color: #FFFFFF;
+ }
+
+  .level-c-w-1 >text:nth-child(2), .level-c-w-3 >text:nth-child(2){
+ 
+font-size: 22cpx;
+font-weight: 400;
+color: #FFFFFF;
+
+ }
+
+
+ .level-column{
+   padding:30cpx;
+   width: 700cpx;
+background: #FFFFFF;
+border-radius: 12cpx;
+margin: 0 auto;
+display: flex;
+justify-content: flex-start;
+flex-direction: row;
+align-items: flex-start;
+flex-wrap: wrap;
+ }
+
+
+
+ .level-c-wrap{
+   width: 25%;
+   display: flex;
+justify-content: center;
+flex-direction: column;
+align-items: center;
+ }
+
+
+ .level-c-wrap > text{
+font-size: 22cpx;
+font-weight: 400;
+color: #222222;
+
+ }
+
+ .break-text{
+   overflow: hidden;
+word-break: break-all;
+ }
+
+
+
+
+
+
+
+
+
+</style>
+
+
+
+
+
+
+
+</style>
+
+<script cml-type="json">
+{
+  "base": {
+    "usingComponents": {
+  "vip-pop-tip": "/components/vip-pop-tip/vip-pop-tip"
+
+    }
+  },
+  "wx": {
+   "navigationStyle":"custom",
+  "navigationBarTextStyle": "white"
+  },
+  "tt": {
+    "navigationBarTitleText": "index",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#E2E2E2"
+  }
+}
+</script>
