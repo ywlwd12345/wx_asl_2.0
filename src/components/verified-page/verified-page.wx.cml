@@ -35,7 +35,7 @@
 
   <view class="success-icon"> <image src="{{gouImg}}" style="width:128cpx;height:128cpx"></image></view>
   <view class="success-text" >实名认证成功</view>
-  <view class="success-text1" >请耐心等候审核！</view>
+  <!-- <view class="success-text1" >请耐心等候审核！</view>-->
   </view>
 
 
@@ -135,6 +135,7 @@ this.fromData.realName=e.detail
   submit(){
     if(this.check()){
       authentication(this.fromData).then(res=>{
+       
         if(res.code){
           this.show=true
         }else{

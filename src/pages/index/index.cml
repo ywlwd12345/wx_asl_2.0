@@ -312,6 +312,17 @@ goLive(){
 
   },
   onShareAppMessage: function (res) {
+
+    
+
+    if(res.from==='menu'){
+       return{
+         title:this.title,
+        imageUrl:this.shareImg
+       }
+
+
+    }
    
 
     if(res.target.id==='1'){
@@ -348,8 +359,6 @@ goLive(){
 
 
 
-
-
     if (res.from === 'button'){
         return {
       title:this.title,
@@ -358,6 +367,8 @@ goLive(){
       imageUrl:this.shareImg
     }
           }else{
+
+            console.log('宝宝测试狗')
                return {
       title:this.title,
       desc: '',
