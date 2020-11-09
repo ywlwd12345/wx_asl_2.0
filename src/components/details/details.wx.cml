@@ -19,7 +19,23 @@
   <!--nav end-->
   <view class="store-detail">
   <view class="carousel-wrap">
-  <carousel class="wrap-img" indicator-dots="{{true}}"  current="{{0}}" circular="{{true}}" autoplay="{{true}}">
+  <carousel class="wrap-img" indicator-dots="{{true}}"  current="{{0}}" circular="{{true}}" autoplay="{{autoplayFlag}}">
+      <carousel-item c-if="{{allDetails.video}}">
+        <origin-video 
+      src="{{allDetails.video}}" 
+      binderror="videoErrorCallback" 
+      show-center-play-btn='{{true}}' 
+      show-play-btn="{{true}}" 
+      controls
+      play-btn-position="center"
+      bindplay="bindplay"
+      bindpause="bindpause"
+      style="width:750cpx;height:750cpx;"
+      picture-in-picture-mode="{{['push', 'pop']}}"
+      bindenterpictureinpicture='bindVideoEnterPictureInPicture'
+      bindleavepictureinpicture='bindVideoLeavePictureInPicture'
+    ></origin-video>
+        </carousel-item>
       <block
          c-for="{{ storeList}}"
           c-for-index="i"
@@ -31,6 +47,10 @@
         </view>
       </carousel-item>
       </block>
+
+   
+
+
       </carousel>
       <view class="pos-img" style="top:{{marginTop}}px;opacity:{{1-navOpacity}};" c-bind:tap="goBack">
         <image src="{{posImg}}" style="width:58cpx;height:58cpx;opacity:{{1-navOpacity}};"></image>
@@ -282,7 +302,7 @@
 import cml from 'chameleon-api';
 import {getGoodDetails,getStyle,addCartData,getBaseUserInfo,CollectiongGoods,deletesGoods} from '../../api/index'
 import {getErWeiData,comments} from '../../api/grouping.js' //引入拼团模块接口
-import { dealDetailsStrData,arrayChangeObj,dealImg,dealDetailsStyle} from '../../untils/processData'
+import { dealDetailsStrData,arrayChangeObj,dealImg,dealDetailsStyle,tip} from '../../untils/processData'
 import store from '../../store'
 import Dialog from '../../vant/dialog/dialog'
 
@@ -316,6 +336,7 @@ class Details implements DetailsInterface {
   }
 
   data = {
+    autoplayFlag:true,//轮播图播放控制
     fixListH:'',
     fixeList:fixeList,
     marginTop:'',
@@ -406,6 +427,30 @@ class Details implements DetailsInterface {
 
 
   methods = {
+    videoErrorCallback(){
+      tip('视频播放出错')
+
+    },
+
+    // 当开始/继续播放时触发play事件
+    bindplay(e){
+
+      this.autoplayFlag=false
+
+
+      
+
+    },
+
+    // 当暂停播放时触发 pause 事件
+
+    bindpause(e){
+      this.autoplayFlag=true
+
+    },
+
+
+
     //分享弹框之后设置背景颜色
 
     setDis(distance){

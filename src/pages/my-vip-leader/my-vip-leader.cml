@@ -403,7 +403,7 @@ color: #222222;
 
  .break-text{
    overflow: hidden;
-word-break: break-all;
+  word-break: break-all;
  }
 
 
