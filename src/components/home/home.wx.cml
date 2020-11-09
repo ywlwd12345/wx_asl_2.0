@@ -1315,7 +1315,6 @@ border-radius: 0 0 20cpx 20cpx;
   position: relative;
   width: 750cpx;
   z-index: 2;
-
 }
 
 .cell{
@@ -1334,7 +1333,6 @@ border-radius: 0 0 20cpx 20cpx;
   justify-content: center;
   align-items: center;
   height: 315cpx;
-
 }
 
 .grid{
