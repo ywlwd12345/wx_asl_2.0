@@ -688,7 +688,8 @@ class PersonalCenter implements PersonalCenterInterface {
         break;
          case "提现":
             cml.navigateTo({
-  path: '/pages/put-coin/put-coin'
+  path: '/pages/put-coin/put-coin',
+  query:{card: this.usersinfo.card}
       })
         break;
         case "转账":

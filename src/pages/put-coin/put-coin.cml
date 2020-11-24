@@ -1,6 +1,6 @@
 <template>
   <view>
-  <put-coin></put-coin>
+  <put-coin card="{{card}}"></put-coin>
   </view>
 </template>
 
@@ -9,6 +9,7 @@
 class PutCoin   {
 
   data = {
+    card:''
   }
 
   computed = {
@@ -21,6 +22,7 @@ class PutCoin   {
   }
 
   beforeCreate(query) {
+    this.card = query.card
   }
 
   created(query) {

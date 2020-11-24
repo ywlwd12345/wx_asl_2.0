@@ -179,6 +179,10 @@ class PutCoin implements PutCoinInterface {
     name: {
       type: String,
       default: '默认值'
+    },
+    card:{
+      type: String,
+      default: ''
     }
   }
 
@@ -246,7 +250,7 @@ class PutCoin implements PutCoinInterface {
 
       }).catch(err=>{})
       })
-    },
+    }, 
   postCoin(){
     let uname
     cml.getStorage('uname').then((value)=>{
@@ -268,10 +272,28 @@ class PutCoin implements PutCoinInterface {
     })
   },
     submit(){
-      if(this.check){
-        this.postCoin()
-
+      //判断否绑定银行卡
+      if(this.card){
+        console.log('接收',this.card)
+        //判断是否为空
+        if(this.coin){
+          if(this.check){
+            this.postCoin()
+          }
+        }else{
+          cml.showToast({
+            message:'请填写完整',
+            duration: 1000
+          })
+        }
+        
+      }else{
+        cml.showToast({
+          message:'请先完善个人银行卡信息',
+          duration: 1500
+        })
       }
+      
 
 
 
@@ -317,10 +339,9 @@ class PutCoin implements PutCoinInterface {
 
   mounted() {
      cml.getStorage('viewPortHeight').then((value)=>{
-    // 处理获取到的键值
-    this.viewPortHeight=value
-})
-
+          // 处理获取到的键值
+          this.viewPortHeight=value
+      })
     this.getCoinData()
   }
 
