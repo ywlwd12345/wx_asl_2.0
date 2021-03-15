@@ -354,7 +354,7 @@ const imgArray=[
 
 {
    imageSrc: 'https://w.aishenglian.com/static/icon/ver2-icon/index/jfzq@2x.png',
-   text:'积分专区'
+   text:'合约专区'
 },
 
 {
@@ -655,8 +655,9 @@ goSpecifiedContent(name){
   })
         
         break;
-         case '积分专区':
-          this.goRebateCredits(name)
+         case '合约专区':
+          // this.goRebateCredits(name) //以前是积分专区
+            this.goRegionClassify(name)
         break;
          case '特惠区':
           this.goRegionClassify(name)
@@ -847,10 +848,13 @@ getTalkData(){
 
 //去店主专区
 goShopOwner(){
-   cml.navigateTo({
-  path: '/pages/rebate-credits/rebate-credits',
-  query:{flag:3}
-  })
+  //  cml.navigateTo({
+  // path: '/pages/rebate-credits/rebate-credits',
+  // query:{flag:3}
+  // })
+
+
+    this.goRegionClassify('店主专区')
 
 
 },

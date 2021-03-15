@@ -35,7 +35,10 @@
         </view>
         <!--操作-->
         <view>
-          <view c-if="{{item.statusNum==2||item.statusNum==3||item.statusNum==5}}" c-bind:tap="returnGood">
+          <view c-if="{{item.statusNum==2||item.statusNum==3||item.statusNum==5}}"
+
+          c-catch:click="returnGood($event)"
+          data-id="{{item.goodsId}}">
             <view class="operation">申请退货</view>
           </view>
 
@@ -242,12 +245,17 @@ class OrderDetails implements OrderDetailsInterface {
       this.getOsn(val.expNum)
     },
   //申请退货
-  returnGood(){ 
+  returnGood({currentTarget}){ 
       let status=7
       let uname
+
+      
+      const goodsId=currentTarget.dataset.id  
+
+   
       cml.getStorage('uname').then((value)=>{
       uname=value
-      modifyState({uname:uname,orderId:this.detailsData.orderId,status:status,goodsId:this.detailsData.goodsInfo[0].goodsId}).then(res=>{
+      modifyState({uname:uname,orderId:this.detailsData.orderId,status:status,goodsId:goodsId}).then(res=>{
           console.log("结果",res)
         if(res.code==1){
           cml.showToast({
